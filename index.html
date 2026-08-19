@@ -165,6 +165,27 @@ nav.tabbar{
 .coin-float{position:fixed;pointer-events:none;font-size:20px;animation:floatUp .8s ease forwards;z-index:200}
 .qopt.right{background:#E8F5E9!important;color:#2E7D32!important;border-color:#A5D6A7!important;animation:pop .25s ease}
 .qopt.wrong{background:#FFEBEE!important;color:#C62828!important;border-color:#EF9A9A!important;animation:shake .3s ease}
+/* 角色台词 */
+.quiz-char{display:flex;align-items:flex-start;gap:8px;background:linear-gradient(135deg,#FBEEE8,#FFFDF8);border:1px solid var(--line2);border-left:3px solid var(--red);border-radius:10px;padding:10px 12px;margin-bottom:12px;animation:fadeIn .3s ease}
+.quiz-char-emoji{font-size:28px;line-height:1;flex-shrink:0}
+.quiz-char-line{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic;flex:1;padding-top:4px}
+/* 卷轴效果 */
+.scroll-panel{position:relative;background:linear-gradient(180deg,#F4E8CF 0%,#FFFDF8 8%,#FFFDF8 92%,#F4E8CF 100%);border:1px solid var(--gold);border-radius:6px;padding:22px 16px 20px}
+.scroll-panel::before,.scroll-panel::after{content:'';display:block;position:absolute;left:-2px;right:-2px;height:8px;background:linear-gradient(180deg,#C9A227,#8E5A1E,#C9A227);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.scroll-panel::before{top:-5px}
+.scroll-panel::after{bottom:-5px}
+.scroll-corner{position:absolute;width:16px;height:16px;border:2px solid var(--gold);border-radius:50%;opacity:.35;pointer-events:none}
+.scroll-corner.tl{top:8px;left:8px}
+.scroll-corner.tr{top:8px;right:8px}
+.scroll-corner.bl{bottom:8px;left:8px}
+.scroll-corner.br{bottom:8px;right:8px}
+/* 拼写题 */
+.spell-hint{font-size:16px;color:var(--red);text-align:center;margin-bottom:12px;font-weight:500;line-height:1.6}
+.spell-input{width:100%;padding:14px;border:2px solid var(--line2);border-radius:12px;font-size:20px;text-align:center;letter-spacing:2px;color:var(--ink);background:var(--bg-card);outline:none;font-family:Georgia,serif;transition:border-color .2s}
+.spell-input:focus{border-color:var(--red)}
+.spell-input.right{border-color:var(--ok);background:#E8F5E9;color:var(--ok)}
+.spell-input.wrong{border-color:var(--danger);background:#FFEBEE;color:var(--danger);animation:shake .3s ease}
+.spell-tip{font-size:12px;color:var(--ink2);text-align:center;margin:8px 0 10px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -216,11 +237,23 @@ nav.tabbar{
 
     <div class="page" id="page-quiz">
       <div class="progress" id="quizProgress"></div>
-      <div class="panel">
+      <div class="quiz-char" id="quizChar" style="display:none">
+        <span class="quiz-char-emoji" id="quizCharEmoji"></span>
+        <span class="quiz-char-line" id="quizCharLine"></span>
+      </div>
+      <div class="panel scroll-panel">
+        <span class="scroll-corner tl"></span><span class="scroll-corner tr"></span>
+        <span class="scroll-corner bl"></span><span class="scroll-corner br"></span>
         <div class="quiz-word" id="qWord" onclick="var w=this.textContent;if(w)speak(w)"></div>
         <div class="quiz-pho" id="qPho"></div>
         <div class="quiz-pos" id="qPos"></div>
         <div id="qOpts"></div>
+        <div id="qSpell" style="display:none">
+          <div class="spell-hint" id="spellHint"></div>
+          <input class="spell-input" id="spellInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼写英文单词…">
+          <div class="spell-tip" id="spellTip"></div>
+          <button class="btn gold" id="spellSubmit" onclick="answerSpell()">呈 卷</button>
+        </div>
       </div>
       <div class="hint" id="quizHint"></div>
     </div>
@@ -339,6 +372,31 @@ var CHARACTERS={
   0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。'},
   1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。'},
   2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。'}
+};
+
+/* ---------- 测验角色台词（每题答题前角色说一句） ---------- */
+var QUIZ_LINES={
+  0:[
+    '这词都记不住，还想进宫？',
+    '嬷嬷考你，答不上来趁早回去。',
+    '宫里处处要认字，先过我这关。',
+    '记住了，这词往后常用。',
+    '答对了才许进门，答错了……哼。'
+  ],
+  1:[
+    '这词儿都认不得，还敢来争宠？',
+    '本宫倒要看看你有多少斤两。',
+    '答不上来，就跪着回你的住处。',
+    '这个词，可是后宫生存的命根子。',
+    '你以为光靠脸就能在这宫里活？'
+  ],
+  2:[
+    '一词之差，天壤之别。你说说。',
+    '能读懂这词，才配在御前说话。',
+    '本宫考你，不可敷衍。',
+    '这词的意思，你要刻在心里。',
+    '答对了，本宫记你一功。'
+  ]
 };
 
 /* ---------- 章节数据（剧情词全部来自词库） ---------- */
@@ -638,6 +696,7 @@ function startQuiz(cfg){
   var count=cfg.quiz||5;
   if(words.length===0){ var _keys=Object.keys(VOCAB_MAP); for(var _t=0;_t<10;_t++) words.push(_keys[rand(_keys.length)]); }
   var items=[];
+  var spellCount=Math.max(1,Math.floor(count*0.3));
   for(var i=0;i<count;i++){
     var w=words[i%words.length];
     if(i>=words.length){
@@ -647,8 +706,13 @@ function startQuiz(cfg){
         if(k!==w && words.indexOf(k)===-1){w=k;break;}
       }
     }
-    var mode=(i%2===0)?'en2zh':'zh2en';
-    items.push({word:w,mode:mode,options:makeOptions(w,4,mode)});
+    var isSpell=(i>=count-spellCount);
+    if(isSpell){
+      items.push({word:w,mode:'spell',type:'spell',options:null});
+    }else{
+      var mode=(i%2===0)?'en2zh':'zh2en';
+      items.push({word:w,mode:mode,type:'choice',options:makeOptions(w,4,mode)});
+    }
   }
   cur={stage:'quiz',items:items,i:0,gate:cfg.gateText};
   renderQuiz();
@@ -657,24 +721,52 @@ function renderQuiz(){
   showPage('page-quiz');
   var it=cur.items[cur.i];
   var p=extractPOS(VOCAB_MAP[it.word].def);
-  if(it.mode==='zh2en'){
-    $(ui.qWord).textContent=p.mean;
-    $(ui.qPho).textContent='';
-    $(ui.qPos).textContent=p.pos+' · 看义选词';
-  }else{
-    $(ui.qWord).textContent=it.word;
-    $(ui.qPho).textContent=VOCAB_MAP[it.word].phonetic||'';
-    $(ui.qPos).textContent=p.pos+' · 选词义';
+  /* 角色台词 */
+  var charIdx=S.chapter%3;
+  var charData=CHARACTERS[charIdx]||CHARACTERS[0];
+  var charBox=$('quizChar');
+  if(charBox){
+    charBox.style.display='flex';
+    $('quizCharEmoji').textContent=charData.emoji;
+    var lines=QUIZ_LINES[charIdx]||QUIZ_LINES[0];
+    $('quizCharLine').textContent='\u201c'+lines[rand(lines.length)]+'\u201d';
   }
   var dots='';
   for(var i=0;i<cur.items.length;i++){
     dots+='<div class="pdot'+(i<cur.i?' done':(i===cur.i?' cur':''))+'"></div>';
   }
   $(ui.quizProgress).innerHTML=dots;
-  $(ui.qOpts).innerHTML=buildOptsHTML(it.options,function(){});
-  var opts=$(ui.qOpts).querySelectorAll('.qopt');
-  for(var j=0;j<opts.length;j++){
-    opts[j].onclick=function(){ answerQuiz(this.getAttribute('data-i')); };
+  if(it.type==='spell'){
+    /* 拼写题：显示中文释义，输入英文 */
+    $(ui.qOpts).style.display='none';
+    $('qSpell').style.display='block';
+    $(ui.qWord).textContent='';
+    $(ui.qPho).textContent='';
+    $(ui.qPos).textContent='\u62fc\u5199 \u00b7 \u770b\u4e49\u5199\u8bcd';
+    $('spellHint').textContent=p.mean;
+    var input=$('spellInput');
+    input.value=''; input.className='spell-input'; input.disabled=false;
+    $('spellSubmit').disabled=false;
+    $('spellTip').textContent='\u9996\u5b57\u6bcd\uff1a'+it.word.charAt(0).toUpperCase()+'  \u00b7  \u5171 '+it.word.length+' \u4e2a\u5b57\u6bcd';
+    setTimeout(function(){try{input.focus();}catch(e){}},120);
+  }else{
+    /* 选择题 */
+    $('qSpell').style.display='none';
+    $(ui.qOpts).style.display='block';
+    if(it.mode==='zh2en'){
+      $(ui.qWord).textContent=p.mean;
+      $(ui.qPho).textContent='';
+      $(ui.qPos).textContent=p.pos+' \u00b7 \u770b\u4e49\u9009\u8bcd';
+    }else{
+      $(ui.qWord).textContent=it.word;
+      $(ui.qPho).textContent=VOCAB_MAP[it.word].phonetic||'';
+      $(ui.qPos).textContent=p.pos+' \u00b7 \u9009\u8bcd\u4e49';
+    }
+    $(ui.qOpts).innerHTML=buildOptsHTML(it.options,function(){});
+    var opts=$(ui.qOpts).querySelectorAll('.qopt');
+    for(var j=0;j<opts.length;j++){
+      opts[j].onclick=function(){ answerQuiz(this.getAttribute('data-i')); };
+    }
   }
   $(ui.quizHint).textContent=cur.i===0&&cur.gate?cur.gate:'';
 }
@@ -720,6 +812,45 @@ function answerQuiz(idx){
       renderQuiz();
     }
   },900);
+}
+function answerSpell(){
+  if(!cur||cur.stage!=='quiz') return;
+  var it=cur.items[cur.i];
+  if(it.type!=='spell') return;
+  var input=$('spellInput');
+  var val=(input.value||'').trim().toLowerCase();
+  var correct=it.word.toLowerCase();
+  var isRight=(val===correct);
+  input.disabled=true;
+  $('spellSubmit').disabled=true;
+  if(isRight){
+    input.className='spell-input right';
+    S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak;
+    var gain=15*(S.streak>1?2:1);
+    S.points+=gain;
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    taskInc('correct');
+    toast('\u62fc\u5199\u6b63\u786e +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
+    spawnCoin(input,'\u2728');
+  }else{
+    input.className='spell-input wrong';
+    input.value=correct;
+    S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    toast('\u62fc\u5199\u9519\u8bef -5 \u5723\u5ba0');
+    spawnCoin(input,'\ud83d\udc94');
+  }
+  save();
+  var wrong=!isRight;
+  setTimeout(function(){
+    if(!cur||cur.stage!=='quiz') return;
+    cur.i++;
+    if(cur.i>=cur.items.length){
+      if(wrong){ finishQuiz(false); }
+      else finishQuiz(true);
+    }else{
+      renderQuiz();
+    }
+  },1500);
 }
 function finishQuiz(ok){
   if(ok){
@@ -1089,6 +1220,7 @@ window.closeSheet=closeSheet;
 window.speakSheet=speakSheet;
 window.renderLibrary=renderLibrary;
 window.resetGame=resetGame;
+window.answerSpell=answerSpell;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
