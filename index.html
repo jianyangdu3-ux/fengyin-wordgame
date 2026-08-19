@@ -36,6 +36,10 @@ main{flex:1;padding:14px 14px 84px}
 .page{display:none;animation:fadeIn .25s ease}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes stamp{0%{transform:scale(2) rotate(-10deg);opacity:0}60%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(1) rotate(-4deg);opacity:1}}
+@keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .panel{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .panel h2{font-size:15px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
 .panel h2 .en{color:var(--gold);font-size:12px;margin-left:6px;font-weight:400}
@@ -50,7 +54,8 @@ main{flex:1;padding:14px 14px 84px}
 .btn.ghost{background:var(--bg-card);color:var(--red);border:1px solid var(--red2)}
 .btn.gold{background:var(--gold);color:#3A2A2A}
 .btn:disabled{opacity:.45}
-.quiz-word{font-size:26px;font-weight:500;color:var(--red);text-align:center;letter-spacing:1px}
+.quiz-word{font-size:26px;font-weight:500;color:var(--red);text-align:center;letter-spacing:1px;cursor:pointer;-webkit-tap-highlight-color:rgba(201,162,39,.2)}
+.quiz-word:active{transform:scale(.97);transition:transform .1s}
 .quiz-pho{text-align:center;color:var(--ink2);font-size:14px;margin:6px 0 2px}
 .quiz-pos{text-align:center;font-size:12px;color:var(--gold);margin-bottom:14px}
 .qopt{
@@ -139,6 +144,27 @@ nav.tabbar{
 .chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
 .chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
+.task-panel{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;text-align:left}
+.task-title{font-size:13px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.task-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+.task-item:last-child{border-bottom:none}
+.task-label{font-size:12px;color:var(--ink)}
+.task-bar{flex:1;height:6px;background:var(--line);border-radius:3px;margin:0 10px;overflow:hidden}
+.task-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .4s}
+.task-num{font-size:11px;color:var(--ink2);min-width:36px;text-align:right}
+.task-check{font-size:14px;color:var(--ok);margin-left:6px}
+.task-reward{margin-top:10px;text-align:center}
+.char-box{display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:10px;animation:fadeIn .4s ease}
+.char-emoji{font-size:36px;line-height:1}
+.char-info{flex:1}
+.char-name{font-size:13px;color:var(--red);font-weight:500}
+.char-quote{font-size:11px;color:var(--ink2);margin-top:2px;font-style:italic}
+.anim-pop{animation:pop .3s ease}
+.anim-shake{animation:shake .3s ease}
+.seal-stamp{animation:stamp .5s ease forwards}
+.coin-float{position:fixed;pointer-events:none;font-size:20px;animation:floatUp .8s ease forwards;z-index:200}
+.qopt.right{background:#E8F5E9!important;color:#2E7D32!important;border-color:#A5D6A7!important;animation:pop .25s ease}
+.qopt.wrong{background:#FFEBEE!important;color:#C62828!important;border-color:#EF9A9A!important;animation:shake .3s ease}
 </style>
 </head>
 <body>
@@ -162,10 +188,25 @@ nav.tabbar{
         </div>
         <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
         <div class="hint">剧情·斗法·抉择·查案 全部绑定考词<br>本地自动存档，进度不丢</div>
+        <!-- 每日任务面板 -->
+        <div class="task-panel" id="taskPanel" style="display:none">
+          <div class="task-title">📜 今日宫务</div>
+          <div class="task-list" id="taskList"></div>
+          <div class="task-reward" id="taskReward" style="display:none">
+            <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="page" id="page-story">
+      <div class="char-box" id="charBox" style="display:none">
+        <div class="char-emoji" id="charEmoji"></div>
+        <div class="char-info">
+          <div class="char-name" id="charName"></div>
+          <div class="char-quote" id="charQuote"></div>
+        </div>
+      </div>
       <div class="chap-title" id="storyTitle"></div>
       <div class="chap-sub" id="storySub"></div>
       <div class="panel"><p class="p-text" id="storyText"></p></div>
@@ -176,7 +217,7 @@ nav.tabbar{
     <div class="page" id="page-quiz">
       <div class="progress" id="quizProgress"></div>
       <div class="panel">
-        <div class="quiz-word" id="qWord"></div>
+        <div class="quiz-word" id="qWord" onclick="var w=this.textContent;if(w)speak(w)"></div>
         <div class="quiz-pho" id="qPho"></div>
         <div class="quiz-pos" id="qPos"></div>
         <div id="qOpts"></div>
@@ -190,7 +231,7 @@ nav.tabbar{
       <div class="panel">
         <div class="hp-row"><span class="hp-name" id="enemyName">华妃</span><div class="hp-bar"><div class="hp-fill" id="enemyHp"></div></div><span class="hp-name" id="enemyHpText"></span></div>
         <div class="hp-row"><span class="hp-name">你</span><div class="hp-bar"><div class="hp-fill friend" id="myHp"></div></div><span class="hp-name" id="myHpText"></span></div>
-        <div class="quiz-word" id="bWord" style="margin-top:14px"></div>
+        <div class="quiz-word" id="bWord" style="margin-top:14px" onclick="var w=this.textContent;if(w)speak(w)"></div>
         <div class="quiz-pho" id="bPho"></div>
         <div class="quiz-pos" id="bPos"></div>
         <div id="bOpts"></div>
@@ -293,6 +334,13 @@ var RANKS=[
 ];
 var SLOGAN=['守拙安分，方能活命','宫门一入，步步为营','不争，是争','凤印之下，皆是因果','这一局，才刚刚开始','高处不胜寒','六宫大权，尽在我手','凤印未落，胜负未分','这深宫，终究是我的了'];
 
+/* ---------- 角色（每章一个对手/盟友） ---------- */
+var CHARACTERS={
+  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。'},
+  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。'},
+  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。'}
+};
+
 /* ---------- 章节数据（剧情词全部来自词库） ---------- */
 var STORY=[
 {
@@ -348,7 +396,9 @@ var STORY=[
 /* ---------- 全局状态 ---------- */
 var S={
   v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
-  right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[]
+  right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[],
+  // 每日任务
+  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -367,16 +417,103 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initTasks(); return true;}}
   }catch(e){}
   return false;
+}
+
+/* ---------- 每日任务 ---------- */
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+function initTasks(){
+  if(!S.tasks) S.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
+  var t=todayStr();
+  if(S.tasks.date!==t){
+    S.tasks={date:t,done:[0,0,0],claimed:[0,0,0]};
+    save();
+  }
+}
+function getTasks(){
+  initTasks();
+  return [
+    {label:'背词 20 个', target:20, key:'words'},
+    {label:'答对 10 题', target:10, key:'correct'},
+    {label:'晋升 1 级', target:1, key:'promote'}
+  ];
+}
+function renderTasks(){
+  var list=$('taskList'); if(!list) return;
+  var tasks=getTasks(); var h=''; var allDone=true;
+  for(var i=0;i<tasks.length;i++){
+    var t=tasks[i]; var done=S.tasks.done[i]||0; var pct=Math.min(100,Math.round(done/t.target*100));
+    var finished=done>=t.target;
+    if(!finished) allDone=false;
+    h+='<div class="task-item">'+
+      '<span class="task-label">'+(finished?'✅ ':'')+t.label+'</span>'+
+      '<div class="task-bar"><div class="task-fill" style="width:'+pct+'%"></div></div>'+
+      '<span class="task-num">'+done+'/'+t.target+'</span>'+
+      '</div>';
+  }
+  list.innerHTML=h;
+  var panel=$('taskPanel'); if(panel) panel.style.display='block';
+  var reward=$('taskReward');
+  if(reward) reward.style.display=(allDone && !S.tasks.claimed[0])?'block':'none';
+}
+function claimTaskReward(){
+  S.tasks.claimed=[1,1,1];
+  S.points+=30; save();
+  toast('领取赏赐 +30 圣宠！');
+  renderTasks(); renderRankBar();
+}
+function taskInc(key,n){
+  initTasks();
+  var tasks=getTasks();
+  for(var i=0;i<tasks.length;i++){
+    if(tasks[i].key===key){
+      S.tasks.done[i]=(S.tasks.done[i]||0)+(n||1);
+      if(S.tasks.done[i]>tasks[i].target) S.tasks.done[i]=tasks[i].target;
+    }
+  }
+  save();
+  renderTasks();
 }
 function toast(msg){
   var t=$(ui.toast);
   t.textContent=msg; t.classList.add('show');
   clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},1600);
 }
+function spawnCoin(el,emoji){
+  if(!el) return;
+  var r=el.getBoundingClientRect();
+  var span=document.createElement('span');
+  span.className='coin-float';
+  span.textContent=emoji;
+  span.style.left=(r.left+r.width/2)+'px';
+  span.style.top=(r.top)+'px';
+  document.body.appendChild(span);
+  setTimeout(function(){span.remove();},900);
+}
+/* ---------- 音频初始化（解决 iOS/微信自动播放限制） ---------- */
+var audioCtx=null;
+function initAudio(){
+  if(!audioCtx){
+    try{ audioCtx=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume().catch(function(){}); }
+}
+/* 首次用户交互时解锁音频 */
+function onceAudioUnlock(){
+  initAudio();
+  document.removeEventListener('touchstart',onceAudioUnlock);
+  document.removeEventListener('click',onceAudioUnlock);
+}
+document.addEventListener('touchstart',onceAudioUnlock,{passive:true});
+document.addEventListener('click',onceAudioUnlock);
+
 function speak(word){
+  initAudio();
   try{
     var u='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
     var a=new Audio(u); a.play().catch(function(){});
@@ -560,11 +697,14 @@ function answerQuiz(idx){
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
     var gain=10*(S.streak>1?2:1);
     S.points+=gain;
-    try{ if(!S.seen[it.word]) S.seen[it.word]=1; }catch(e){}
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    taskInc('correct');
     toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
+    spawnCoin(qopt||$(ui.qWord),'✨');
   }else{
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
     toast('答错了 -5 圣宠');
+    spawnCoin(qopt||$(ui.qWord),'💔');
   }
   save();
   var opts=$(ui.qOpts).querySelectorAll('.qopt');
@@ -642,6 +782,7 @@ function answerBattle(idx){
     var dmg=20+(S.streak>2?15:0);
     cur.hp-=dmg; S.points+=12;
     cur.log='你一道见招拆招，'+cur.enemy+'气血震荡 -'+dmg;
+    taskInc('correct');
     toast('施计成功！连击'+S.streak);
   }else{
     S.wrong++; S.streak=0;
@@ -707,7 +848,7 @@ function answerChoice(idx){
     }
   }
   S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
-  if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; toast('抉择正确 +20 圣宠'); }
+  if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('抉择正确 +20 圣宠'); }
   else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
   save();
   var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
@@ -755,7 +896,7 @@ function answerCase(idx){
       $(ui.caseOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
     }
   }
-  if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; toast('查明真相 +25 圣宠'); }
+  if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('查明真相 +25 圣宠'); }
   else{ S.points=Math.max(0,S.points-12); S.wrong++; S.streak=0; toast('误判了 -12 圣宠'); }
   save();
   var opts=$(ui.caseOpts).querySelectorAll('.qopt');
@@ -783,6 +924,15 @@ function openStory(){
   if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
   var ch=STORY[S.chapter];
   showPage('page-story');
+  // 角色头像
+  var c=CHARACTERS[S.chapter];
+  var cb=$('charBox');
+  if(c && cb){
+    cb.style.display='flex';
+    $('charEmoji').textContent=c.emoji;
+    $('charName').textContent=c.name;
+    $('charQuote').textContent='"'+c.quote+'"';
+  }else if(cb){ cb.style.display='none'; }
   $(ui.storyTitle).textContent=ch.title;
   $(ui.storySub).textContent=ch.sub;
   $(ui.btnStoryNext).style.display='block';
@@ -828,11 +978,14 @@ function afterGate(ok){
 }
 function promote(rank){
   S.rank=rank;
+  taskInc('promote');
   var ch=STORY[S.chapter];
   if(ch._done) delete ch._done;
   showPage('page-reward');
   $(ui.rewardFrom).textContent='获赐第 '+rank+' 枚凤印 · 晋位大典';
   $(ui.rewardRank).textContent=RANKS[rank].n;
+  $(ui.rewardRank).className='rn seal-stamp';
+  setTimeout(function(){$(ui.rewardRank).className='rn';},600);
   $(ui.rewardSlogan).textContent=RANKS[rank].s;
   $(ui.rewardText).textContent=rank===RANKS.length-1
     ?'九枚凤印尽收，百官朝贺。你终于站到了这深宫之巅——可你心里清楚，这不过是另一场修行开始。'
@@ -920,6 +1073,7 @@ function init(){
     sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef'
   };
   var has=load();
+  renderTasks();
   renderRankBar();
   if(has && S.chapter>0){
     // 有进度 → 回到封面，用户点"继续"由 tab 剧情进入
