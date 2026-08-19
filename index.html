@@ -56,6 +56,9 @@ main{flex:1;padding:14px 14px 84px}
 .btn:disabled{opacity:.45}
 .quiz-word{font-size:26px;font-weight:500;color:var(--red);text-align:center;letter-spacing:1px;cursor:pointer;-webkit-tap-highlight-color:rgba(201,162,39,.2)}
 .quiz-word:active{transform:scale(.97);transition:transform .1s}
+.word-wrap{display:flex;align-items:center;justify-content:center;gap:8px}
+.speak-icon{font-size:22px;background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--gold);line-height:1}
+.speak-icon:active{transform:scale(.9)}
 .quiz-pho{text-align:center;color:var(--ink2);font-size:14px;margin:6px 0 2px}
 .quiz-pos{text-align:center;font-size:12px;color:var(--gold);margin-bottom:14px}
 .qopt{
@@ -130,7 +133,7 @@ nav.tabbar{
   opacity:0;pointer-events:none;transition:opacity .25s;
 }
 .toast.show{opacity:1}
-.cover{text-align:center;padding:16px 10px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 62px - 20px)}
+.cover{text-align:center;padding:16px 10px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 62px - 20px)}
 .cover .logo{
   font-size:28px;color:var(--red);letter-spacing:6px;font-weight:500;margin:12px 0 4px;
 }
@@ -244,12 +247,21 @@ nav.tabbar{
       <div class="panel scroll-panel">
         <span class="scroll-corner tl"></span><span class="scroll-corner tr"></span>
         <span class="scroll-corner bl"></span><span class="scroll-corner br"></span>
-        <div class="quiz-word" id="qWord" onclick="var w=this.textContent;if(w)speak(w)"></div>
+        <div class="word-wrap">
+          <div class="quiz-word" id="qWord" onclick="speakWord()"></div>
+          <button class="speak-icon" onclick="speakWord()" title="听发音">🔊</button>
+        </div>
         <div class="quiz-pho" id="qPho"></div>
         <div class="quiz-pos" id="qPos"></div>
+        <div style="text-align:center;margin:4px 0 10px">
+          <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+        </div>
         <div id="qOpts"></div>
         <div id="qSpell" style="display:none">
           <div class="spell-hint" id="spellHint"></div>
+          <div style="text-align:center;margin:6px 0">
+            <button class="btn ghost" onclick="speakSpell()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+          </div>
           <input class="spell-input" id="spellInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼写英文单词…">
           <div class="spell-tip" id="spellTip"></div>
           <button class="btn gold" id="spellSubmit" onclick="answerSpell()">呈 卷</button>
@@ -264,9 +276,15 @@ nav.tabbar{
       <div class="panel">
         <div class="hp-row"><span class="hp-name" id="enemyName">华妃</span><div class="hp-bar"><div class="hp-fill" id="enemyHp"></div></div><span class="hp-name" id="enemyHpText"></span></div>
         <div class="hp-row"><span class="hp-name">你</span><div class="hp-bar"><div class="hp-fill friend" id="myHp"></div></div><span class="hp-name" id="myHpText"></span></div>
-        <div class="quiz-word" id="bWord" style="margin-top:14px" onclick="var w=this.textContent;if(w)speak(w)"></div>
+        <div class="word-wrap" style="margin-top:14px">
+          <div class="quiz-word" id="bWord" onclick="speakWord()"></div>
+          <button class="speak-icon" onclick="speakWord()" title="听发音">🔊</button>
+        </div>
         <div class="quiz-pho" id="bPho"></div>
         <div class="quiz-pos" id="bPos"></div>
+        <div style="text-align:center;margin:4px 0 10px">
+          <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+        </div>
         <div id="bOpts"></div>
         <div class="battle-log" id="battleLog"></div>
       </div>
@@ -571,16 +589,41 @@ document.addEventListener('touchstart',onceAudioUnlock,{passive:true});
 document.addEventListener('click',onceAudioUnlock);
 
 function speak(word){
+  if(!word) return;
   initAudio();
-  try{
-    var u='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
-    var a=new Audio(u); a.play().catch(function(){});
-  }catch(e){}
+  // 优先 Web Speech API（iOS 更可靠）
   try{
     if(window.speechSynthesis){
-      var u2=new SpeechSynthesisUtterance(word); u2.lang='en-US'; speechSynthesis.speak(u2);
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(word);
+      u.lang='en-US';
+      u.rate=0.85;
+      speechSynthesis.speak(u);
+      return;
     }
-  }catch(e2){}
+  }catch(e){}
+  // fallback 到有道
+  try{
+    var url='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
+    var a=new Audio(url);
+    a.play().catch(function(){});
+  }catch(e){}
+}
+function speakWord(){
+  var w;
+  if(cur && cur.stage==='quiz') w=cur.items[cur.i].word;
+  else if(cur && cur.stage==='battle') w=cur.q.word;
+  else w='';
+  if(!w) return;
+  speak(w);
+  toast('🔊 发音：'+w);
+}
+function speakSpell(){
+  var w=cur && cur.items ? cur.items[cur.i].word : '';
+  if(!w) return;
+  speak(w);
+  toast('🔊 发音：'+w);
+}
 }
 function rand(n){return Math.floor(Math.random()*n);}
 function pick(arr){return arr[rand(arr.length)];}
@@ -1224,6 +1267,8 @@ window.speakSheet=speakSheet;
 window.renderLibrary=renderLibrary;
 window.resetGame=resetGame;
 window.answerSpell=answerSpell;
+window.speakWord=speakWord;
+window.speakSpell=speakSpell;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
