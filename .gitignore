@@ -1,4 +1,5 @@
 .workbuddy/
 *.zip
 *.png
+!assets/*.png
 *.log
