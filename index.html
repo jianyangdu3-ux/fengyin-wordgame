@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>凤印九重 · 宫斗背词</title>
+<style>
+:root{
+  --bg:#FAF6EF; --bg-card:#FFFDF8; --ink:#3A2A2A; --ink2:#7A6A5F;
+  --red:#8E2B2B; --red2:#B54A3A; --gold:#C9A227; --gold2:#E4C87A;
+  --line:#E5D5B8; --line2:#D9C3A0; --danger:#B33A3A; --ok:#3E7A4E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%}
+body{
+  background:#2E2222; font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink); display:flex; justify-content:center;
+}
+#app{width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column}
+header.topbar{
+  position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
+  color:#F5E9C9;padding:10px 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.topbar h1{font-size:17px;letter-spacing:2px;font-weight:500}
+.topbar .sub{font-size:11px;color:#E4C87A;margin-top:2px;display:flex;justify-content:space-between;align-items:center}
+.topbar .fav{font-size:12px;color:#F5E9C9;background:rgba(255,255,255,.12);border:1px solid rgba(228,200,122,.5);padding:2px 8px;border-radius:10px}
+.rank-bar{
+  position:sticky;top:62px;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 14px;
+  background:var(--bg);border-bottom:1px solid var(--line);scrollbar-width:none;
+}
+.rank-bar::-webkit-scrollbar{display:none}
+.rank-chip{flex:0 0 auto;font-size:11px;color:var(--ink2);border:1px solid var(--line2);background:var(--bg-card);padding:3px 10px;border-radius:12px;white-space:nowrap}
+.rank-chip.cur{background:var(--red);color:#F5E9C9;border-color:var(--red);font-weight:500}
+.rank-chip.past{color:var(--red);border-color:var(--red2);background:#FBEEE8}
+main{flex:1;padding:14px 14px 84px}
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.panel{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.panel h2{font-size:15px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.panel h2 .en{color:var(--gold);font-size:12px;margin-left:6px;font-weight:400}
+.p-text{font-size:14.5px;line-height:2;color:var(--ink);text-indent:2em}
+.gword{color:var(--red);border-bottom:1px dashed var(--red2);cursor:pointer;font-weight:500}
+.gword:active{background:var(--gold2)}
+.btn{
+  display:block;width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;letter-spacing:2px;
+  background:var(--red);color:#F5E9C9;cursor:pointer;margin-top:12px;
+}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--bg-card);color:var(--red);border:1px solid var(--red2)}
+.btn.gold{background:var(--gold);color:#3A2A2A}
+.btn:disabled{opacity:.45}
+.quiz-word{font-size:26px;font-weight:500;color:var(--red);text-align:center;letter-spacing:1px}
+.quiz-pho{text-align:center;color:var(--ink2);font-size:14px;margin:6px 0 2px}
+.quiz-pos{text-align:center;font-size:12px;color:var(--gold);margin-bottom:14px}
+.qopt{
+  display:block;width:100%;text-align:left;background:var(--bg-card);border:1px solid var(--line2);
+  border-radius:12px;padding:12px 14px;font-size:14.5px;color:var(--ink);margin-top:10px;cursor:pointer;line-height:1.5;
+}
+.qopt:active{background:#FBEEE8}
+.qopt .pos{color:var(--gold);margin-right:6px;font-size:12.5px}
+.qopt.right{background:#E8F3EA;border-color:var(--ok);color:var(--ok)}
+.qopt.wrong{background:#FBE9E9;border-color:var(--danger);color:var(--danger)}
+.progress{display:flex;gap:4px;margin-bottom:12px}
+.pdot{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.pdot.done{background:var(--red)}
+.pdot.cur{background:var(--gold)}
+.hp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.hp-name{font-size:13px;color:var(--ink2)}
+.hp-bar{flex:1;height:10px;background:#F0E4D0;border-radius:5px;margin:0 10px;overflow:hidden}
+.hp-fill{height:100%;background:linear-gradient(90deg,var(--red2),var(--red));border-radius:5px;transition:width .3s}
+.hp-fill.friend{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.battle-title{text-align:center;font-size:15px;color:var(--red);font-weight:500;margin:6px 0 2px}
+.battle-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:10px}
+.battle-log{font-size:13px;color:var(--ink2);text-align:center;min-height:20px;margin-top:10px;line-height:1.6}
+.letter{
+  background:#F4E8CF;border:1px solid var(--gold);border-radius:10px;padding:14px;font-family:Georgia,serif;
+  font-size:15px;line-height:1.9;color:#5A4632;margin:10px 0;
+}
+.letter .gword{color:#8E5A1E;border-color:#C9A227}
+.reward-big{text-align:center;padding:20px 0 6px}
+.reward-big .rn{font-size:34px;color:var(--red);font-weight:500;letter-spacing:4px}
+.reward-big .rf{font-size:13px;color:var(--gold);margin-top:6px}
+.stats-row{display:flex;gap:8px;margin-top:12px}
+.stat{flex:1;background:#FBEEE8;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:18px;color:var(--red);font-weight:500}
+.stat span{font-size:11px;color:var(--ink2)}
+nav.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:60;
+  background:var(--bg-card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);
+}
+.tab{flex:1;padding:9px 0 8px;text-align:center;font-size:11px;color:var(--ink2);cursor:pointer;background:none;border:none}
+.tab .ti{display:block;font-size:16px;line-height:1.3}
+.tab.active{color:var(--red)}
+.tab.active .ti{transform:translateY(-1px)}
+.library-top{position:sticky;top:120px;z-index:30;background:var(--bg);padding:4px 0 10px}
+.lib-search{
+  width:100%;padding:10px 14px;border:1px solid var(--line2);border-radius:12px;font-size:14px;
+  background:var(--bg-card);color:var(--ink);outline:none;
+}
+.lib-list{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lib-item{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+.lib-item:last-child{border-bottom:none}
+.lib-item .w{font-size:14px;color:var(--ink);font-weight:500}
+.lib-item .d{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lib-item .pos{color:var(--gold);font-size:11px;margin-right:4px}
+.lib-empty{text-align:center;color:var(--ink2);padding:30px 0;font-size:13px}
+.rec-item{border-left:3px solid var(--gold);background:var(--bg-card);border:1px solid var(--line);border-left-color:var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.rec-item .q{font-size:13.5px;color:var(--ink);line-height:1.7}
+.rec-item .a{font-size:12px;color:var(--ok);margin-top:6px}
+.rec-item .a.bad{color:var(--danger)}
+.sheet-mask{position:fixed;inset:0;background:rgba(46,34,34,.5);z-index:90;display:none}
+.sheet{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;z-index:91;
+  background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px 26px;
+  box-shadow:0 -6px 24px rgba(0,0,0,.15);
+}
+.sheet .sw{font-size:24px;color:var(--red);font-weight:500}
+.sheet .sp{font-size:13px;color:var(--ink2);margin:4px 0 10px}
+.sheet .sd{font-size:15px;line-height:1.9;color:var(--ink)}
+.sheet .btn{margin-top:16px}
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
+  background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.toast.show{opacity:1}
+.cover{text-align:center;padding:24px 10px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 62px - 50px)}
+.cover .logo{
+  font-size:28px;color:var(--red);letter-spacing:6px;font-weight:500;margin:12px 0 4px;
+}
+.cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
+.cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
+.cover .desc b{color:var(--red);font-weight:500}
+.seal{
+  width:84px;height:84px;border:3px solid var(--red);border-radius:10px;margin:0 auto 6px;display:flex;
+  align-items:center;justify-content:center;color:var(--red);font-size:26px;letter-spacing:2px;transform:rotate(-4deg);
+}
+.chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
+.chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
+.hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <h1>凤印九重</h1>
+    <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span class="fav" id="favText">圣宠 0</span></div>
+  </header>
+  <div class="rank-bar" id="rankBar"></div>
+
+  <main id="main">
+    <div class="page active" id="page-start">
+      <div class="cover">
+        <div class="seal">凤印</div>
+        <div class="logo">凤印九重</div>
+        <div class="sublogo">宫 斗 背 词 · 考 研 篇</div>
+        <div class="desc">
+          大周选秀，<b>5491 个考研核心词</b>藏在这深宫的一砖一瓦里。<br>
+          你本是寒门女子，入宫只为活命——<b>记不住词，就活不过这一章</b>。<br>
+          从秀女到皇后九重位份，每晋一级<b>获赐一枚凤印</b>。
+        </div>
+        <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
+        <div class="hint">剧情·斗法·抉择·查案 全部绑定考词<br>本地自动存档，进度不丢</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-story">
+      <div class="chap-title" id="storyTitle"></div>
+      <div class="chap-sub" id="storySub"></div>
+      <div class="panel"><p class="p-text" id="storyText"></p></div>
+      <button class="btn" id="btnStoryNext" onclick="storyNext()">继续</button>
+      <div class="hint" id="storyHint"></div>
+    </div>
+
+    <div class="page" id="page-quiz">
+      <div class="progress" id="quizProgress"></div>
+      <div class="panel">
+        <div class="quiz-word" id="qWord"></div>
+        <div class="quiz-pho" id="qPho"></div>
+        <div class="quiz-pos" id="qPos"></div>
+        <div id="qOpts"></div>
+      </div>
+      <div class="hint" id="quizHint"></div>
+    </div>
+
+    <div class="page" id="page-battle">
+      <div class="battle-title" id="battleTitle"></div>
+      <div class="battle-sub" id="battleSub"></div>
+      <div class="panel">
+        <div class="hp-row"><span class="hp-name" id="enemyName">华妃</span><div class="hp-bar"><div class="hp-fill" id="enemyHp"></div></div><span class="hp-name" id="enemyHpText"></span></div>
+        <div class="hp-row"><span class="hp-name">你</span><div class="hp-bar"><div class="hp-fill friend" id="myHp"></div></div><span class="hp-name" id="myHpText"></span></div>
+        <div class="quiz-word" id="bWord" style="margin-top:14px"></div>
+        <div class="quiz-pho" id="bPho"></div>
+        <div class="quiz-pos" id="bPos"></div>
+        <div id="bOpts"></div>
+        <div class="battle-log" id="battleLog"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-choice">
+      <div class="chap-title" id="choiceTitle"></div>
+      <div class="panel"><p class="p-text" id="choiceText"></p></div>
+      <div id="choiceOpts"></div>
+      <div class="hint" id="choiceHint"></div>
+    </div>
+
+    <div class="page" id="page-case">
+      <div class="chap-title" id="caseTitle"></div>
+      <div class="panel">
+        <p class="p-text" id="caseIntro"></p>
+        <div class="letter" id="caseLetter"></div>
+        <div class="battle-sub" id="caseQ"></div>
+        <div id="caseOpts"></div>
+      </div>
+      <div class="hint" id="caseHint"></div>
+    </div>
+
+    <div class="page" id="page-reward">
+      <div class="reward-big">
+        <div class="chap-sub" id="rewardFrom"></div>
+        <div class="rn" id="rewardRank"></div>
+        <div class="rf" id="rewardSlogan"></div>
+      </div>
+      <div class="panel"><p class="p-text" id="rewardText"></p></div>
+      <button class="btn gold" id="btnRewardNext" onclick="rewardNext()">继续</button>
+    </div>
+
+    <div class="page" id="page-library">
+      <div class="library-top"><input class="lib-search" id="libSearch" placeholder="搜单词，如 abandon" oninput="renderLibrary(this.value)"></div>
+      <div class="lib-list" id="libList"></div>
+      <div class="stats-row">
+        <div class="stat"><b id="libTotal">0</b><span>词库总量</span></div>
+        <div class="stat"><b id="libKnow">0</b><span>已见词汇</span></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-record">
+      <div class="panel"><h2>藏录 <span class="en">抉择回望</span></h2><div id="recList"></div></div>
+      <div class="panel"><h2>宫册 <span class="en">你的功绩</span></h2>
+        <div class="stats-row">
+          <div class="stat"><b id="stRight">0</b><span>答对</span></div>
+          <div class="stat"><b id="stWrong">0</b><span>答错</span></div>
+          <div class="stat"><b id="stStreak">0</b><span>最高连击</span></div>
+        </div>
+        <button class="btn ghost" onclick="resetGame()">重入轮回（清空进度）</button>
+      </div>
+    </div>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" onclick="goTab('story')"><span class="ti">📜</span>剧情</button>
+    <button class="tab" onclick="goTab('library')"><span class="ti">📖</span>词库</button>
+    <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>藏录</button>
+  </nav>
+
+  <div class="sheet-mask" id="sheetMask" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sw" id="sWord"></div>
+    <div class="sp" id="sPho"></div>
+    <div class="sd" id="sDef"></div>
+    <button class="btn ghost" onclick="speakSheet()">🔊 听发音</button>
+    <button class="btn" onclick="closeSheet()">收起</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="vocab.js"></script>
+<script>
+(function(){
+"use strict";
+var VOCAB_MAP = {};
+try{
+  if(window.VOCAB && window.VOCAB.length){
+    window.VOCAB.forEach(function(it){
+      var k=String(it.word).toLowerCase();
+      if(!VOCAB_MAP[k]) VOCAB_MAP[k]=it;
+    });
+  }
+}catch(e){}
+
+/* ---------- 位份体系：九重位份，每晋一级获赐一枚凤印 ---------- */
+var RANKS=[
+  {n:'秀女',s:'初入宫闱，谨言慎行'},
+  {n:'答应',s:'得见天颜，一步之遥'},
+  {n:'常在',s:'常在御前，如履薄冰'},
+  {n:'贵人',s:'贵人之位，开始有名有姓'},
+  {n:'嫔',s:'一宫主位，初掌宫务'},
+  {n:'妃',s:'妃位之上，众人侧目'},
+  {n:'贵妃',s:'位同副后，权倾六宫'},
+  {n:'皇贵妃',s:'统摄六宫，凤印在望'},
+  {n:'皇后',s:'母仪天下，凤临深宫'}
+];
+var SLOGAN=['守拙安分，方能活命','宫门一入，步步为营','不争，是争','凤印之下，皆是因果','这一局，才刚刚开始','高处不胜寒','六宫大权，尽在我手','凤印未落，胜负未分','这深宫，终究是我的了'];
+
+/* ---------- 章节数据（剧情词全部来自词库） ---------- */
+var STORY=[
+{
+  title:'第一章 · 选秀入宫', sub:'宫门一入深似海',
+  scenes:[
+    {t:'大周王朝，三年一选秀。你出身寒门，母亲临终前只留一句："深宫险恶，务必小心。"', w:['careful','dangerous','ancient']},
+    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨已下，抗旨便是死罪。', w:['obey','command','escape']},
+    {t:'宫门前，掌事姑姑上下打量你："深宫不养闲人，先过宫门考校。答得出，才进得了这扇门。"', w:['examine','admit','test']}
+  ],
+  quiz:5, battle:null, choice:null, case:null, reward:1,
+  gateText:'你深吸一口气，走向宫门考校的案台。'
+},
+{
+  title:'第二章 · 初入宫闱', sub:'御前风波',
+  scenes:[
+    {t:'入宫第一夜，华妃的贴身宫女故意打翻你的茶盏，尖声道："不懂规矩的贱婢！见了华妃娘娘还不跪下！"', w:['spill','rude','kneel']},
+    {t:'满殿的目光都落在你身上。华妃端坐主位，慢悠悠地呷了一口茶，等你开口。', w:['silence','observe','judge']},
+    {t:'你明白，这一晚若退一步，往后人人可欺；若贸然顶撞，便是大不敬之罪。这宫里的每一句话，都要拿捏分寸。', w:['offend','measure','wisdom']}
+  ],
+  quiz:4, battle:{enemy:'华妃',hp:100}, choice:{
+    q:'夜色已深，敬事房的太监来报——圣驾今夜翻牌，指了你侍寝。华妃的人却堵在门口："娘娘说了，妹妹初来乍到，不懂规矩，这牌子该让给姐姐。"',
+    opts:[
+      {k:'let',t:'忍让退让，把机会让出去'},
+      {k:'insist',t:'据理力争，坚持自己的机会'}
+    ],
+    good:'insist', goodText:'你欠身一笑："娘娘厚爱，可圣意难违。"这句话不卑不亢，反倒让华妃不好发作。', 
+    badText:'你退了一步，把牌子让了出去。华妃满意地点头，可你在宫人眼中，从此成了"好欺负的"那一个。'
+  }, case:null, reward:2,
+  gateText:'圣宠加身，却也招了人的眼。'
+},
+{
+  title:'第三章 · 风波乍起', sub:'一封密信',
+  scenes:[
+    {t:'晨起，枕下多了一封密信。你展开一看，冷汗直流——信上写的，竟是英文。', w:['secret','message','tremble']},
+    {t:'信中提到"I am innocent. I never betray you."——落款竟是你素不相识的外臣之名。若此信被搜出，便是私通外臣的铁证。', w:['innocent','betray','evidence']},
+    {t:'门外响起脚步声，皇后的凤驾已至。你必须在那之前，读懂这封信里真正的意思。', w:['approach','understand','hurry']}
+  ],
+  quiz:0, battle:null, choice:null, case:{
+    letter:'I am innocent. I never betray you. Someone wants to hurt me. Please help me.',
+    q:'这封密信，到底在说什么？',
+    opts:[
+      {t:'写信的人被人陷害，正求救', good:true},
+      {t:'写信的人与人密谋造反', good:false},
+      {t:'写信的人想逃离皇宫', good:false}
+    ],
+    goodText:'你读懂了一一这封信是求救，不是密谋！真正的幕后黑手，是想借这封信除掉你。',
+    badText:'你没能读懂信里的意思，慌乱中把信攥成一团——这一幕恰好被皇后的眼线看在眼里。'
+  }, reward:3,
+  gateText:'凤驾将至，你必须立刻做出判断。'
+}
+];
+
+/* ---------- 全局状态 ---------- */
+var S={
+  v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
+  right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[]
+};
+var SAVE_KEY='gd12_state_v1';
+var cur=null;      // 当前测验上下文
+var ui={};
+
+/* ---------- 工具 ---------- */
+function $(id){return document.getElementById(id);}
+function extractPOS(def){
+  var m=/^([a-zA-Z.]+)\s*(.*)$/.exec(def||'');
+  if(m) return {pos:m[1], mean:m[2]};
+  return {pos:'',mean:def||''};
+}
+function save(){
+  try{localStorage.setItem(SAVE_KEY, JSON.stringify(S));}catch(e){}
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(SAVE_KEY);
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; return true;}}
+  }catch(e){}
+  return false;
+}
+function toast(msg){
+  var t=$(ui.toast);
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},1600);
+}
+function speak(word){
+  try{
+    var u='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
+    var a=new Audio(u); a.play().catch(function(){});
+  }catch(e){}
+  try{
+    if(window.speechSynthesis){
+      var u2=new SpeechSynthesisUtterance(word); u2.lang='en-US'; speechSynthesis.speak(u2);
+    }
+  }catch(e2){}
+}
+function rand(n){return Math.floor(Math.random()*n);}
+function pick(arr){return arr[rand(arr.length)];}
+
+/* ---------- 渲染基础 ---------- */
+function renderRankBar(){
+  var bar=$(ui.rankBar); var h='';
+  for(var i=0;i<RANKS.length;i++){
+    h+='<span class="rank-chip'+(i<S.rank?' past':(i===S.rank?' cur':''))+'">'+(i<S.rank?'✦印 ':'')+RANKS[i].n+'</span>';
+  }
+  var sealEl=$('sealText');
+  if(sealEl) sealEl.textContent=S.rank>0?('凤印×'+S.rank):'';
+  bar.innerHTML=h;
+  $(ui.favText).textContent='圣宠 '+S.points;
+}
+function showPage(id){
+  var pages=document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  $(id).classList.add('active');
+  // 首页隐藏 tabbar，其他页面显示
+  var tb=document.querySelector('.tabbar');
+  if(tb) tb.style.display=(id==='page-start')?'none':'flex';
+  window.scrollTo(0,0);
+}
+function setTab(which){
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+  var map={story:0,library:1,record:2};
+  var idx=map[which];
+  if(idx!==undefined&&tabs[idx]) tabs[idx].classList.add('active');
+}
+function goTab(which){
+  if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} openStory(); }
+  else if(which==='library'){ showPage('page-library'); renderLibrary(''); setTab('library'); }
+  else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
+}
+
+/* ---------- 剧情词高亮 ---------- */
+function linkWords(text, words, cls){
+  var out=text;
+  (words||[]).forEach(function(w){
+    var key=String(w).toLowerCase();
+    if(!VOCAB_MAP[key]) return;
+    var re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','i');
+    if(out.match(re) && !out.includes('<span')){
+      out=out.replace(re,'<span class="gword '+cls+'" data-w="'+key+'">$1</span>');
+    }
+  });
+  return out;
+}
+function bindWordClicks(root){
+  var spans=root?root.querySelectorAll('.gword'):document.querySelectorAll('.gword');
+  for(var i=0;i<spans.length;i++){
+    spans[i].onclick=function(){ openSheet(this.getAttribute('data-w')); };
+  }
+}
+
+/* ---------- 释义弹层 ---------- */
+function openSheet(key){
+  var it=VOCAB_MAP[key]; if(!it) return;
+  var p=extractPOS(it.def);
+  $(ui.sWord).textContent=it.word;
+  $(ui.sPho).textContent=it.phonetic||'';
+  $(ui.sDef).textContent=(p.pos?p.pos+' ':'')+p.mean;
+  $(ui.sheetMask).style.display='block';
+  try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
+}
+function speakSheet(){
+  var w=$(ui.sWord).textContent; if(w) speak(w);
+}
+function closeSheet(){
+  $(ui.sheetMask).style.display='none';
+}
+
+/* ---------- 测验（词关） ---------- */
+function makeOptions(word, count, mode){
+  var ans=VOCAB_MAP[word];
+  var p=extractPOS(ans.def);
+  var pool=[];
+  var keys=Object.keys(VOCAB_MAP);
+  var tries=0;
+  while(pool.length<count-1 && tries<keys.length*3){
+    tries++;
+    var k=keys[rand(keys.length)];
+    if(k===word) continue;
+    var o=VOCAB_MAP[k];
+    var op=extractPOS(o.def);
+    if(mode==='en2zh' && op.pos!==p.pos) continue;
+    if(mode==='zh2en' && op.pos!==p.pos) continue;
+    if(pool.indexOf(k)===-1) pool.push(k);
+  }
+  var opts=[];
+  var wrong=pool.slice(0,count-1);
+  wrong.forEach(function(k){
+    var o=VOCAB_MAP[k]; var op=extractPOS(o.def);
+    opts.push({k:k,label:mode==='en2zh'?op.mean:(mode==='zh2en'?o.word:o.word),pos:op.pos,is:false});
+  });
+  opts.push({k:word,label:mode==='en2zh'?p.mean:(mode==='zh2en'?ans.word:ans.word),pos:p.pos,is:true});
+  for(var i=opts.length-1;i>0;i--){var j=rand(i+1);var tmp=opts[i];opts[i]=opts[j];opts[j]=tmp;}
+  return opts;
+}
+function buildOptsHTML(opts, clickFn){
+  var h='';
+  opts.forEach(function(o,idx){
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.is?' data-ok="1"':'')+'><span class="pos">'+o.pos+'</span>'+o.label+'</button>';
+  });
+  return h;
+}
+
+function startQuiz(cfg){
+  var words=[];
+  (cfg.scenes||[]).forEach(function(s){ (s.w||[]).forEach(function(x){ if(words.indexOf(x)===-1 && VOCAB_MAP[x]) words.push(x); }); });
+  var count=cfg.quiz||5;
+  if(words.length===0){ var _keys=Object.keys(VOCAB_MAP); for(var _t=0;_t<10;_t++) words.push(_keys[rand(_keys.length)]); }
+  var items=[];
+  for(var i=0;i<count;i++){
+    var w=words[i%words.length];
+    if(i>=words.length){
+      var keys=Object.keys(VOCAB_MAP);
+      for(var t=0;t<60;t++){
+        var k=keys[rand(keys.length)];
+        if(k!==w && words.indexOf(k)===-1){w=k;break;}
+      }
+    }
+    var mode=(i%2===0)?'en2zh':'zh2en';
+    items.push({word:w,mode:mode,options:makeOptions(w,4,mode)});
+  }
+  cur={stage:'quiz',items:items,i:0,gate:cfg.gateText};
+  renderQuiz();
+}
+function renderQuiz(){
+  showPage('page-quiz');
+  var it=cur.items[cur.i];
+  var p=extractPOS(VOCAB_MAP[it.word].def);
+  if(it.mode==='zh2en'){
+    $(ui.qWord).textContent=p.mean;
+    $(ui.qPho).textContent='';
+    $(ui.qPos).textContent=p.pos+' · 看义选词';
+  }else{
+    $(ui.qWord).textContent=it.word;
+    $(ui.qPho).textContent=VOCAB_MAP[it.word].phonetic||'';
+    $(ui.qPos).textContent=p.pos+' · 选词义';
+  }
+  var dots='';
+  for(var i=0;i<cur.items.length;i++){
+    dots+='<div class="pdot'+(i<cur.i?' done':(i===cur.i?' cur':''))+'"></div>';
+  }
+  $(ui.quizProgress).innerHTML=dots;
+  $(ui.qOpts).innerHTML=buildOptsHTML(it.options,function(){});
+  var opts=$(ui.qOpts).querySelectorAll('.qopt');
+  for(var j=0;j<opts.length;j++){
+    opts[j].onclick=function(){ answerQuiz(this.getAttribute('data-i')); };
+  }
+  $(ui.quizHint).textContent=cur.i===0&&cur.gate?cur.gate:'';
+}
+function answerQuiz(idx){
+  if(!cur||cur.stage!=='quiz') return;
+  var it=cur.items[cur.i];
+  var o=it.options[parseInt(idx,10)];
+  var isRight=!!o.is;
+  var qopt=$(ui.qOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  if(qopt){
+    qopt.classList.add(isRight?'right':'wrong');
+    if(!isRight){
+      for(var k=0;k<it.options.length;k++) if(it.options[k].is){
+        $(ui.qOpts).querySelectorAll('.qopt')[k].classList.add('right');
+        break;
+      }
+    }
+  }
+  if(isRight){
+    S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
+    var gain=10*(S.streak>1?2:1);
+    S.points+=gain;
+    try{ if(!S.seen[it.word]) S.seen[it.word]=1; }catch(e){}
+    toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
+  }else{
+    S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    toast('答错了 -5 圣宠');
+  }
+  save();
+  var opts=$(ui.qOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  var wrong=!isRight;
+  setTimeout(function(){
+    if(!cur||cur.stage!=='quiz') return;
+    cur.i++;
+    if(cur.i>=cur.items.length){
+      if(wrong){ finishQuiz(false); }
+      else finishQuiz(true);
+    }else{
+      renderQuiz();
+    }
+  },900);
+}
+function finishQuiz(ok){
+  if(ok){
+    toast('考校通过！');
+    afterGate(true);
+  }else{
+    S.storyIdx=0; save();
+    showPage('page-story');
+    $(ui.btnStoryNext).textContent='再看一遍剧情';
+    $(ui.storyHint).textContent='考校未过——重看本章剧情，把标红的词记住，再试一次。';
+    openStory();
+    cur=null;
+  }
+}
+
+/* ---------- 斗法（战斗化测验） ---------- */
+function startBattle(cfg){
+  cur={stage:'battle',enemy:cfg.enemy,hp:100,myhp:100,count:6,i:0,log:''};
+  nextBattleQ();
+}
+function nextBattleQ(){
+  var keys=Object.keys(VOCAB_MAP);
+  var w=keys[rand(keys.length)];
+  cur.q={word:w,mode:'en2zh',options:makeOptions(w,3,'en2zh')};
+  renderBattle();
+}
+function renderBattle(){
+  showPage('page-battle');
+  $(ui.battleTitle).textContent='斗法 · 对阵'+cur.enemy;
+  $(ui.battleSub).textContent='答对出招，连击翻倍；答错受挫，圣宠受损';
+  $(ui.enemyName).textContent=cur.enemy;
+  $(ui.enemyHp).style.width=Math.max(0,cur.hp)+'%';
+  $(ui.enemyHpText).textContent=Math.max(0,cur.hp)+'/100';
+  $(ui.myHp).style.width=Math.max(0,cur.myhp)+'%';
+  $(ui.myHpText).textContent=Math.max(0,cur.myhp)+'/100';
+  var p=extractPOS(VOCAB_MAP[cur.q.word].def);
+  $(ui.bWord).textContent=cur.q.word;
+  $(ui.bPho).textContent=VOCAB_MAP[cur.q.word].phonetic||'';
+  $(ui.bPos).textContent=p.pos;
+  $(ui.bOpts).innerHTML=buildOptsHTML(cur.q.options,function(){});
+  var opts=$(ui.bOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerBattle(this.getAttribute('data-i')); };
+  $(ui.battleLog).textContent=cur.log;
+}
+function answerBattle(idx){
+  if(!cur||cur.stage!=='battle') return;
+  var o=cur.q.options[parseInt(idx,10)];
+  var isRight=!!o.is;
+  var qopt=$(ui.bOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  qopt.classList.add(isRight?'right':'wrong');
+  if(!isRight){
+    for(var k=0;k<cur.q.options.length;k++) if(cur.q.options[k].is){
+      $(ui.bOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+    }
+  }
+  var opts=$(ui.bOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  if(isRight){
+    S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
+    var dmg=20+(S.streak>2?15:0);
+    cur.hp-=dmg; S.points+=12;
+    cur.log='你一道见招拆招，'+cur.enemy+'气血震荡 -'+dmg;
+    toast('施计成功！连击'+S.streak);
+  }else{
+    S.wrong++; S.streak=0;
+    cur.myhp-=25; S.points=Math.max(0,S.points-8);
+    cur.log=cur.enemy+'反将一军："就这点本事？" 你-25';
+    toast('计谋被识破 -8 圣宠');
+  }
+  save();
+  setTimeout(function(){
+    if(!cur||cur.stage!=='battle') return;
+    if(cur.hp<=0){ winBattle(); }
+    else if(cur.myhp<=0){ loseBattle(); }
+    else { cur.i++; nextBattleQ(); }
+  },900);
+}
+function winBattle(){
+  if(!cur||cur.stage!=='battle') return;
+  cur=null;
+  toast('你赢了！');
+  $(ui.battleLog).textContent='你在六宫面前立住了脚跟。';
+  setTimeout(function(){ afterGate(true); },800);
+}
+function loseBattle(){
+  $(ui.battleLog).textContent='你暂时落败……重整旗鼓再来一次。';
+  setTimeout(function(){
+    cur=null; S.storyIdx=0; save();
+    showPage('page-story');
+    $(ui.btnStoryNext).textContent='重整旗鼓';
+    $(ui.storyHint).textContent='斗法落败——复习本章剧情与标红词汇，再战一次。';
+    openStory();
+  },1000);
+}
+
+/* ---------- 抉择（考词） ---------- */
+function showChoice(cfg){
+  cur={stage:'choice',cfg:cfg,answered:false};
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=STORY[S.chapter].title;
+  $(ui.choiceText).innerHTML=linkWords(cfg.q,STORY[S.chapter].scenes.reduce(function(a,s){return a.concat(s.w);},[]));
+  bindWordClicks($(ui.choiceText));
+  var h='';
+  cfg.opts.forEach(function(o,idx){
+    var it=VOCAB_MAP[o.k]; var pos='';
+    if(it){ var p=extractPOS(it.def); pos=p.pos||''; }
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.k===cfg.good?' data-ok="1"':'')+'><span class="pos">'+(pos?pos+' ':'')+'</span>'+o.t+'</button>';
+  });
+  $(ui.choiceOpts).innerHTML=h;
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerChoice(this.getAttribute('data-i')); };
+  $(ui.choiceHint).textContent='抉择的关键词已在文中标红，点开即看释义。';
+}
+function answerChoice(idx){
+  if(cur.answered) return;
+  cur.answered=true;
+  var cfg=cur.cfg;
+  var o=cfg.opts[parseInt(idx,10)];
+  var isGood=(o.k===cfg.good);
+  var qopt=$(ui.choiceOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  qopt.classList.add(isGood?'right':'wrong');
+  if(!isGood){
+    for(var k=0;k<cfg.opts.length;k++) if(cfg.opts[k].k===cfg.good){
+      $(ui.choiceOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+    }
+  }
+  S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
+  if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; toast('抉择正确 +20 圣宠'); }
+  else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
+  save();
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  setTimeout(function(){
+    $(ui.choiceText).innerHTML='<p class="p-text" style="text-indent:0">'+(isGood?cfg.goodText:cfg.badText)+'</p>';
+    $(ui.choiceOpts).style.display='none';
+    $(ui.choiceHint).textContent='';
+    var b=document.createElement('button');
+    b.className='btn gold'; b.textContent='继续';
+    b.onclick=function(){ b.remove(); afterGate(isGood); };
+    $(ui.choiceHint).parentNode.appendChild(b);
+  },900);
+}
+
+/* ---------- 查案（阅读理解） ---------- */
+function showCase(cfg){
+  cur={stage:'case',cfg:cfg,answered:false};
+  showPage('page-case');
+  $(ui.caseTitle).textContent=STORY[S.chapter].title;
+  $(ui.caseIntro).innerHTML=linkWords('凤驾将至，你必须读懂这封信。信中的词均可点开查看释义。',['evidence','understand']);
+  var letterWords=['innocent','betray','hurt','help'];
+  $(ui.caseLetter).innerHTML=linkWords(cfg.letter,letterWords,'');
+  bindWordClicks($(ui.caseLetter));
+  $(ui.caseQ).textContent=cfg.q;
+  var h='';
+  cfg.opts.forEach(function(o,idx){
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.good?' data-ok="1"':'')+'>'+o.t+'</button>';
+  });
+  $(ui.caseOpts).innerHTML=h;
+  var opts=$(ui.caseOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerCase(this.getAttribute('data-i')); };
+  $(ui.caseHint).textContent='点密信里的词可看释义，再作答。';
+}
+function answerCase(idx){
+  if(cur.answered) return;
+  cur.answered=true;
+  var cfg=cur.cfg;
+  var o=cfg.opts[parseInt(idx,10)];
+  var isGood=!!o.good;
+  var qopt=$(ui.caseOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  qopt.classList.add(isGood?'right':'wrong');
+  if(!isGood){
+    for(var k=0;k<cfg.opts.length;k++) if(cfg.opts[k].good){
+      $(ui.caseOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+    }
+  }
+  if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; toast('查明真相 +25 圣宠'); }
+  else{ S.points=Math.max(0,S.points-12); S.wrong++; S.streak=0; toast('误判了 -12 圣宠'); }
+  save();
+  var opts=$(ui.caseOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  setTimeout(function(){
+    $(ui.caseIntro).innerHTML='<p class="p-text" style="text-indent:0">'+(isGood?cfg.goodText:cfg.badText)+'</p>';
+    $(ui.caseLetter).style.display='none';
+    $(ui.caseQ).style.display='none';
+    $(ui.caseOpts).style.display='none';
+    $(ui.caseHint).textContent='';
+    var b=document.createElement('button');
+    b.className='btn gold'; b.textContent='继续';
+    b.onclick=function(){ b.remove(); afterGate(isGood); };
+    $(ui.caseHint).parentNode.appendChild(b);
+  },900);
+}
+
+/* ---------- 章节流程 ---------- */
+function startGame(){
+  renderRankBar();
+  S.chapter=0; S.step=0; S.storyIdx=0; save();
+  openStory();
+}
+function openStory(){
+  if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
+  var ch=STORY[S.chapter];
+  showPage('page-story');
+  $(ui.storyTitle).textContent=ch.title;
+  $(ui.storySub).textContent=ch.sub;
+  $(ui.btnStoryNext).style.display='block';
+  $(ui.storyHint).textContent='';
+  var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
+  $(ui.storyText).innerHTML=linkWords(s.t,s.w);
+  bindWordClicks();
+  if(S.storyIdx>=ch.scenes.length){
+    $(ui.storyText).innerHTML='<p class="p-text">'+(ch.gateText||'')+'</p>';
+    $(ui.btnStoryNext).textContent=ch.quiz>0?'开始考校':'进入宫闱事件';
+  }else{
+    $(ui.btnStoryNext).textContent='继续';
+  }
+  setTab('story');
+}
+function storyNext(){
+  if(S.chapter>=STORY.length) return;
+  var ch=STORY[S.chapter];
+  if(S.storyIdx<ch.scenes.length-1){
+    S.storyIdx++; save(); openStory();
+    return;
+  }
+  // 场景走完 → 按章内顺序推进未完成事件
+  var done=ch._done||{};
+  if(ch.quiz>0 && !done.quiz){ startQuiz(ch); return; }
+  if(ch.battle && !done.battle){ startBattle(ch.battle); return; }
+  if(ch.choice && !done.choice){ showChoice(ch.choice); return; }
+  if(ch.case && !done.case){ showCase(ch.case); return; }
+  afterGate(true);
+}
+function afterGate(ok){
+  if(S.chapter>=STORY.length){ openStory(); return; }
+  var ch=STORY[S.chapter];
+  // 按章内顺序推进：quiz → battle → choice → case → reward
+  var done=ch._done||{};
+  if(ch.quiz>0 && !done.quiz){ done.quiz=true; ch._done=done; if(ok){ openStory(); return; } }
+  if(ch.battle && !done.battle){ done.battle=true; ch._done=done; openStory(); return; }
+  if(ch.choice && !done.choice){ done.choice=true; ch._done=done; openStory(); return; }
+  if(ch.case && !done.case){ done.case=true; ch._done=done; openStory(); return; }
+  // 全部完成 → 晋升
+  if(S.rank<ch.reward) promote(ch.reward);
+  else { S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
+}
+function promote(rank){
+  S.rank=rank;
+  var ch=STORY[S.chapter];
+  if(ch._done) delete ch._done;
+  showPage('page-reward');
+  $(ui.rewardFrom).textContent='获赐第 '+rank+' 枚凤印 · 晋位大典';
+  $(ui.rewardRank).textContent=RANKS[rank].n;
+  $(ui.rewardSlogan).textContent=RANKS[rank].s;
+  $(ui.rewardText).textContent=rank===RANKS.length-1
+    ?'九枚凤印尽收，百官朝贺。你终于站到了这深宫之巅——可你心里清楚，这不过是另一场修行开始。'
+    :'内侍捧着鎏金凤印走到你面前，宫人纷纷跪下请安。你想起母亲那句"深宫险恶"——你活下来了，而且还要活得更好。';
+  $(ui.btnRewardNext).textContent='进入第'+(S.chapter+2)+'章';
+  renderRankBar();
+}
+function rewardNext(){
+  S.chapter++; S.storyIdx=0; S.step=0; save();
+  if(S.chapter>=STORY.length){
+    openStory();
+  }else{
+    openStory();
+  }
+}
+
+/* ---------- 词库 ---------- */
+function renderLibrary(q){
+  var kw=(q||'').trim().toLowerCase();
+  var list=$(ui.libList);
+  if(!kw){
+    var keys=Object.keys(VOCAB_MAP).slice(0,60);
+    list.innerHTML=keys.map(function(k){return libItem(k);}).join('');
+  }else{
+    var hits=[];
+    var all=Object.keys(VOCAB_MAP);
+    for(var i=0;i<all.length;i++){
+      if(all[i].indexOf(kw)>-1){ hits.push(all[i]); if(hits.length>=40) break; }
+    }
+    list.innerHTML=hits.length?hits.map(function(k){return libItem(k);}).join(''):'<div class="lib-empty">没有找到这个词，换个拼写试试</div>';
+  }
+  bindLibClicks(list);
+  $(ui.libTotal).textContent=Object.keys(VOCAB_MAP).length;
+  $(ui.libKnow).textContent=Object.keys(S.seen||{}).length;
+}
+function libItem(k){
+  var it=VOCAB_MAP[k]; var p=extractPOS(it.def);
+  return '<div class="lib-item" data-w="'+k+'"><span class="w">'+it.word+'</span><span class="d"><span class="pos">'+p.pos+'</span>'+p.mean+'</span></div>';
+}
+function bindLibClicks(list){
+  var items=list.querySelectorAll('.lib-item');
+  for(var i=0;i<items.length;i++){
+    items[i].onclick=function(){ openSheet(this.getAttribute('data-w')); };
+  }
+}
+
+/* ---------- 藏录 & 宫册 ---------- */
+function renderRecord(){
+  var list=$(ui.recList);
+  if(!S.verdict.length){
+    list.innerHTML='<div class="lib-empty">尚未做出抉择。走到剧情岔路口时，你的选择会记在这里。</div>';
+    return;
+  }
+  var h='';
+  S.verdict.slice().reverse().forEach(function(v){
+    h+='<div class="rec-item"><div class="q">'+v.c+'</div><div class="a'+(v.good?'':' bad')+'">'+(v.good?'✓ 你选了：「'+v.t+'」':'✗ 你选了：「'+v.t+'」')+'</div></div>';
+  });
+  list.innerHTML=h;
+}
+function renderStats(){
+  $(ui.stRight).textContent=S.right;
+  $(ui.stWrong).textContent=S.wrong;
+  $(ui.stStreak).textContent=S.bestStreak;
+}
+function resetGame(){
+  if(!confirm('确定重入轮回？当前进度将被清空。')) return;
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  location.reload();
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  ui={
+    toast:'toast',rankBar:'rankBar',rankName:'rankName',favText:'favText',
+    storyTitle:'storyTitle',storySub:'storySub',storyText:'storyText',
+    btnStoryNext:'btnStoryNext',storyHint:'storyHint',
+    quizProgress:'quizProgress',qWord:'qWord',qPho:'qPho',qPos:'qPos',qOpts:'qOpts',quizHint:'quizHint',
+    battleTitle:'battleTitle',battleSub:'battleSub',enemyName:'enemyName',enemyHp:'enemyHp',enemyHpText:'enemyHpText',
+    myHp:'myHp',myHpText:'myHpText',bWord:'bWord',bPho:'bPho',bPos:'bPos',bOpts:'bOpts',battleLog:'battleLog',
+    choiceTitle:'choiceTitle',choiceText:'choiceText',choiceOpts:'choiceOpts',choiceHint:'choiceHint',
+    caseTitle:'caseTitle',caseIntro:'caseIntro',caseLetter:'caseLetter',caseQ:'caseQ',caseOpts:'caseOpts',caseHint:'caseHint',
+    rewardFrom:'rewardFrom',rewardRank:'rewardRank',rewardSlogan:'rewardSlogan',rewardText:'rewardText',btnRewardNext:'btnRewardNext',
+    libSearch:'libSearch',libList:'libList',libTotal:'libTotal',libKnow:'libKnow',
+    recList:'recList',stRight:'stRight',stWrong:'stWrong',stStreak:'stStreak',
+    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef'
+  };
+  var has=load();
+  renderRankBar();
+  if(has && S.chapter>0){
+    // 有进度 → 回到封面，用户点"继续"由 tab 剧情进入
+  }
+  renderLibrary('');
+}
+window.startGame=startGame;
+window.storyNext=storyNext;
+window.rewardNext=rewardNext;
+window.goTab=goTab;
+window.openSheet=openSheet;
+window.closeSheet=closeSheet;
+window.speakSheet=speakSheet;
+window.renderLibrary=renderLibrary;
+window.resetGame=resetGame;
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+}else{
+  init();
+}
+})();
+</script>
+</body>
+</html>
