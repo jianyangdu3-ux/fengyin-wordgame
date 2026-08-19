@@ -201,6 +201,99 @@ nav.tabbar{
 .spell-input.right{border-color:var(--ok);background:#E8F5E9;color:var(--ok)}
 .spell-input.wrong{border-color:var(--danger);background:#FFEBEE;color:var(--danger);animation:shake .3s ease}
 .spell-tip{font-size:12px;color:var(--ink2);text-align:center;margin:8px 0 10px;line-height:1.6}
+
+/* ===== 古风视觉升级 ===== */
+/* 宣纸暖色背景 */
+#app{background:linear-gradient(180deg,#FAF5E8 0%,#F5EDD0 50%,#FAF5E8 100%)}
+/* 宋体标题 */
+.cover .logo,.chap-title,.battle-title,.letter,.reward-big .rn{font-family:"Songti SC","STSong","SimSun","Hiragino Mincho ProN","Yu Mincho",serif}
+/* 角色卡片重做 */
+.char-box{
+  background:linear-gradient(135deg,#FFFDF8,#F4ECD8);
+  border:2px solid #C9A227;
+  border-radius:14px;
+  padding:12px 14px;
+  position:relative;
+  box-shadow:0 2px 12px rgba(142,43,43,.08);
+  overflow:hidden;
+  align-items:flex-start;
+}
+.char-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,#C9A227,#E4C87A,#C9A227,transparent);
+}
+.char-box::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#C9A227,transparent);
+}
+.char-img{
+  width:76px;height:110px;object-fit:cover;border-radius:8px;
+  border:2px solid #C9A227;box-shadow:0 2px 8px rgba(0,0,0,.15);
+  flex-shrink:0;background:#FFFDF8;
+}
+/* 测验角色 */
+.quiz-char{
+  background:linear-gradient(135deg,#FBEEE8,#FFFDF8);
+  border:1px solid var(--line2);
+  border-left:3px solid var(--red);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:12px;
+  animation:fadeIn .3s ease;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  position:relative;
+  overflow:hidden;
+}
+.quiz-char-img{
+  width:56px;height:80px;object-fit:cover;border-radius:6px;
+  border:2px solid #C9A227;box-shadow:0 2px 6px rgba(0,0,0,.12);flex-shrink:0;
+}
+.quiz-char-line-wrap{flex:1;padding-top:4px}
+/* 斗法敌人角色 */
+.enemy-char{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.enemy-char-img{width:64px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #C9A227;box-shadow:0 2px 8px rgba(0,0,0,.12);flex-shrink:0}
+.enemy-char-info{flex:1}
+.enemy-char-name{font-size:13px;color:var(--red);font-weight:500}
+.enemy-char-quote{font-size:11px;color:var(--ink2);margin-top:2px;font-style:italic}
+/* 面板装饰 */
+.panel{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#FFFDF8,#F8F0E0);
+  box-shadow:0 2px 14px rgba(142,43,43,.06);
+}
+.panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#C9A227,#E4C87A,#C9A227,transparent);
+}
+/* 封面氛围 */
+.cover .seal{
+  background:linear-gradient(135deg,#FFFDF8,#F8F0E0);
+  box-shadow:0 2px 12px rgba(122,31,31,.12);
+  position:relative;
+}
+.cover .seal::before{
+  content:'';position:absolute;inset:-3px;border:1px solid #C9A227;border-radius:13px;opacity:.5;
+}
+/* 装饰线 */
+.decor-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line2),transparent);
+  margin:10px 0;
+}
+/* 回纹角花 */
+.corner-flower{
+  position:absolute;width:20px;height:20px;opacity:.3;pointer-events:none;
+}
+.corner-flower.tl{top:4px;left:4px}
+.corner-flower.tr{top:4px;right:4px}
+.corner-flower.bl{bottom:4px;left:4px}
+.corner-flower.br{bottom:4px;right:4px}
+/* 封面宫殿剪影 */
+.palace-silhouette{
+  width:100%;height:80px;opacity:.08;pointer-events:none;margin-bottom:-8px;
+}
 </style>
 </head>
 <body>
@@ -214,7 +307,13 @@ nav.tabbar{
   <main id="main">
     <div class="page active" id="page-start">
       <div class="cover">
+        <div class="palace-silhouette">
+          <svg viewBox="0 0 430 100" preserveAspectRatio="xMidYMax slice" width="100%" height="100%">
+            <path d="M0 100 L0 70 L50 50 L100 70 L150 45 L215 20 L280 45 L330 70 L380 50 L430 70 L430 100Z" fill="#7A1F1F"/>
+          </svg>
+        </div>
         <div class="seal">凤印</div>
+        <div class="decor-line"></div>
         <div class="logo">凤印九重</div>
         <div class="sublogo">宫 斗 背 词 · 考 研 篇</div>
         <div class="desc">
@@ -237,7 +336,7 @@ nav.tabbar{
 
     <div class="page" id="page-story">
       <div class="char-box" id="charBox" style="display:none">
-        <div class="char-emoji" id="charEmoji"></div>
+        <img class="char-img" id="charImg" src="" alt="">
         <div class="char-info">
           <div class="char-name" id="charName"></div>
           <div class="char-quote" id="charQuote"></div>
@@ -253,8 +352,10 @@ nav.tabbar{
     <div class="page" id="page-quiz">
       <div class="progress" id="quizProgress"></div>
       <div class="quiz-char" id="quizChar" style="display:none">
-        <span class="quiz-char-emoji" id="quizCharEmoji"></span>
-        <span class="quiz-char-line" id="quizCharLine"></span>
+        <img class="quiz-char-img" id="quizCharImg" src="" alt="">
+        <div class="quiz-char-line-wrap">
+          <span class="quiz-char-line" id="quizCharLine"></span>
+        </div>
       </div>
       <div class="panel scroll-panel">
         <span class="scroll-corner tl"></span><span class="scroll-corner tr"></span>
@@ -286,6 +387,13 @@ nav.tabbar{
     <div class="page" id="page-battle">
       <div class="battle-title" id="battleTitle"></div>
       <div class="battle-sub" id="battleSub"></div>
+      <div class="enemy-char" id="enemyChar" style="display:none">
+        <img class="enemy-char-img" id="enemyCharImg" src="" alt="">
+        <div class="enemy-char-info">
+          <div class="enemy-char-name" id="enemyCharName"></div>
+          <div class="enemy-char-quote" id="enemyCharQuote"></div>
+        </div>
+      </div>
       <div class="panel">
         <div class="hp-row"><span class="hp-name" id="enemyName">华妃</span><div class="hp-bar"><div class="hp-fill" id="enemyHp"></div></div><span class="hp-name" id="enemyHpText"></span></div>
         <div class="hp-row"><span class="hp-name">你</span><div class="hp-bar"><div class="hp-fill friend" id="myHp"></div></div><span class="hp-name" id="myHpText"></span></div>
@@ -400,10 +508,15 @@ var SLOGAN=['守拙安分，方能活命','宫门一入，步步为营','不争�
 
 /* ---------- 角色（每章一个对手/盟友） ---------- */
 var CHARACTERS={
-  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。'},
-  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。'},
-  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。'}
+  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。',img:'assets/char-maid.png'},
+  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。',img:'assets/char-consort.png'},
+  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。',img:'assets/char-queen.png'}
 };
+
+function findCharByName(name){
+  for(var i=0;i<3;i++) if(CHARACTERS[i].name===name) return CHARACTERS[i];
+  return null;
+}
 
 /* ---------- 测验角色台词（每题答题前角色说一句） ---------- */
 var QUIZ_LINES={
@@ -788,7 +901,8 @@ function renderQuiz(){
   var charBox=$('quizChar');
   if(charBox){
     charBox.style.display='flex';
-    $('quizCharEmoji').textContent=charData.emoji;
+    var ci=$('quizCharImg');
+    if(ci){ ci.src=charData.img; ci.alt=charData.name; }
     var lines=QUIZ_LINES[charIdx]||QUIZ_LINES[0];
     $('quizCharLine').textContent='\u201c'+lines[rand(lines.length)]+'\u201d';
   }
@@ -994,6 +1108,15 @@ function renderBattle(){
   showPage('page-battle');
   $(ui.battleTitle).textContent='斗法 · 对阵'+cur.enemy;
   $(ui.battleSub).textContent='答对出招，连击翻倍；答错受挫，圣宠受损';
+  var c=findCharByName(cur.enemy);
+  var ec=$('enemyChar');
+  if(c && ec){
+    ec.style.display='flex';
+    $('enemyCharImg').src=c.img;
+    $('enemyCharImg').alt=c.name;
+    $('enemyCharName').textContent=c.name;
+    $('enemyCharQuote').textContent='"'+c.quote+'"';
+  }else if(ec){ ec.style.display='none'; }
   $(ui.enemyName).textContent=cur.enemy;
   $(ui.enemyHp).style.width=Math.max(0,cur.hp)+'%';
   $(ui.enemyHpText).textContent=Math.max(0,cur.hp)+'/100';
@@ -1045,11 +1168,13 @@ function answerBattle(idx){
 function winBattle(){
   if(!cur||cur.stage!=='battle') return;
   cur=null;
+  var ec=$('enemyChar'); if(ec) ec.style.display='none';
   toast('你赢了！');
   $(ui.battleLog).textContent='你在六宫面前立住了脚跟。';
   setTimeout(function(){ afterGate(true); },800);
 }
 function loseBattle(){
+  var ec=$('enemyChar'); if(ec) ec.style.display='none';
   $(ui.battleLog).textContent='你暂时落败……重整旗鼓再来一次。';
   setTimeout(function(){
     cur=null;
@@ -1178,7 +1303,8 @@ function openStory(){
   var cb=$('charBox');
   if(c && cb){
     cb.style.display='flex';
-    $('charEmoji').textContent=c.emoji;
+    var ci=$('charImg');
+    if(ci){ ci.src=c.img; ci.alt=c.name; }
     $('charName').textContent=c.name;
     $('charQuote').textContent='"'+c.quote+'"';
   }else if(cb){ cb.style.display='none'; }
