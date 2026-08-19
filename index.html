@@ -168,6 +168,18 @@ nav.tabbar{
 .coin-float{position:fixed;pointer-events:none;font-size:20px;animation:floatUp .8s ease forwards;z-index:200}
 .qopt.right{background:#E8F5E9!important;color:#2E7D32!important;border-color:#A5D6A7!important;animation:pop .25s ease}
 .qopt.wrong{background:#FFEBEE!important;color:#C62828!important;border-color:#EF9A9A!important;animation:shake .3s ease}
+/* 考校结果面板 */
+.quiz-result{text-align:center;padding:16px 12px}
+.result-stamp{display:inline-block;font-size:22px;font-weight:600;padding:8px 28px;border-radius:24px;margin-bottom:12px}
+.result-stamp.pass{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;border:1px solid #A5D6A7}
+.result-stamp.fail{background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;border:1px solid #EF9A9A}
+.result-score{font-size:15px;color:var(--ink);margin-bottom:10px}
+.result-score b{font-size:18px;color:var(--red)}
+.result-wrong-title{font-size:13px;color:var(--muted);margin:10px 0 6px}
+.result-wrong-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.result-wrong-item{background:#FFFDF8;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;text-align:left}
+.result-word{font-size:15px;font-weight:500;color:var(--red)}
+.result-def{font-size:12.5px;color:var(--muted);margin-top:2px}
 /* 角色台词 */
 .quiz-char{display:flex;align-items:flex-start;gap:8px;background:linear-gradient(135deg,#FBEEE8,#FFFDF8);border:1px solid var(--line2);border-left:3px solid var(--red);border-radius:10px;padding:10px 12px;margin-bottom:12px;animation:fadeIn .3s ease}
 .quiz-char-emoji{font-size:28px;line-height:1;flex-shrink:0}
@@ -268,6 +280,7 @@ nav.tabbar{
         </div>
       </div>
       <div class="hint" id="quizHint"></div>
+      <div id="quizResult" style="display:none"></div>
     </div>
 
     <div class="page" id="page-battle">
@@ -624,7 +637,6 @@ function speakSpell(){
   speak(w);
   toast('🔊 发音：'+w);
 }
-}
 function rand(n){return Math.floor(Math.random()*n);}
 function pick(arr){return arr[rand(arr.length)];}
 
@@ -759,11 +771,15 @@ function startQuiz(cfg){
       items.push({word:w,mode:mode,type:'choice',options:makeOptions(w,4,mode)});
     }
   }
-  cur={stage:'quiz',items:items,i:0,gate:cfg.gateText};
+  cur={stage:'quiz',items:items,i:0,gate:cfg.gateText,wrongCount:0,wrongWords:[],chapterCfg:cfg};
   renderQuiz();
 }
 function renderQuiz(){
   showPage('page-quiz');
+  /* 重置结果面板 */
+  var rb=$('quizResult'); if(rb){rb.style.display='none';rb.innerHTML='';}
+  var qOptsEl=$('qOpts'); if(qOptsEl) qOptsEl.style.display='block';
+  var qSpellEl=$('qSpell'); if(qSpellEl) qSpellEl.style.display='none';
   var it=cur.items[cur.i];
   var p=extractPOS(VOCAB_MAP[it.word].def);
   /* 角色台词 */
@@ -840,19 +856,19 @@ function answerQuiz(idx){
     spawnCoin(qopt||$(ui.qWord),'✨');
   }else{
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    cur.wrongCount++;
+    if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
     toast('答错了 -5 圣宠');
     spawnCoin(qopt||$(ui.qWord),'💔');
   }
   save();
   var opts=$(ui.qOpts).querySelectorAll('.qopt');
   for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
-  var wrong=!isRight;
   setTimeout(function(){
     if(!cur||cur.stage!=='quiz') return;
     cur.i++;
     if(cur.i>=cur.items.length){
-      if(wrong){ finishQuiz(false); }
-      else finishQuiz(true);
+      finishQuiz();
     }else{
       renderQuiz();
     }
@@ -881,33 +897,85 @@ function answerSpell(){
     input.className='spell-input wrong';
     input.value=correct;
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    cur.wrongCount++;
+    if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
     toast('\u62fc\u5199\u9519\u8bef -5 \u5723\u5ba0');
     spawnCoin(input,'\ud83d\udc94');
   }
   save();
-  var wrong=!isRight;
   setTimeout(function(){
     if(!cur||cur.stage!=='quiz') return;
     cur.i++;
     if(cur.i>=cur.items.length){
-      if(wrong){ finishQuiz(false); }
-      else finishQuiz(true);
+      finishQuiz();
     }else{
       renderQuiz();
     }
   },1500);
 }
-function finishQuiz(ok){
-  if(ok){
-    toast('考校通过！');
-    afterGate(true);
+function finishQuiz(){
+  var total=cur.items.length;
+  var correctCount=total-cur.wrongCount;
+  var passLine=Math.ceil(total*0.6); /* 60%通过线 */
+  var passed=correctCount>=passLine;
+  var wrongWords=cur.wrongWords||[];
+  var cfg=cur.chapterCfg;
+
+  if(passed){
+    /* 隐藏角色台词和考校内容，显示通过结果 */
+    var charBox=$('quizChar'); if(charBox) charBox.style.display='none';
+    var qPanel=$('qOpts'); if(qPanel) qPanel.style.display='none';
+    var qSpell=$('qSpell'); if(qSpell) qSpell.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBox=$('quizResult');
+    resBox.style.display='block';
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp pass">'+(wrongWords.length===0?'考校全通':'考校通过')+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(wrongWords.length>0?' · 错'+wrongWords.length+'词需复习':'')+'</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">错词复习（点单词可听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="quizContinueBtn" style="margin-top:6px">继续剧情</button>'+
+    '</div>';
+    var btn=$('quizContinueBtn');
+    if(btn) btn.onclick=function(){
+      resBox.style.display='none';
+      resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      cur=null;
+      afterGate(true);
+    };
   }else{
-    S.storyIdx=0; save();
-    showPage('page-story');
-    $(ui.btnStoryNext).textContent='再看一遍剧情';
-    $(ui.storyHint).textContent='考校未过——重看本章剧情，把标红的词记住，再试一次。';
-    openStory();
-    cur=null;
+    /* 失败：不重置剧情，显示错词复习+重试 */
+    var charBox2=$('quizChar'); if(charBox2) charBox2.style.display='none';
+    var qPanel2=$('qOpts'); if(qPanel2) qPanel2.style.display='none';
+    var qSpell2=$('qSpell'); if(qSpell2) qSpell2.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBox2=$('quizResult');
+    resBox2.style.display='block';
+    resBox2.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp fail">考校未过</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题 · 需 '+passLine+' 题通过</div>'+
+      '<div class="result-wrong-title">错词复习（点单词可听发音），记住后重新考校</div>'+
+      '<div class="result-wrong-list">'+wrongWords.map(function(w){
+        var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+        return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+      }).join('')+'</div>'+
+      '<button class="btn gold" id="quizRetryBtn" style="margin-top:6px">重新考校</button>'+
+    '</div>';
+    var btn2=$('quizRetryBtn');
+    if(btn2) btn2.onclick=function(){
+      resBox2.style.display='none';
+      resBox2.innerHTML='';
+      if(charBox2) charBox2.style.display='flex';
+      if(qPanel2) qPanel2.style.display='block';
+      cur=null;
+      if(cfg) startQuiz(cfg);
+    };
   }
 }
 
@@ -984,11 +1052,16 @@ function winBattle(){
 function loseBattle(){
   $(ui.battleLog).textContent='你暂时落败……重整旗鼓再来一次。';
   setTimeout(function(){
-    cur=null; S.storyIdx=0; save();
-    showPage('page-story');
-    $(ui.btnStoryNext).textContent='重整旗鼓';
-    $(ui.storyHint).textContent='斗法落败——复习本章剧情与标红词汇，再战一次。';
-    openStory();
+    cur=null;
+    var btn=document.createElement('button');
+    btn.className='btn gold'; btn.textContent='重新斗法';
+    btn.onclick=function(){
+      btn.remove();
+      var ch=STORY[S.chapter];
+      if(ch&&ch.battle) startBattle(ch.battle);
+    };
+    var log=$('battleLog').parentNode;
+    log.appendChild(btn);
   },1000);
 }
 
