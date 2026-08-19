@@ -17,15 +17,16 @@ body{
   color:var(--ink); display:flex; justify-content:center;
 }
 #app{width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column}
+.header-wrap{position:sticky;top:0;z-index:50}
 header.topbar{
-  position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
+  background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
   color:#F5E9C9;padding:calc(10px + env(safe-area-inset-top)) 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,.18);
 }
 .topbar h1{font-size:19px;letter-spacing:2px;font-weight:600}
 .topbar .sub{font-size:13px;color:#E4C87A;margin-top:3px;display:flex;justify-content:space-between;align-items:center}
 .topbar .fav{font-size:12px;color:#F5E9C9;background:rgba(255,255,255,.12);border:1px solid rgba(228,200,122,.5);padding:2px 8px;border-radius:10px}
 .rank-bar{
-  position:sticky;top:62px;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 14px;
+  display:flex;gap:6px;overflow-x:auto;padding:8px 14px;
   background:var(--bg);border-bottom:1px solid var(--line);scrollbar-width:none;
 }
 .rank-bar::-webkit-scrollbar{display:none}
@@ -40,12 +41,6 @@ main{flex:1;padding:14px 14px 84px}
 @keyframes stamp{0%{transform:scale(2) rotate(-10deg);opacity:0}60%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(1) rotate(-4deg);opacity:1}}
 @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-/* 封面氛围动效 */
-@keyframes breathe{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.06) rotate(-3deg)}}
-@keyframes shimmer{0%{text-shadow:0 0 0 transparent}50%{text-shadow:0 0 12px rgba(201,162,39,.45)}100%{text-shadow:0 0 0 transparent}}
-@keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes drift{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(8px) translateY(-6px)}50%{transform:translateX(0) translateY(-12px)}75%{transform:translateX(-8px) translateY(-6px)}100%{transform:translateX(0) translateY(0)}}
-@keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.35)}50%{box-shadow:0 0 0 10px rgba(201,162,39,0)}}
 .panel{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .panel h2{font-size:15px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
 .panel h2 .en{color:var(--gold);font-size:12px;margin-left:6px;font-weight:400}
@@ -128,49 +123,29 @@ nav.tabbar{
   position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;z-index:91;
   background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
   box-shadow:0 -6px 24px rgba(0,0,0,.15);
+  max-height:80vh;overflow-y:auto;
 }
 .sheet .sw{font-size:24px;color:var(--red);font-weight:500}
 .sheet .sp{font-size:13px;color:var(--ink2);margin:4px 0 10px}
 .sheet .sd{font-size:15px;line-height:1.9;color:var(--ink)}
 .sheet .btn{margin-top:16px}
+.sheet .btn:last-child{margin-bottom:12px}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
   background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
   opacity:0;pointer-events:none;transition:opacity .25s;
 }
 .toast.show{opacity:1}
-.cover{text-align:center;padding:20px 12px 28px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 62px - env(safe-area-inset-top) - 20px)}
+.cover{text-align:center;padding:16px 10px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 120px)}
 .cover .logo{
-  font-size:32px;color:var(--red);letter-spacing:6px;font-weight:500;margin:14px 0 4px;
-  text-shadow:0 2px 4px rgba(142,43,43,.15);animation:shimmer 3s ease-in-out infinite;
-  font-family:"Songti SC","STSong","SimSun","Hiragino Mincho ProN","Yu Mincho",serif;
+  font-size:28px;color:var(--red);letter-spacing:6px;font-weight:500;margin:12px 0 4px;
 }
-.cover .sublogo{font-size:13px;color:var(--gold);letter-spacing:5px;margin-bottom:20px;font-weight:500}
-.cover .desc{font-size:14px;color:var(--ink);line-height:2;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 4px 16px;box-shadow:0 2px 10px rgba(142,43,43,.06)}
+.cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
+.cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
 .cover .desc b{color:var(--red);font-weight:500}
-/* 封面装饰框 */
-.cover-frame{position:relative;border:2px solid var(--gold);border-radius:16px;padding:18px 10px 14px;margin:0 4px 16px;background:linear-gradient(180deg,#FFFDF8,#F8F0E0)}
-.cover-frame::before{content:'';position:absolute;top:-2px;left:18px;right:18px;height:4px;background:var(--bg);z-index:1}
-.cover-frame::after{content:'';position:absolute;bottom:-2px;left:18px;right:18px;height:4px;background:var(--bg);z-index:1}
-/* 封面装饰粒子 */
-.cover-particle{position:absolute;pointer-events:none;opacity:.35;animation:drift 5s ease-in-out infinite}
-.cover-particle:nth-child(2){animation-delay:1.2s;animation-duration:6s}
-.cover-particle:nth-child(3){animation-delay:2.5s;animation-duration:4.5s}
-.cover-particle:nth-child(4){animation-delay:.8s;animation-duration:7s}
-.cover-particle:nth-child(5){animation-delay:3.1s;animation-duration:5.5s}
-/* 功能预览卡片 */
-.feature-row{display:flex;gap:8px;margin:14px 4px 6px}
-.feature-card{flex:1;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 4px;text-align:center;box-shadow:0 1px 6px rgba(142,43,43,.05)}
-.feature-card .fi{font-size:22px;display:block;margin-bottom:4px}
-.feature-card .ft{font-size:11px;color:var(--ink);line-height:1.4}
-/* 按钮脉冲 */
-.btn-pulse{animation:btnPulse 2s ease-in-out infinite}
-/* 滚动提示 */
-.scroll-hint{font-size:11px;color:var(--ink2);margin-top:8px;animation:floatSlow 2s ease-in-out infinite}
 .seal{
-  width:88px;height:88px;border:3px solid var(--red);border-radius:10px;margin:0 auto 6px;display:flex;
-  align-items:center;justify-content:center;color:var(--red);font-size:28px;letter-spacing:2px;transform:rotate(-4deg);
-  background:linear-gradient(135deg,#FFFDF8,#F8F0E0);box-shadow:0 4px 16px rgba(142,43,43,.12);animation:breathe 4s ease-in-out infinite;
+  width:84px;height:84px;border:3px solid var(--red);border-radius:10px;margin:0 auto 6px;display:flex;
+  align-items:center;justify-content:center;color:var(--red);font-size:26px;letter-spacing:2px;transform:rotate(-4deg);
 }
 .chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
 .chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
@@ -326,11 +301,13 @@ nav.tabbar{
 </head>
 <body>
 <div id="app">
-  <header class="topbar">
-    <h1>凤印九重</h1>
-    <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span class="fav" id="favText">圣宠 0</span></div>
-  </header>
-  <div class="rank-bar" id="rankBar"></div>
+  <div class="header-wrap">
+    <header class="topbar">
+      <h1>凤印九重</h1>
+      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span class="fav" id="favText">圣宠 0</span></div>
+    </header>
+    <div class="rank-bar" id="rankBar"></div>
+  </div>
 
   <main id="main">
     <div class="page active" id="page-start">
@@ -340,31 +317,16 @@ nav.tabbar{
             <path d="M0 100 L0 70 L50 50 L100 70 L150 45 L215 20 L280 45 L330 70 L380 50 L430 70 L430 100Z" fill="#7A1F1F"/>
           </svg>
         </div>
-        <div style="position:relative;margin-top:6px">
-          <span class="cover-particle" style="left:12%;top:8px;font-size:14px">✦</span>
-          <span class="cover-particle" style="right:14%;top:16px;font-size:12px">✦</span>
-          <span class="cover-particle" style="left:22%;top:30px;font-size:10px;opacity:.2">·</span>
-          <span class="cover-particle" style="right:20%;top:6px;font-size:10px;opacity:.2">·</span>
-          <span class="cover-particle" style="left:50%;top:22px;font-size:10px;opacity:.2">·</span>
-          <div class="seal">凤印</div>
-        </div>
+        <div class="seal">凤印</div>
         <div class="decor-line"></div>
         <div class="logo">凤印九重</div>
         <div class="sublogo">宫 斗 背 词 · 考 研 篇</div>
-        <div class="cover-frame">
-          <div class="desc">
-            大周选秀，<b>5491 个考研核心词</b>藏在这深宫的一砖一瓦里。<br>
-            你本是寒门女子，入宫只为活命——<b>记不住词，就活不过这一章</b>。<br>
-            从秀女到皇后九重位份，每晋一级<b>获赐一枚凤印</b>。
-          </div>
-          <div class="feature-row">
-            <div class="feature-card"><span class="fi">📜</span><span class="ft">剧情考词<br>一关一词</span></div>
-            <div class="feature-card"><span class="fi">⚔️</span><span class="ft">斗法拼写<br>拼写闯关</span></div>
-            <div class="feature-card"><span class="fi">🔊</span><span class="ft">语音发音<br>边听边记</span></div>
-          </div>
+        <div class="desc">
+          大周选秀，<b>5491 个考研核心词</b>藏在这深宫的一砖一瓦里。<br>
+          你本是寒门女子，入宫只为活命——<b>记不住词，就活不过这一章</b>。<br>
+          从秀女到皇后九重位份，每晋一级<b>获赐一枚凤印</b>。
         </div>
-        <button class="btn gold btn-pulse" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
-        <div class="scroll-hint">👆 向上滑动查看今日宫务</div>
+        <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
         <div class="hint">剧情·斗法·抉择·查案 全部绑定考词<br>本地自动存档，进度不丢</div>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
