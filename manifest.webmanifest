@@ -1,0 +1,20 @@
+{
+  "name": "凤印九重 · 宫斗背词",
+  "short_name": "凤印九重",
+  "description": "以宫廷剧情闯关记忆考研英语核心词汇",
+  "lang": "zh-CN",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8F2E8",
+  "theme_color": "#8E2B2B",
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

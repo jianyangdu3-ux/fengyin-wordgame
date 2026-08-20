@@ -6,6 +6,14 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#8E2B2B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="凤印九重">
+<link rel="manifest" href="manifest.webmanifest?v=82">
+<link rel="icon" href="assets/app-icon.svg?v=82" type="image/svg+xml">
+<link rel="preload" href="assets/char-maid.webp?v=80" as="image" type="image/webp">
 <title>凤印九重 · 宫斗背词</title>
 <style>
 :root{
@@ -458,6 +466,147 @@ nav.tabbar{
 .review-bar .rev-info{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
 .review-bar .btn{flex:0 0 auto;padding:8px 14px}
 .lib-empty{color:var(--ink2);text-align:center;padding:26px 0;font-size:13px;line-height:1.7}
+/* ===== V7 首页重设计：凤印宫笺 ===== */
+body{background:#241816}
+#app{background:#f8f2e8}
+.page-start-active .header-wrap{display:none}
+.page-start-active main{padding:0;scrollbar-width:none}
+.page-start-active main::-webkit-scrollbar{display:none}
+.home-v7{min-height:100%;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));position:relative;overflow:hidden;background:
+  radial-gradient(circle at 88% 9%,rgba(201,162,39,.09),transparent 26%),
+  linear-gradient(180deg,#fbf7f0 0%,#f7efe3 58%,#f4eadb 100%)}
+.home-v7:before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E")}
+.home-v7>*{position:relative;z-index:1}
+.home-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.home-seal{width:38px;height:38px;border:2px solid #a33b2f;border-radius:7px;color:#a33b2f;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:18px;font-weight:700;transform:rotate(-2deg);box-shadow:inset 0 0 0 2px #fbf7f0, inset 0 0 0 3px rgba(163,59,47,.35)}
+.home-brand{font-family:"Songti SC","STSong",serif;font-size:23px;letter-spacing:4px;color:#38251f;font-weight:700;white-space:nowrap}
+.home-resources{margin-left:auto;display:flex;gap:6px}
+.resource-pill{height:32px;padding:0 10px;border:1px solid #d8c39a;border-radius:18px;background:rgba(255,253,248,.78);display:flex;align-items:center;gap:5px;color:#4a3730;font-size:12px;white-space:nowrap;box-shadow:0 3px 12px rgba(83,50,29,.04)}
+.resource-pill b{font-size:13px;font-weight:600}.resource-pill .bolt{color:#c89022}
+.rank-hero{height:360px;border:1px solid #d8bd88;border-radius:24px 24px 18px 18px;background:rgba(255,253,248,.72);box-shadow:0 14px 35px rgba(92,52,27,.10);position:relative;overflow:hidden;padding:34px 24px}
+.rank-hero:before,.rank-hero:after{content:'';position:absolute;width:22px;height:22px;border-color:#caa45c;border-style:solid;opacity:.7}
+.rank-hero:before{left:9px;top:9px;border-width:1px 0 0 1px;border-radius:9px 0 0 0}.rank-hero:after{right:9px;bottom:9px;border-width:0 1px 1px 0;border-radius:0 0 9px 0}
+.palace-wash{position:absolute;inset:auto 0 0;height:47%;opacity:.16;background:linear-gradient(180deg,transparent,#cfae79 72%)}
+.palace-wash:after{content:'宫';position:absolute;right:24px;bottom:-22px;font-family:"Songti SC",serif;font-size:180px;color:#9d6d3b;opacity:.12}
+.rank-copy{position:relative;z-index:10;width:52%}
+.eyebrow{font-family:"Songti SC",serif;font-size:15px;letter-spacing:4px;color:#5f463b;margin-bottom:17px}.eyebrow:before{content:'◆';font-size:7px;color:#bc8b37;margin-right:8px;vertical-align:3px}
+.home-rank{font-family:"Songti SC","STSong",serif;color:#a23228;font-size:56px;line-height:1;letter-spacing:7px;font-weight:700;text-shadow:0 2px 0 #fff;margin-bottom:25px}
+.seal-progress-label{display:flex;justify-content:space-between;color:#59433a;font-size:13px;margin-bottom:9px}.seal-progress-label span:last-child{color:#a23228;font-weight:600}
+.seal-progress{height:8px;border:1px solid #dcc8a4;background:#f8f0e2;border-radius:8px;overflow:hidden}.seal-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98625,#e1c37a);border-radius:8px;transition:width .5s}
+.rank-next{margin-top:12px;color:#78665d;font-size:11px;line-height:1.55}
+.hero-person{position:absolute;z-index:2;right:-18px;bottom:-12px;width:59%;height:96%;object-fit:cover;object-position:67% center;mix-blend-mode:multiply;pointer-events:none;filter:drop-shadow(-7px 10px 12px rgba(65,37,27,.12));-webkit-mask-image:linear-gradient(to left,#000 88%,transparent 100%);mask-image:linear-gradient(to left,#000 88%,transparent 100%)}
+.hero-badge{display:block;margin:0;text-align:left;cursor:default}.hero-badge:active .hero-frame{transform:none}
+.home-primary{width:calc(100% - 28px);height:68px;margin:-18px auto 0;border:1px solid #81261f;border-radius:18px;background:linear-gradient(135deg,#a93429,#8f281f);color:#fff4d6;box-shadow:0 12px 24px rgba(126,37,30,.22),inset 0 0 0 1px rgba(255,225,163,.18);font-family:"Songti SC",serif;font-size:24px;letter-spacing:7px;display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:5}
+.home-primary:after{content:'›';width:29px;height:29px;border:1px solid rgba(255,239,199,.7);border-radius:50%;display:grid;place-items:center;font-family:serif;font-size:25px;letter-spacing:0;line-height:1}.home-primary:active{transform:scale(.985)}
+.today-count{text-align:center;font-family:"Songti SC",serif;font-size:14px;letter-spacing:2px;color:#5f4b42;margin:14px 0 20px}.today-count b{color:#a23228;font-size:18px}
+.rank-journey{display:flex;align-items:center;justify-content:space-between;position:relative;margin:0 3px 22px}.rank-journey:before{content:'';position:absolute;left:7%;right:7%;top:17px;height:1px;background:#d2b370}
+.journey-node{position:relative;z-index:1;width:43px;text-align:center;color:#695950;font-size:11px}.journey-dot{width:36px;height:36px;margin:0 auto 6px;border:1px solid #d7c49e;background:#f9f1e3;border-radius:50% 50% 45% 45%;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:12px}.journey-node.current .journey-dot{background:#a93429;border:3px solid #ecd697;color:#fff5d9;box-shadow:0 4px 12px rgba(153,47,39,.18)}.journey-node.past .journey-dot{color:#a23228;border-color:#ba776c}.journey-node.future:nth-child(n+8){display:none}
+.home-stats{border:1px solid #decba9;border-radius:18px;background:rgba(255,253,248,.74);display:grid;grid-template-columns:repeat(3,1fr);padding:17px 5px;margin-bottom:14px;box-shadow:0 8px 24px rgba(86,54,31,.05)}
+.home-stat{text-align:center;border-right:1px solid #eadcc5}.home-stat:last-child{border-right:0}.home-stat span{display:block;color:#8b7769;font-size:11px;margin-bottom:6px}.home-stat b{font-family:Georgia,"Songti SC",serif;font-size:23px;font-weight:500;color:#36261f}.home-stat em{font-style:normal;font-size:10px;color:#a28e7c;margin-left:2px}
+.home-v7 .task-panel{margin:0;background:rgba(255,253,248,.7);border-color:#decba9;border-radius:18px;padding:15px}.home-v7 .task-title{font-family:"Songti SC",serif;font-size:15px;letter-spacing:2px}.home-v7 .task-item{padding:9px 0}.home-v7 .task-fill{background:linear-gradient(90deg,#b8892b,#dfc174)}
+.home-v7 .love-entry{margin-top:12px}.home-v7 .hint{margin:14px 6px 0;font-size:10px;opacity:.7}
+@media(max-width:370px){.home-v7{padding-left:13px;padding-right:13px}.home-brand{font-size:20px}.resource-pill{padding:0 7px}.rank-hero{height:330px}.home-rank{font-size:48px}.hero-person{right:-39px}.journey-node{width:38px;font-size:10px}.journey-dot{width:33px;height:33px}.rank-journey:before{top:16px}}
+/* ===== V7.1 剧情 / 考校 / 斗法统一视觉 ===== */
+.page-story-active .rank-bar,.page-quiz-active .rank-bar,.page-battle-active .rank-bar{display:none!important}
+.page-story-active header.topbar,.page-quiz-active header.topbar,.page-battle-active header.topbar{
+  background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7;padding:calc(9px + env(safe-area-inset-top)) 16px 9px
+}
+.page-story-active .topbar h1,.page-quiz-active .topbar h1,.page-battle-active .topbar h1{font-family:"Songti SC",serif;font-size:17px;letter-spacing:4px;color:#38251f}
+.page-story-active .topbar .sub,.page-quiz-active .topbar .sub,.page-battle-active .topbar .sub{margin-top:5px;color:#9a6a2c}
+.page-story-active .topbar .fav,.page-quiz-active .topbar .fav,.page-battle-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399;padding:3px 9px}
+.page-story-active main,.page-quiz-active main,.page-battle-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:
+  radial-gradient(circle at 90% 0,rgba(201,162,39,.08),transparent 24%),linear-gradient(180deg,#faf6ee,#f5ecde)}
+.page-story-active nav.tabbar,.page-quiz-active nav.tabbar,.page-battle-active nav.tabbar{background:rgba(255,253,248,.96);border-top-color:#dfcba7;box-shadow:0 -8px 26px rgba(74,42,25,.06)}
+
+/* 剧情：人物来信式叙事 */
+#page-story .char-box{height:150px;padding:0 15px;border:1px solid #dcc18d;border-radius:20px;background:linear-gradient(105deg,#f6ead7,#fffaf2);box-shadow:0 12px 28px rgba(80,47,27,.09);align-items:center;margin-bottom:18px}
+#page-story .char-box:before{height:100%;width:42%;right:auto;background:radial-gradient(circle at 30% 40%,rgba(192,139,51,.16),transparent 65%)}
+#page-story .char-box:after{content:'宫';left:auto;right:8px;bottom:-32px;width:auto;height:auto;background:none;font-family:"Songti SC",serif;font-size:130px;color:#a9793b;opacity:.06}
+#page-story .char-img{width:112px;height:148px;margin-left:-8px;align-self:flex-end;object-fit:cover;object-position:64% 24%;border:0;border-radius:0;background:transparent;mix-blend-mode:multiply;box-shadow:none;-webkit-mask-image:linear-gradient(#000 86%,transparent);mask-image:linear-gradient(#000 86%,transparent)}
+#page-story .char-info{padding-left:8px;position:relative;z-index:2}
+#page-story .char-name{font-family:"Songti SC",serif;font-size:17px;letter-spacing:3px;color:#982e27;margin-bottom:8px}
+#page-story .char-quote{font-size:12px;line-height:1.75;color:#6c584c;font-style:normal}
+#page-story .chap-title{font-size:22px;line-height:1.4;letter-spacing:4px;margin:8px 0 5px;color:#8f2c27}
+#page-story .chap-sub{font-size:11px;letter-spacing:2px;color:#ad843e;margin-bottom:13px}
+#page-story .panel{border:1px solid #dfc9a3;border-radius:18px;background:rgba(255,253,248,.82);padding:23px 20px;box-shadow:0 10px 28px rgba(77,47,28,.06)}
+#page-story .panel:before{left:22px;right:22px;background:linear-gradient(90deg,transparent,#c3943e,transparent)}
+#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:justify}
+#page-story #btnStoryNext{height:54px;border:1px solid #84241f;border-radius:15px;background:linear-gradient(135deg,#a7352b,#8d281f);box-shadow:0 9px 18px rgba(137,39,31,.18);font-family:"Songti SC",serif;font-size:17px;letter-spacing:5px}
+
+/* 考校：高专注单词宫笺 */
+#page-quiz .progress{height:5px;margin:0 2px 13px;gap:5px}.page-quiz-active .pdot{height:5px;background:#e3d7c2}.page-quiz-active .pdot.done{background:#9d352c}.page-quiz-active .pdot.cur{background:#c99639;box-shadow:0 0 0 3px rgba(201,150,57,.12)}
+#page-quiz .timer-bar{height:7px;margin:0 2px 16px;background:#eadfcd}.page-quiz-active .timer-num{top:10px;right:4px;font-size:10px;color:#a17938}
+#page-quiz .quiz-char{min-height:88px;border:1px solid #dfc7a0;border-left:0;border-radius:17px;padding:0 14px;background:rgba(255,251,244,.86);align-items:center;box-shadow:0 7px 20px rgba(78,45,27,.05)}
+#page-quiz .quiz-char-img{width:72px;height:86px;align-self:flex-end;object-fit:cover;object-position:65% 22%;border:0;border-radius:0;background:transparent;mix-blend-mode:multiply;box-shadow:none;-webkit-mask-image:linear-gradient(#000 86%,transparent);mask-image:linear-gradient(#000 86%,transparent)}
+#page-quiz .quiz-char-line{font-family:"Songti SC",serif;font-size:13px;line-height:1.7;color:#624c42;font-style:normal}
+#page-quiz .scroll-panel{border:1px solid #d9bd88;border-radius:22px;padding:29px 18px 22px;background:rgba(255,253,248,.9);box-shadow:0 14px 32px rgba(81,48,28,.08)}
+#page-quiz .scroll-panel:before,#page-quiz .scroll-panel:after{display:none}#page-quiz .scroll-corner{width:19px;height:19px;border-width:1px;border-radius:7px;opacity:.55}
+#page-quiz .quiz-word{font-family:Georgia,"Songti SC",serif;font-size:33px;color:#8d2c27;font-weight:500;letter-spacing:.5px}
+#page-quiz .speak-icon{width:38px;height:38px;padding:0;border:1px solid #dcc69d;border-radius:50%;background:#fff9ef;color:#b17b25;font-size:17px}
+#page-quiz .listen-row,#page-battle .listen-row{display:none}
+#page-quiz .quiz-pho{font-family:Georgia,serif;font-size:13px;color:#7d6c61}.page-quiz-active .quiz-pos{color:#a57931;letter-spacing:1px}
+#page-quiz .qopt{min-height:52px;border-color:#e1d1b7;border-radius:14px;padding:13px 15px;background:#fffdfa;box-shadow:0 3px 10px rgba(70,42,25,.035);transition:transform .12s,border-color .12s,background .12s}
+#page-quiz .qopt:active{transform:scale(.985);border-color:#bd7e72}.page-quiz-active .qopt .pos{display:inline-flex;min-width:30px;color:#b1843a}
+
+/* 斗法：朱砂宫墙与双阵营 */
+.page-battle-active main{background:radial-gradient(circle at 50% -10%,rgba(183,126,48,.22),transparent 32%),linear-gradient(180deg,#48231f 0,#6f2925 31%,#f5ecde 31.2%,#f5ecde 100%)}
+#page-battle .battle-title{font-family:"Songti SC",serif;color:#fff2cf;font-size:22px;letter-spacing:5px;margin:3px 0 5px;text-shadow:0 2px 7px rgba(0,0,0,.24)}
+#page-battle .battle-sub{color:#e8c98b;font-size:11px;letter-spacing:1px;margin-bottom:15px}
+#page-battle .timer-bar{height:7px;background:rgba(255,255,255,.18);margin-bottom:13px}#page-battle .timer-num{color:#f6dfae}
+#page-battle .enemy-move{border:1px solid rgba(239,204,143,.55);border-radius:14px;background:rgba(48,13,12,.35);color:#fff0ce;padding:10px 12px;margin-bottom:9px;font-family:"Songti SC",serif;font-size:13px;box-shadow:inset 0 0 16px rgba(0,0,0,.08)}
+#page-battle .combo-badge{min-height:18px;color:#f3ce7c;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+#page-battle .enemy-char{height:108px;margin-bottom:-14px;position:relative;z-index:2;align-items:flex-end}
+#page-battle .enemy-char-img{width:112px;height:125px;object-fit:cover;object-position:65% 20%;border:0;border-radius:0;mix-blend-mode:screen;box-shadow:none;-webkit-mask-image:linear-gradient(#000 82%,transparent);mask-image:linear-gradient(#000 82%,transparent)}
+#page-battle .enemy-char-info{align-self:center}.page-battle-active .enemy-char-name{font-family:"Songti SC",serif;color:#fff1ce;font-size:16px;letter-spacing:3px}.page-battle-active .enemy-char-quote{color:#e6cfa9;line-height:1.65;font-style:normal}
+#page-battle .panel{border:1px solid #d7ba85;border-radius:22px;background:rgba(255,253,248,.96);padding:20px 17px;box-shadow:0 15px 34px rgba(54,25,20,.18)}
+#page-battle .hp-row{margin-bottom:10px}.page-battle-active .hp-name{font-size:11px;color:#79645a;min-width:37px}.page-battle-active .hp-bar{height:9px;background:#eee2cf}.page-battle-active .hp-fill{background:linear-gradient(90deg,#c35b4d,#8d2c27)}.page-battle-active .hp-fill.friend{background:linear-gradient(90deg,#c69a43,#e4c87a)}
+#page-battle .quiz-word{font-family:Georgia,serif;font-size:30px;color:#8d2c27}.page-battle-active .speak-icon{width:36px;height:36px;padding:0;border:1px solid #dcc69d;border-radius:50%;background:#fff9ef;font-size:16px}
+#page-battle .qopt{min-height:50px;border-radius:14px;border-color:#dfcfb5;background:#fffdfa;padding:12px 14px}.page-battle-active .battle-log{color:#875b43;font-family:"Songti SC",serif;line-height:1.75}
+@media(max-width:370px){#page-story .char-box{height:132px}#page-story .char-img{width:96px;height:130px}#page-story .p-text{font-size:15px}#page-battle .enemy-char{height:96px}#page-battle .enemy-char-img{width:96px;height:112px}}
+/* ===== V7.2 操作反馈与晋升仪式 ===== */
+.answer-flash{position:fixed;left:50%;top:28%;transform:translate(-50%,-50%) scale(.88);width:calc(100% - 54px);max-width:360px;z-index:220;border-radius:20px;padding:18px 19px;text-align:center;pointer-events:none;opacity:0;animation:answerReveal .28s ease forwards;box-shadow:0 18px 48px rgba(53,27,20,.23);backdrop-filter:blur(10px)}
+.answer-flash.right{background:rgba(246,251,239,.96);border:1px solid #93aa6e;color:#37502e}.answer-flash.wrong{background:rgba(255,245,239,.97);border:1px solid #c36e5f;color:#7f2f29}
+.answer-flash .af-mark{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:white}.answer-flash.right .af-mark{background:#718f53}.answer-flash.wrong .af-mark{background:#aa4035}
+.answer-flash .af-title{font-family:"Songti SC",serif;font-size:18px;letter-spacing:3px;font-weight:700}.answer-flash .af-detail{font-size:12px;line-height:1.7;margin-top:6px;color:#69564c}.answer-flash .af-word{font-family:Georgia,serif;font-size:16px;font-weight:700;color:#8f2c27;margin-right:5px}
+@keyframes answerReveal{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.qopt.right{box-shadow:0 0 0 3px rgba(75,128,76,.12),0 8px 18px rgba(52,111,57,.1)!important}.qopt.wrong{box-shadow:0 0 0 3px rgba(179,58,58,.1)!important}
+.battle-skill{position:fixed;left:50%;top:30%;transform:translate(-50%,-50%) scale(.7);z-index:225;pointer-events:none;color:#fff0c2;font-family:"Songti SC",serif;font-size:29px;letter-spacing:6px;text-shadow:0 3px 0 #7d211c,0 0 18px #efc76d;white-space:nowrap;animation:skillBurst .85s ease forwards}
+@keyframes skillBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{opacity:0;transform:translate(-50%,-70%) scale(.94)}}
+
+.page-reward-active .rank-bar{display:none!important}.page-reward-active header.topbar{background:#671d1b;color:#f5dfad;box-shadow:none}.page-reward-active main{padding:0 16px calc(88px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#6f201c 0,#8d2d25 44%,#f6eddf 44.2%);position:relative}
+#page-reward{text-align:center;padding-top:18px;min-height:690px;overflow:hidden}
+.reward-gates{height:185px;position:relative;margin:-18px -16px 0;overflow:hidden;background:radial-gradient(circle at 50% 70%,rgba(244,207,122,.2),transparent 35%)}
+.reward-gate{position:absolute;top:12px;width:52%;height:180px;background:linear-gradient(90deg,#451613,#7a241e);border:2px solid #c79a4a;transition:transform 1.1s cubic-bezier(.2,.75,.15,1);box-shadow:0 0 24px rgba(0,0,0,.25)}.reward-gate.left{left:0;transform:translateX(-72%);border-radius:0 30px 0 0}.reward-gate.right{right:0;transform:translateX(72%);border-radius:30px 0 0 0}
+.reward-gate:before{content:'';position:absolute;inset:15px;border:1px solid rgba(232,197,124,.5);background:repeating-linear-gradient(90deg,transparent 0 26px,rgba(235,198,117,.12) 27px 29px)}
+.reward-rays{position:absolute;left:50%;top:50%;width:220px;height:220px;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,224,148,.26) 0 8deg,transparent 8deg 18deg);animation:raysTurn 15s linear infinite}@keyframes raysTurn{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.reward-seal{position:absolute;left:50%;top:62px;transform:translateX(-50%) rotate(-7deg) scale(0);width:92px;height:92px;border:5px double #f0c86e;border-radius:16px;color:#f7d788;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:34px;font-weight:700;text-shadow:0 2px 0 #761e1a;box-shadow:inset 0 0 0 4px #8f2b25,0 8px 20px rgba(0,0,0,.25);animation:royalStamp .55s .55s cubic-bezier(.2,1.4,.4,1) forwards}@keyframes royalStamp{to{transform:translateX(-50%) rotate(-7deg) scale(1)}}
+#page-reward .reward-big{padding:11px 0 8px;position:relative;z-index:3}#page-reward .reward-big .chap-sub{color:#a77833;letter-spacing:2px;margin-bottom:8px}#page-reward .reward-big .rn{font-family:"Songti SC",serif;font-size:46px;letter-spacing:9px;color:#992f28;text-shadow:0 2px #fff}#page-reward .reward-big .rf{color:#745c4d;letter-spacing:2px}
+#page-reward .panel{border:1px solid #ddc49a;border-radius:18px;background:rgba(255,253,248,.92);padding:18px 19px;text-align:left;box-shadow:0 11px 28px rgba(71,39,25,.08)}#page-reward .p-text{font-family:"Songti SC",serif;font-size:14px;line-height:1.95;color:#534037}
+.reward-unlocks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.reward-unlock{border:1px solid #e0ceb0;border-radius:12px;background:#fffaf1;padding:10px 5px;text-align:center}.reward-unlock b{display:block;color:#9b322b;font-size:14px;margin-bottom:4px}.reward-unlock span{font-size:10px;color:#8b7668}
+#page-reward #btnRewardNext{height:55px;border-radius:16px;background:linear-gradient(135deg,#a6362c,#8d281f);border:1px solid #7e211d;color:#fff0cf;font-family:"Songti SC",serif;font-size:17px;letter-spacing:4px;box-shadow:0 9px 19px rgba(137,39,31,.2)}
+/* ===== V7.3 新手引导 / 词库 / 藏录 ===== */
+.onboard-mask{position:fixed;inset:0;z-index:300;background:rgba(31,19,17,.62);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:18px 18px calc(22px + env(safe-area-inset-bottom));animation:fadeIn .25s ease}
+.onboard-card{width:100%;max-width:394px;border:1px solid #d3ad68;border-radius:24px;background:linear-gradient(145deg,#fffdf8,#f6ead8);padding:22px 20px 18px;box-shadow:0 24px 70px rgba(29,14,11,.36);position:relative;overflow:hidden}.onboard-card:before{content:'凤';position:absolute;right:-8px;top:-30px;font-family:"Songti SC",serif;font-size:145px;color:#a43830;opacity:.045}
+.onboard-step{font-size:11px;color:#aa7d35;letter-spacing:2px}.onboard-icon{width:54px;height:54px;border:1px solid #d8bd8a;border-radius:18px;display:grid;place-items:center;margin:14px 0 13px;background:#fff9ee;font-size:27px}.onboard-title{font-family:"Songti SC",serif;font-size:22px;color:#922e28;letter-spacing:3px}.onboard-text{font-size:14px;line-height:1.85;color:#5b4940;margin:9px 0 16px}.onboard-demo{border:1px dashed #c79643;border-radius:13px;padding:11px 12px;background:rgba(255,255,255,.54);font-size:12px;color:#6b5548;margin-bottom:16px}.onboard-demo .demo-word{color:#9d3029;border-bottom:1px dashed #9d3029;font-family:Georgia,serif;font-weight:700}
+.onboard-actions{display:flex;gap:9px}.onboard-actions .btn{margin:0;height:48px}.onboard-actions .skip{flex:.36;background:transparent;color:#8a7769;border:1px solid #d8c8ae}.onboard-actions .next{flex:1;background:#9d332b}.onboard-dots{display:flex;gap:6px;position:absolute;right:20px;top:24px}.onboard-dots i{width:6px;height:6px;border-radius:50%;background:#decdb1}.onboard-dots i.active{width:18px;border-radius:5px;background:#a6372e}
+
+.page-library-active .rank-bar,.page-record-active .rank-bar{display:none!important}.page-library-active header.topbar,.page-record-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-library-active .topbar h1,.page-record-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-library-active .topbar .fav,.page-record-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
+.page-library-active main,.page-record-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#faf6ee,#f3e9db)}
+.section-head{text-align:center;margin:3px 0 16px}.section-head b{display:block;font-family:"Songti SC",serif;font-size:24px;letter-spacing:5px;color:#8f2e28}.section-head span{display:block;font-size:10px;letter-spacing:3px;color:#a98245;margin-top:5px}
+#page-library .lib-tabs{gap:7px;background:rgba(255,253,248,.72);border:1px solid #ddcaa9;border-radius:16px;padding:5px;margin-bottom:12px}#page-library .lib-tab{border:0;background:transparent;height:39px;border-radius:12px;color:#766359}#page-library .lib-tab.active{background:#9d332b;color:#fff2d4;box-shadow:0 5px 12px rgba(136,43,36,.16)}
+#page-library .library-top{top:0;background:transparent;padding:0 0 12px}#page-library .lib-search{height:48px;border:1px solid #dcc7a4;border-radius:15px;background:#fffdf8;padding-left:42px;box-shadow:0 6px 18px rgba(65,39,24,.04)}#page-library .library-top:before{content:'⌕';position:absolute;left:15px;top:6px;font-family:Georgia,serif;font-size:27px;color:#b18a4a;z-index:2}
+#page-library .lib-list{border:1px solid #ddc9a7;border-radius:18px;background:rgba(255,253,248,.82);box-shadow:0 9px 25px rgba(70,41,24,.05)}#page-library .lib-item{min-height:58px;padding:11px 15px;border-bottom-color:#eadfcd}#page-library .lib-item .w{font-family:Georgia,serif;font-size:16px;color:#8f302a}#page-library .lib-item .d{max-width:62%;font-size:11px}#page-library .stats-row .stat{background:#fffaf2;border-color:#ddc9a7}
+#page-record .panel{border:1px solid #dcc7a4;border-radius:19px;background:rgba(255,253,248,.86);padding:17px;box-shadow:0 9px 25px rgba(70,41,24,.06)}#page-record .panel h2{font-family:"Songti SC",serif;font-size:19px;letter-spacing:3px;color:#922e28;border-bottom:1px solid #eadcc5;padding-bottom:11px;margin-bottom:13px}#page-record .panel h2 .en{float:right;font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:1px;color:#ac8648;margin-top:5px}
+#page-record .stat{padding:13px 5px;border-radius:13px;background:#fff9ef}#page-record .stat b{font-family:Georgia,serif;font-size:22px}#page-record .save-btn-row{margin-top:15px}#page-record .save-btn-row .btn,#page-record .panel>a.btn,#page-record .panel>button.btn{min-height:46px;border-radius:13px;letter-spacing:1px}#page-record .cloud-status{border-color:#ddcaa9;background:#faf3e7;padding:12px 13px}.page-record-active .rec-item{border:1px solid #e1ceb0;border-left:4px solid #b18438;border-radius:13px;background:#fffaf2}
+/* ===== V7.4 抉择 / 查案 / 情缘 / 放榜 ===== */
+.page-choice-active .rank-bar,.page-case-active .rank-bar,.page-love-active .rank-bar{display:none!important}.page-choice-active header.topbar,.page-case-active header.topbar,.page-love-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-choice-active .topbar h1,.page-case-active .topbar h1,.page-love-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-choice-active .topbar .fav,.page-case-active .topbar .fav,.page-love-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
+.page-choice-active main,.page-case-active main,.page-love-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:radial-gradient(circle at 85% 0,rgba(174,115,39,.09),transparent 28%),linear-gradient(180deg,#faf6ee,#f3e9db)}
+#page-choice:before{content:'朱 批 抉 择';display:block;text-align:center;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#b4873e;margin:0 0 8px}#page-choice .chap-title{font-size:24px;letter-spacing:4px;margin:0 0 15px;color:#8f2e28}#page-choice .panel{border:1px solid #d9bd89;border-radius:19px;background:rgba(255,253,248,.9);padding:22px 19px;box-shadow:0 10px 28px rgba(70,39,23,.07)}#page-choice .panel:after{content:'择';position:absolute;right:3px;bottom:-32px;font-family:"Songti SC",serif;font-size:112px;color:#9d322b;opacity:.045}#page-choice .p-text{font-family:"Songti SC",serif;font-size:15px;line-height:2;color:#4c3931;text-align:justify}#page-choice #choiceOpts{display:grid;gap:10px}#page-choice .qopt{margin:0;min-height:58px;border:1px solid #dcc7a5;border-radius:15px;background:#fffaf2;padding:14px 15px;box-shadow:0 5px 15px rgba(68,39,23,.04)}#page-choice .qopt:before{content:'◆';font-size:7px;color:#b58940;margin-right:9px;vertical-align:2px}
+#page-case:before{content:'内 廷 密 卷';display:block;text-align:center;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#b4873e;margin-bottom:8px}#page-case .chap-title{font-size:24px;letter-spacing:4px;margin:0 0 15px;color:#8f2e28}#page-case .panel{border:1px solid #d4b67e;border-radius:20px;background:#fffaf3;padding:20px 17px;box-shadow:0 12px 30px rgba(65,37,22,.08)}#page-case .panel:after{content:'密';position:absolute;right:14px;top:10px;width:43px;height:43px;border:2px solid #aa3c32;border-radius:8px;color:#aa3c32;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:21px;transform:rotate(-8deg);opacity:.65}#page-case #caseIntro{padding-right:48px;font-family:"Songti SC",serif;font-size:14px;line-height:1.9}#page-case .letter{margin:17px 0;border:1px solid #cda96a;border-radius:14px;background:linear-gradient(135deg,#efe0bd,#f9efda);padding:18px 16px;box-shadow:inset 0 0 24px rgba(115,74,31,.06);font-family:Georgia,"Songti SC",serif;line-height:1.9}#page-case #caseQ{font-family:"Songti SC",serif;font-size:15px;color:#70483b;line-height:1.7;margin:14px 0}#page-case #caseOpts{display:grid;gap:9px}#page-case .qopt{margin:0;min-height:52px;border-radius:14px;background:#fffdfa}
+#page-love>.chap-title{font-size:25px;letter-spacing:4px;margin:2px 0 8px;color:#922f35}#page-love>.chap-sub{border:1px solid #e0c6b0;border-radius:15px;background:rgba(255,250,246,.78);padding:12px 14px;line-height:1.8;color:#876d63;margin-bottom:15px}#page-love .love-card{border:1px solid #dfc5ae;border-radius:19px;padding:16px;background:linear-gradient(145deg,rgba(255,253,249,.94),rgba(248,237,228,.9));box-shadow:0 9px 24px rgba(88,42,42,.06);position:relative;overflow:hidden}#page-love .love-card:after{content:'缘';position:absolute;right:-4px;bottom:-31px;font-family:"Songti SC",serif;font-size:100px;color:#a94145;opacity:.045}#page-love .love-head{position:relative;z-index:2}.page-love-active .love-emoji{width:48px;height:48px;border:1px solid #d9bda4;border-radius:50%;background:#fff8f1;display:grid;place-items:center;font-size:24px}.page-love-active .love-name{font-family:"Songti SC",serif;font-size:18px;letter-spacing:2px;color:#91313a}.page-love-active .love-tag{border-color:#d8b693;color:#9b6d39;background:#fff9ef}.page-love-active .love-bar{height:7px;background:#eadcd1}.page-love-active .love-fill{background:linear-gradient(90deg,#b56267,#d39a79)}#page-love .love-card .btn{position:relative;z-index:2;border-radius:13px;background:#96353a;color:#fff0e4}#page-love .love-card .btn.gold{background:#a86f3f}
+#page-quiz .quiz-result{padding:24px 5px 8px}#page-quiz .quiz-result:before{content:'考 校 放 榜';display:block;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#ad8240;margin-bottom:15px}#page-quiz .result-stamp{min-width:150px;border-radius:15px;background:#fff8e9;font-family:"Songti SC",serif;font-size:24px;letter-spacing:5px;color:#8f2e28;border:3px double #bd8d3d;box-shadow:0 8px 20px rgba(81,47,26,.09);transform:rotate(-2deg)}#page-quiz .result-stamp.pass{background:#f5f7e9;color:#4d743d;border-color:#8ca477}#page-quiz .result-stamp.fail{background:#fff0eb;color:#9a382f;border-color:#c77d6f}#page-quiz .result-stamp.perfect{background:linear-gradient(135deg,#f8e8ae,#fff7dc);color:#8b5a1f;border-color:#c19136}#page-quiz .result-score{font-size:14px;line-height:1.8;margin:15px 0}#page-quiz .result-score b{font-family:Georgia,serif;font-size:24px}#page-quiz .result-wrong-title{text-align:left;color:#8c6c5a;border-bottom:1px solid #e6d8c2;padding-bottom:7px}#page-quiz .result-wrong-item{border:1px solid #e1cfb3;border-radius:13px;background:#fffaf2;padding:10px 12px}#page-quiz .result-word{font-family:Georgia,serif}#page-quiz .quiz-result>.btn{height:50px;border-radius:14px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reward-rays{display:none}.answer-flash{backdrop-filter:none}}
+.update-pill{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:500;background:rgba(48,29,25,.94);color:#fff0d0;border:1px solid rgba(224,190,119,.55);border-radius:22px;padding:9px 16px;font-size:12px;letter-spacing:1px;box-shadow:0 8px 24px rgba(0,0,0,.2);white-space:nowrap;animation:fadeIn .2s ease}
 </style>
 </head>
 <body>
@@ -472,72 +621,45 @@ nav.tabbar{
 
   <main id="main">
     <div class="page active" id="page-start">
-      <div class="cover">
-        <div class="palace-silhouette">
-          <svg viewBox="0 0 430 100" preserveAspectRatio="xMidYMax slice" width="100%" height="100%">
-            <!-- 左配殿 -->
-            <path d="M20 100 L20 72 Q25 68 30 72 L30 55 Q35 48 45 48 Q55 48 60 55 L60 72 Q65 68 70 72 L70 100Z" fill="#7A1F1F"/>
-            <rect x="38" y="62" width="14" height="18" rx="1" fill="#7A1F1F" opacity=".7"/>
-            <!-- 左配殿飞檐翘角 -->
-            <path d="M30 55 Q37 50 45 48 Q53 50 60 55" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
-            <!-- 右配殿 -->
-            <path d="M360 100 L360 72 Q365 68 370 72 L370 55 Q375 48 385 48 Q395 48 400 55 L400 72 Q405 68 410 72 L410 100Z" fill="#7A1F1F"/>
-            <rect x="378" y="62" width="14" height="18" rx="1" fill="#7A1F1F" opacity=".7"/>
-            <!-- 右配殿飞檐翘角 -->
-            <path d="M370 55 Q377 50 385 48 Q393 50 400 55" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
-            <!-- 中间主殿（大殿） -->
-            <path d="M100 100 L100 70 L120 55 L130 48 L140 55 L160 70 L160 100Z" fill="#7A1F1F"/>
-            <!-- 中间主殿（小顶/阁楼） -->
-            <path d="M125 48 L125 30 L135 22 L145 30 L145 48Z" fill="#7A1F1F"/>
-            <!-- 主殿飞檐 -->
-            <path d="M120 55 Q130 48 140 55" fill="none" stroke="#7A1F1F" stroke-width="2"/>
-            <path d="M125 30 Q135 24 145 30" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
-            <!-- 主殿殿门 -->
-            <rect x="125" y="75" width="10" height="18" rx="5" fill="#7A1F1F" opacity=".5"/>
-            <!-- 城墙基座（贯穿） -->
-            <rect x="0" y="90" width="430" height="10" fill="#7A1F1F" opacity=".4"/>
-            <!-- 立柱线 -->
-            <line x1="42" y1="60" x2="42" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-            <line x1="55" y1="60" x2="55" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-            <line x1="128" y1="55" x2="128" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-            <line x1="142" y1="55" x2="142" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-            <line x1="382" y1="60" x2="382" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-            <line x1="395" y1="60" x2="395" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
-          </svg>
-        </div>
-        <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="点击入宫">
-          <div class="hero-frame" id="heroFrame">
-            <span class="corner tl"></span><span class="corner tr"></span>
-            <span class="corner bl"></span><span class="corner br"></span>
-            <img class="hero-avatar" id="heroAvatar" src="assets/char-maid.png" alt="角色">
+      <div class="home-v7">
+        <div class="home-head">
+          <div class="home-seal">凤</div><div class="home-brand">凤印九重</div>
+          <div class="home-resources">
+            <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
+            <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
           </div>
-          <div class="hero-rank" id="heroRank">秀女</div>
-          <div class="hero-track">
-            <span class="ht-label">凤印</span>
-            <div class="ht-bar"><div class="ht-fill" id="htFill" style="width:0%"></div></div>
-            <span class="ht-num" id="htNum">0/9</span>
-          </div>
-          <div class="hero-hint">点击入宫</div>
         </div>
-        <div class="decor-line"></div>
-        <div class="logo">凤印九重</div>
-        <div class="sublogo">宫 斗 背 词 · 考 研 篇</div>
-        <div class="desc">
-          大周选秀，<b>5491 个考研核心词</b>藏在这深宫的一砖一瓦里。<br>
-          你本是寒门女子，入宫只为活命——<b>记不住词，就活不过这一章</b>。<br>
-          从秀女到皇后九重位份，每晋一级<b>获赐一枚凤印</b>。
+        <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="当前位份，点击继续闯关">
+          <section class="rank-hero">
+            <div class="palace-wash"></div>
+            <div class="rank-copy">
+              <div class="eyebrow">今日晋封</div>
+              <div class="home-rank" id="heroRank">秀女</div>
+              <div class="seal-progress-label"><span>凤印</span><span id="htNum">0 / 9</span></div>
+              <div class="seal-progress"><i id="htFill" style="width:0%"></i></div>
+              <div class="rank-next" id="rankNext">踏入宫门，完成首章即可获赐第一枚凤印</div>
+            </div>
+            <img class="hero-person hero-avatar" id="heroAvatar" src="assets/char-maid.webp?v=80" alt="当前宫廷角色" fetchpriority="high" decoding="async">
+          </section>
         </div>
-        <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
+        <button class="home-primary" id="btnStart" onclick="startGame()">入宫选秀</button>
+        <div class="today-count">今日已习 <b id="todayWords">0</b> / 20 词</div>
+        <div class="rank-journey" id="homeJourney" aria-label="九重位份进度"></div>
+        <div class="home-stats">
+          <div class="home-stat"><span>已掌握</span><b id="homeMastered">0</b><em>词</em></div>
+          <div class="home-stat"><span>最佳连胜</span><b id="homeStreak">0</b><em>题</em></div>
+          <div class="home-stat"><span>正确率</span><b id="homeAccuracy">0</b><em>%</em></div>
+        </div>
         <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
-        <div class="hint">限时斗法 · 连击绝杀 · 飞花令 · 心力博弈<br>答对出招，答错受伤——词背得好，才活得久<br>本地自动存档，进度不丢</div>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
-          <div class="task-title">📜 今日宫务</div>
+          <div class="task-title">今日宫务</div>
           <div class="task-list" id="taskList"></div>
           <div class="task-reward" id="taskReward" style="display:none">
             <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
           </div>
         </div>
+        <div class="hint">5491 个考研核心词 · 本地自动存档</div>
       </div>
     </div>
 
@@ -574,7 +696,7 @@ nav.tabbar{
         </div>
         <div class="quiz-pho" id="qPho"></div>
         <div class="quiz-pos" id="qPos"></div>
-        <div style="text-align:center;margin:4px 0 10px">
+        <div class="listen-row" style="text-align:center;margin:4px 0 10px">
           <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
         </div>
         <div id="qOpts"></div>
@@ -615,7 +737,7 @@ nav.tabbar{
         </div>
         <div class="quiz-pho" id="bPho"></div>
         <div class="quiz-pos" id="bPos"></div>
-        <div style="text-align:center;margin:4px 0 10px">
+        <div class="listen-row" style="text-align:center;margin:4px 0 10px">
           <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
         </div>
         <div id="bOpts"></div>
@@ -642,16 +764,21 @@ nav.tabbar{
     </div>
 
     <div class="page" id="page-reward">
+      <div class="reward-gates" aria-hidden="true">
+        <div class="reward-rays"></div><div class="reward-gate left"></div><div class="reward-gate right"></div>
+        <div class="reward-seal" id="rewardSeal">凤印</div>
+      </div>
       <div class="reward-big">
         <div class="chap-sub" id="rewardFrom"></div>
         <div class="rn" id="rewardRank"></div>
         <div class="rf" id="rewardSlogan"></div>
       </div>
-      <div class="panel"><p class="p-text" id="rewardText"></p></div>
+      <div class="panel"><p class="p-text" id="rewardText"></p><div class="reward-unlocks" id="rewardUnlocks"></div></div>
       <button class="btn gold" id="btnRewardNext" onclick="rewardNext()">继续</button>
     </div>
 
     <div class="page" id="page-library">
+      <div class="section-head"><b>御书房</b><span>词 库 · 温 故 知 新</span></div>
       <div class="lib-tabs">
         <button class="lib-tab active" id="libTabAll" onclick="libTab('all')">全部词</button>
         <button class="lib-tab" id="libTabFav" onclick="libTab('fav')">⭐ 收藏<span class="n" id="libFavN">0</span></button>
@@ -667,6 +794,7 @@ nav.tabbar{
     </div>
 
     <div class="page" id="page-record">
+      <div class="section-head"><b>宫册藏录</b><span>功 绩 · 抉 择 · 存 档</span></div>
       <div class="panel"><h2>藏录 <span class="en">抉择回望</span></h2><div id="recList"></div></div>
       <div class="panel"><h2>宫册 <span class="en">你的功绩</span></h2>
         <div class="stats-row">
@@ -835,9 +963,9 @@ var SLOGAN=['守拙安分，方能活命','宫门一入，步步为营','不争�
 
 /* ---------- 角色（每章一个对手/盟友） ---------- */
 var CHARACTERS={
-  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。',img:'assets/char-maid.png'},
-  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。',img:'assets/char-consort.png'},
-  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。',img:'assets/char-queen.png'}
+  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。',img:'assets/char-steward.webp?v=80'},
+  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。',img:'assets/char-consort.webp?v=80'},
+  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。',img:'assets/char-queen.webp?v=80'}
 };
 
 function findCharByName(name){
@@ -1163,6 +1291,20 @@ function shakeApp(){
   var a=document.getElementById('app'); if(!a) return;
   a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
 }
+function showAnswerFeedback(ok,title,word,detail){
+  var old=document.querySelector('.answer-flash'); if(old) old.remove();
+  var box=document.createElement('div');
+  box.className='answer-flash '+(ok?'right':'wrong');
+  box.innerHTML='<div class="af-mark">'+(ok?'✓':'×')+'</div><div class="af-title">'+title+'</div>'+
+    '<div class="af-detail">'+(word?'<span class="af-word">'+word+'</span>':'')+(detail||'')+'</div>';
+  document.body.appendChild(box);
+  setTimeout(function(){if(box&&box.parentNode)box.remove();},ok?760:1350);
+}
+function showBattleSkill(name){
+  if(!name) return;
+  var s=document.createElement('div'); s.className='battle-skill'; s.textContent=name;
+  document.body.appendChild(s); setTimeout(function(){if(s.parentNode)s.remove();},900);
+}
 
 /* ---------- 每日任务 ---------- */
 function todayStr(){
@@ -1313,15 +1455,37 @@ function renderRankBar(){
 }
 /* 首页主视觉渲染：金钗 + 位份圆环 + 九印进度 */
 function renderHeroBadge(){
-  var imgs=['assets/char-maid.png','assets/char-maid.png','assets/char-maid.png',
-            'assets/char-consort.png','assets/char-consort.png','assets/char-consort.png',
-            'assets/char-queen.png','assets/char-queen.png','assets/char-queen.png'];
+  var imgs=['assets/char-maid.webp?v=80','assets/char-maid.webp?v=80','assets/char-maid.webp?v=80',
+            'assets/char-consort.webp?v=80','assets/char-consort.webp?v=80','assets/char-consort.webp?v=80',
+            'assets/char-queen.webp?v=80','assets/char-queen.webp?v=80','assets/char-queen.webp?v=80'];
   var r=S.rank||0;
   var ha=$('heroAvatar'); if(ha) ha.src=imgs[r]||imgs[0];
   var hr=$('heroRank'); if(hr) hr.textContent=(RANKS[r]||RANKS[0]).n;
   var hf=$('htFill'); if(hf) hf.style.width=Math.min((r/8)*100,100)+'%';
-  var hn=$('htNum'); if(hn) hn.textContent=r+'/9';
+  var hn=$('htNum'); if(hn) hn.textContent=r+' / 9';
   var st=$('sealText'); if(st) st.textContent=r>0?('凤印×'+r):'';
+  renderHomeDashboard();
+}
+function renderHomeDashboard(){
+  var r=S.rank||0;
+  var he=$('homeEnergy'); if(he) he.textContent=S.energy;
+  var hp=$('homeFavor'); if(hp) hp.textContent=S.points;
+  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.done&&S.tasks.done[0])||0;
+  var mastered=$('homeMastered'); if(mastered) mastered.textContent=Object.keys(S.seen||{}).length;
+  var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
+  var total=(S.right||0)+(S.wrong||0);
+  var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
+  var next=$('rankNext');
+  if(next) next.textContent=r>=8?'九重凤印已集齐，凤临天下':('距离下一次晋封还差 '+(8-r)+' 枚凤印');
+  var journey=$('homeJourney');
+  if(journey){
+    var html='';
+    for(var i=0;i<RANKS.length;i++){
+      var cls=i<r?'past':(i===r?'current':'future');
+      html+='<div class="journey-node '+cls+'"><div class="journey-dot">'+(i<r?'✓':(i+1))+'</div><span>'+RANKS[i].n+'</span></div>';
+    }
+    journey.innerHTML=html;
+  }
 }
 function showPage(id){
   clearTimer();
@@ -1333,6 +1497,18 @@ function showPage(id){
   if(tb) tb.style.display=(id==='page-start')?'none':'flex';
   var rb=document.querySelector('.rank-bar');
   if(rb) rb.style.display='flex';
+  document.body.classList.toggle('page-start-active',id==='page-start');
+  var viewClasses=['page-story-active','page-quiz-active','page-battle-active','page-reward-active','page-library-active','page-record-active','page-choice-active','page-case-active','page-love-active'];
+  for(var c=0;c<viewClasses.length;c++) document.body.classList.remove(viewClasses[c]);
+  if(id==='page-story') document.body.classList.add('page-story-active');
+  if(id==='page-quiz') document.body.classList.add('page-quiz-active');
+  if(id==='page-battle') document.body.classList.add('page-battle-active');
+  if(id==='page-reward') document.body.classList.add('page-reward-active');
+  if(id==='page-library') document.body.classList.add('page-library-active');
+  if(id==='page-record') document.body.classList.add('page-record-active');
+  if(id==='page-choice') document.body.classList.add('page-choice-active');
+  if(id==='page-case') document.body.classList.add('page-case-active');
+  if(id==='page-love') document.body.classList.add('page-love-active');
   window.scrollTo(0,0);
 }
 function setTab(which){
@@ -1748,6 +1924,7 @@ function answerQuiz(idx){
     taskInc('correct');
     toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
     spawnCoin(qopt||$(ui.qWord),'✨');
+    showAnswerFeedback(true,S.streak>=3?'妙语连珠':'答对了',it.word,'圣宠 +'+gain+(S.streak>1?' · 连续答对 '+S.streak+' 题':''));
   }else{
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
     S.energy=Math.max(0,S.energy-3);
@@ -1756,6 +1933,8 @@ function answerQuiz(idx){
     markWrong(it.word);
     toast('答错了 -5 圣宠 -3 心力');
     spawnCoin(qopt||$(ui.qWord),'💔');
+    var wd=VOCAB_MAP[it.word]?extractPOS(VOCAB_MAP[it.word].def).mean:'';
+    showAnswerFeedback(false,'已收入错词本',it.word,wd+' · 稍后再复习一次');
   }
   save();
   var opts=$(ui.qOpts).querySelectorAll('.qopt');
@@ -1768,7 +1947,7 @@ function answerQuiz(idx){
     }else{
       renderQuiz();
     }
-  },900);
+  },isRight?900:1450);
 }
 function answerSpell(timedOut){
   if(!cur||cur.stage!=='quiz') return;
@@ -1790,6 +1969,7 @@ function answerSpell(timedOut){
     taskInc('correct');
     toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
     spawnCoin(input,'\u2728');
+    showAnswerFeedback(true,S.streak>=3?'飞花成章':'飞花令对中',it.word,'完整拼写正确 · 圣宠 +'+gain);
   }else{
     input.className='spell-input wrong';
     input.value=correct;
@@ -1800,6 +1980,8 @@ function answerSpell(timedOut){
     markWrong(it.word);
     toast(timedOut?'\u8d85\u65f6\u672a\u5199\u51fa -5 \u5723\u5ba0 -3 \u5fc3\u529b':'飞花令落空 -5 圣宠 -3 心力');
     spawnCoin(input,'\ud83d\udc94');
+    var sd=VOCAB_MAP[it.word]?extractPOS(VOCAB_MAP[it.word].def).mean:'';
+    showAnswerFeedback(false,timedOut?'落笔已迟':'正确拼写已补全',it.word,sd+' · 已收入错词本');
   }
   save();
   setTimeout(function(){
@@ -2006,6 +2188,7 @@ function answerBattle(idx){
     shakeApp();
     taskInc('correct');
     toast(cur.combo>=2?('连击×'+cur.combo+'！「'+cn+'」'):'出招命中！');
+    showBattleSkill(cn||'见招拆招');
   }else{
     cur.combo=0;
     cur.myhp-=25;
@@ -2018,6 +2201,7 @@ function answerBattle(idx){
     flashHp('myHp');
     shakeApp();
     toast('中计了！-8 圣宠 -3 心力');
+    showAnswerFeedback(false,'一时中计',cur.q.word,'正确词义已标出 · 已收入错词本');
   }
   save();
   setTimeout(function(){
@@ -2174,6 +2358,32 @@ function startGame(){
   }
   save();
   openStory();
+  maybeShowOnboarding();
+}
+var ONBOARD_KEY='gd_onboard_v1';
+function maybeShowOnboarding(){
+  try{if(localStorage.getItem(ONBOARD_KEY)==='1')return;}catch(e){}
+  if(document.getElementById('onboardMask'))return;
+  renderOnboarding(0);
+}
+function renderOnboarding(step){
+  var data=[
+    {icon:'词',title:'点词就能查',text:'剧情中带红色虚线的英文词都可以点击，不需要离开故事。',demo:'例如：<span class="demo-word">careful</span>　点击后查看释义、发音与收藏'},
+    {icon:'答',title:'答对才能进阶',text:'选择词义或完成飞花令。答错的词会自动收入错词本，之后可以集中复习。',demo:'考校通过线为 60%　·　连续答对会触发宫斗招式'},
+    {icon:'印',title:'集凤印，升九重',text:'完成剧情、考校与斗法即可晋升。从秀女一路走到皇后。',demo:'秀女 → 答应 → 常在 → 贵人 → 嫔 → 妃 → 贵妃 → 皇贵妃 → 皇后'}
+  ];
+  var d=data[Math.max(0,Math.min(step,data.length-1))];
+  var mask=document.getElementById('onboardMask');
+  if(!mask){mask=document.createElement('div');mask.id='onboardMask';mask.className='onboard-mask';document.body.appendChild(mask);}
+  var dots='';for(var i=0;i<data.length;i++)dots+='<i class="'+(i===step?'active':'')+'"></i>';
+  mask.innerHTML='<div class="onboard-card"><div class="onboard-dots">'+dots+'</div><div class="onboard-step">新手引导 · '+(step+1)+' / '+data.length+'</div><div class="onboard-icon">'+d.icon+'</div><div class="onboard-title">'+d.title+'</div><div class="onboard-text">'+d.text+'</div><div class="onboard-demo">'+d.demo+'</div><div class="onboard-actions"><button class="btn skip" id="onboardSkip">跳过</button><button class="btn next" id="onboardNext">'+(step===data.length-1?'开始闯关':'下一步')+'</button></div></div>';
+  $('onboardSkip').onclick=closeOnboarding;
+  $('onboardNext').onclick=function(){if(step<data.length-1)renderOnboarding(step+1);else closeOnboarding();};
+}
+function closeOnboarding(){
+  try{localStorage.setItem(ONBOARD_KEY,'1');}catch(e){}
+  var mask=document.getElementById('onboardMask');if(mask)mask.remove();
+  toast('记住：点红色英文词，可随时查看释义');
 }
 function openStory(){
   if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
@@ -2247,6 +2457,11 @@ function promote(rank){
   $(ui.rewardText).textContent=rank===RANKS.length-1
     ?'九枚凤印尽收，百官朝贺。你终于站到了这深宫之巅——可你心里清楚，这不过是另一场修行开始。'
     :'内侍捧着鎏金凤印走到你面前，宫人纷纷跪下请安。你想起母亲那句"深宫险恶"——你活下来了，而且还要活得更好。';
+  var ru=$('rewardUnlocks');
+  if(ru) ru.innerHTML='<div class="reward-unlock"><b>凤印 +1</b><span>晋升凭证</span></div>'+
+    '<div class="reward-unlock"><b>圣宠进阶</b><span>解锁新考校</span></div>'+
+    '<div class="reward-unlock"><b>'+(rank>=3?'情缘开启':'新章开启')+'</b><span>'+(rank>=3?'宫墙外缘分':'新的宫廷剧情')+'</span></div>';
+  var seal=$('rewardSeal'); if(seal){seal.style.animation='none';void seal.offsetWidth;seal.style.animation='royalStamp .55s .55s cubic-bezier(.2,1.4,.4,1) forwards';}
   $(ui.btnRewardNext).textContent='进入第'+(S.chapter+2)+'章';
   renderRankBar();
   renderLoveEntry();
@@ -2677,11 +2892,42 @@ function init(){
   });
   if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
     /* 有进度 → 首页按钮改为"继续" */
-    var bs=$('btnStart'); if(bs) bs.textContent='继 续 深 宫';
+    var bs=$('btnStart'); if(bs) bs.textContent='继续深宫闯关';
     var hh=document.querySelector('.hero-hint'); if(hh) hh.textContent='继续闯关';
   }
   renderLibrary('');
   showPage('page-start');
+  registerOffline();
+}
+function registerOffline(){
+  try{
+    if('serviceWorker' in navigator && location.protocol!=='file:'){
+      var hadController=!!navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('./sw.js?v=82').then(function(reg){
+        try{reg.update();}catch(e){}
+        reg.addEventListener('updatefound',function(){
+          var worker=reg.installing;if(!worker)return;
+          worker.addEventListener('statechange',function(){
+            if(worker.state==='installed' && navigator.serviceWorker.controller) showUpdateStatus('发现新版本，正在更新…');
+          });
+        });
+      }).catch(function(){});
+      navigator.serviceWorker.addEventListener('controllerchange',function(){
+        if(!hadController)return;
+        try{
+          if(sessionStorage.getItem('gd_sw_reloaded_v82')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v82','1');
+        }catch(e){}
+        showUpdateStatus('更新完成，正在载入新功能…');
+        setTimeout(function(){location.reload();},350);
+      });
+    }
+  }catch(e){}
+}
+function showUpdateStatus(text){
+  var old=document.getElementById('updatePill');if(old)old.remove();
+  var el=document.createElement('div');el.id='updatePill';el.className='update-pill';el.textContent=text;
+  document.body.appendChild(el);
 }
 window.startGame=startGame;
 window.storyNext=storyNext;
