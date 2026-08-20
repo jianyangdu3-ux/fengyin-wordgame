@@ -164,10 +164,26 @@ nav.tabbar{
 .cloud-status .ok{color:var(--ok)}
 .cloud-status .off{color:var(--ink2)}
 .cloud-code{
+  width:100%;box-sizing:border-box;
   font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;letter-spacing:5px;color:var(--red);
   background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px;text-align:center;margin:8px 0;
-  user-select:all;cursor:pointer;
+  user-select:all;cursor:text;
 }
+.cloud-code::placeholder{font-size:13px;letter-spacing:1px;color:var(--ink2);opacity:.55}
+/* V6.5 云端三步引导 */
+.cloud-guide{border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0 12px;background:var(--bg-card)}
+.guide-title{font-size:12.5px;color:var(--gold);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.guide-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:8px}
+.guide-step:last-child{margin-bottom:0}
+.guide-num{
+  flex:0 0 18px;height:18px;border-radius:50%;background:var(--red);color:#F5E9C9;
+  font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.guide-txt{flex:1;min-width:0}
+.guide-txt strong{color:var(--ink);font-weight:500}
+.guide-link{color:var(--gold);text-decoration:none;white-space:nowrap;border-bottom:1px dashed var(--gold);padding-bottom:1px}
+.guide-link:active{opacity:.7}
+.guide-done{color:var(--ok);white-space:nowrap;font-size:11.5px}
 .cloud-row{margin-bottom:10px}
 .cloud-row label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
 .cloud-row input{
@@ -675,8 +691,8 @@ nav.tabbar{
   <div class="save-modal" id="cloudModal">
     <div class="sv-title">☁️ 云端同步配置</div>
     <div class="sv-sub">自动上传/拉取进度，多设备无缝续玩</div>
-    <div class="cloud-code" id="cloudCode" title="点击复制存档码">--------</div>
-    <div class="sv-sub" style="margin-top:0">⬆️ 你的存档码（新设备输入它即可接管）</div>
+    <input class="cloud-code" id="cloudCode" placeholder="自动生成存档码" autocomplete="off" spellcheck="false">
+    <div class="sv-sub" style="margin-top:0">⬆️ 你的存档码（换设备时把它抄到新设备即可接管）</div>
     <div class="cloud-row">
       <label>GitHub 用户名</label>
       <input id="cfgOwner" placeholder="如 jianyangdu3-ux">
@@ -689,6 +705,24 @@ nav.tabbar{
       <label>Token（只勾选该仓库 Contents 读写权限）</label>
       <input id="cfgToken" type="password" placeholder="github_pat_xxx">
       <button class="btn ghost" onclick="saveCloudCfgForm()">保存配置</button>
+    </div>
+    <div class="cloud-guide" id="cloudGuide">
+      <div class="guide-title">三步开通（约 5 分钟）</div>
+      <div class="guide-step">
+        <span class="guide-num">1</span>
+        <span class="guide-txt">新建<strong>私有</strong>仓库，名字随意</span>
+        <a class="guide-link" href="https://github.com/new" target="_blank" rel="noopener">去建仓库 ↗</a>
+      </div>
+      <div class="guide-step">
+        <span class="guide-num">2</span>
+        <span class="guide-txt">创建 Token，只勾该仓库 <strong>Contents: Read and write</strong></span>
+        <a class="guide-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">去建 Token ↗</a>
+      </div>
+      <div class="guide-step">
+        <span class="guide-num">3</span>
+        <span class="guide-txt">填好上方三项，点「保存配置」自动校验</span>
+        <span class="guide-done">已保存 ✓</span>
+      </div>
     </div>
     <div class="cloud-actions">
       <button class="btn gold" onclick="cloudNow('up')">⬆️ 立即上传</button>
@@ -2469,13 +2503,22 @@ function escapeHtml(s){
 function openCloudCfg(){
   var c=cloudCfg();
   var m=$('cloudModal'); if(!m) return;
-  $('cloudCode').textContent=c.code;
+  $('cloudCode').value=c.code;
   $('cfgOwner').value=c.owner||'';
   $('cfgRepo').value=c.repo||'';
   $('cfgToken').value=c.token||'';
-  $('cloudTip').innerHTML=cloudReady()
-    ?'已配置。保存后每次存档自动上传，打开游戏自动拉取。'
-    :'① GitHub 新建<b>私有</b>仓库（如 fengyin-saves）<br>② Settings→Developer settings→Fine-grained tokens 创建 token，权限只勾该仓库 <b>Contents: Read and write</b><br>③ 填入上方并保存';
+  var tip=$('cloudTip');
+  var guide=$('cloudGuide');
+  if(tip){
+    if(cloudReady()){
+      tip.innerHTML='已配置。保存后每次存档自动上传，打开游戏自动拉取。';
+    }else{
+      tip.innerHTML='还没配好？照着下方三步走，或参考弹层内引导链接。';
+    }
+  }
+  if(guide){
+    guide.style.display=cloudReady()?'none':'block';
+  }
   $('cloudMask').style.display='block';
   m.style.display='block';
 }
@@ -2486,6 +2529,9 @@ function closeCloudCfg(){
 }
 function saveCloudCfgForm(){
   var c=cloudCfg();
+  var codeEl=$('cloudCode');
+  var code=(codeEl&&codeEl.value||'').trim().toUpperCase().replace(/[^A-Z2-9]/g,'');
+  if(code) c.code=code; /* 允许输入旧存档码接管 */
   c.owner=($('cfgOwner').value||'').trim();
   c.repo=($('cfgRepo').value||'').trim();
   c.token=($('cfgToken').value||'').trim();
