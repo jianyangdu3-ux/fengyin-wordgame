@@ -184,6 +184,15 @@ nav.tabbar{
 .guide-link{color:var(--gold);text-decoration:none;white-space:nowrap;border-bottom:1px dashed var(--gold);padding-bottom:1px}
 .guide-link:active{opacity:.7}
 .guide-done{color:var(--ok);white-space:nowrap;font-size:11.5px}
+/* V6.6 云端详细说明折叠区 */
+.cloud-details{margin-top:8px;border-top:1px dashed var(--line);padding-top:7px;font-size:12px;color:var(--ink2);line-height:1.75}
+.cloud-details summary{cursor:pointer;list-style:none;color:var(--ink);font-weight:500;margin-bottom:2px;user-select:none;font-size:12.5px}
+.cloud-details summary::-webkit-details-marker{display:none}
+.cloud-details summary::before{content:'▸ ';color:var(--gold)}
+.cloud-details[open] summary::before{content:'▾ '}
+.cloud-details b{color:var(--ink);font-weight:500}
+.cloud-details .step-sub{margin:5px 0 1px}
+.cloud-details .tip-inline{background:rgba(0,0,0,0.05);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:11.5px;line-height:1.65}
 .cloud-row{margin-bottom:10px}
 .cloud-row label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
 .cloud-row input{
@@ -723,6 +732,41 @@ nav.tabbar{
         <span class="guide-txt">填好上方三项，点「保存配置」自动校验</span>
         <span class="guide-done">已保存 ✓</span>
       </div>
+      <details class="cloud-details">
+        <summary>每步怎么点？照着做就行</summary>
+        <div>
+          <div class="step-sub"><b>第 1 步 · 建私有仓库</b>（github.com/new）</div>
+          ① Repository name 填 <b>fengyin-saves</b>（名字随意）<br>
+          ② 可见性选 <b>Private（私有）</b>，千万别选 Public<br>
+          ③ 其余不用动，点 <b>Create repository</b> 完成
+          <div class="step-sub"><b>第 2 步 · 建 Token（只给这一个仓库开权限）</b></div>
+          ① 打开上面「去建 Token」链接，用 GitHub 账号登录<br>
+          ② Token name 随意填；Expiration 选 <b>90 天</b>（到期可再建）或 No expiration<br>
+          ③ Repository access 选 <b>Only select repositories</b> → 勾选刚建的仓库<br>
+          ④ Permissions → Repository permissions → <b>Contents</b> → 选 <b>Read and write</b><br>
+          ⑤ 点最下方 <b>Generate token</b> → 立刻复制（<b>只显示这一次！</b>）
+          <div class="step-sub"><b>第 3 步 · 回来粘贴保存</b></div>
+          把 用户名 / 仓库名 / Token 填进上方三个框 → 点「保存配置」→ 看到"配置已保存"即成功
+        </div>
+      </details>
+      <details class="cloud-details">
+        <summary>📱 换手机 / 换电脑怎么接着玩？</summary>
+        <div>
+          <b>旧设备：</b>打开这个配置弹层，记下上方「存档码」（如 A3K9XQ2P）<br>
+          <b>新设备：</b>打开游戏 → 云端配置 → 填同样的三项配置 + 输入旧存档码 → 保存 → 自动拉回进度 ✓<br>
+          <div class="tip-inline">存档码相当于你这份存档的"暗号"，两设备填同一个码 + 同一套 GitHub 配置，就是同一份存档。</div>
+        </div>
+      </details>
+      <details class="cloud-details">
+        <summary>❓ 常见问题</summary>
+        <div>
+          <b>Token 安全吗？</b>它只是"开这一个仓库"的钥匙，只勾了 Contents 读写，碰不到你其他仓库和账号。<br>
+          <b>Token 没复制就关了页面？</b>去 GitHub 重新生成一个，游戏里换上新的保存即可。<br>
+          <b>存档码忘了？</b>随时打开这个弹层就能看到，建议抄到备忘录。<br>
+          <b>两台设备同时玩？</b>以时间最近的存档为准，打开游戏会自动比对并弹窗提示，放心点。<br>
+          <b>不想同步了？</b>清空三项配置保存即可断开，本地进度不受影响。
+        </div>
+      </details>
     </div>
     <div class="cloud-actions">
       <button class="btn gold" onclick="cloudNow('up')">⬆️ 立即上传</button>
