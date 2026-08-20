@@ -149,39 +149,22 @@ nav.tabbar{
 .cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
 .cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
 .cover .desc b{color:var(--red);font-weight:500}
-/* ===== 凤印·朱砂印章（首页主视觉 / 点击入宫入口） ===== */
+/* ===== 凤印·古代宝印（玉台+金凤钮+印绶，首页主视觉/点击入宫入口） ===== */
 .seal-wrap{
-  position:relative;display:inline-block;margin:8px auto 10px;cursor:pointer;
+  position:relative;display:inline-block;margin:6px auto 10px;cursor:pointer;
   transform:rotate(-4deg);
   -webkit-tap-highlight-color:transparent;user-select:none;
 }
-.seal-wrap:active .seal{transform:scale(.92)}
 .seal-wrap.stamped{animation:stamp .55s cubic-bezier(.22,.9,.3,1) forwards}
-.seal{
-  width:92px;height:92px;position:relative;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(145deg,#C0392B 0%,#96251A 55%,#7A150C 100%);
-  color:#F7E9C9;font-size:27px;letter-spacing:4px;text-indent:4px;
-  font-family:"Songti SC","STSong","SimSun","Kaiti SC","STKaiti",serif;font-weight:600;
-  border:1px solid #6E120A;border-radius:12px;
-  box-shadow:0 4px 14px rgba(122,21,12,.4),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55);
-  animation:sealBreathe 2.8s ease-in-out infinite;
-  transition:transform .12s ease;
+.seal-wrap:active .seal-svg{filter:drop-shadow(0 3px 8px rgba(122,21,12,.35)) brightness(.97)}
+/* 宝印本体（SVG） */
+.seal-svg{
+  display:block;width:120px;height:auto;margin:0 auto;
+  filter:drop-shadow(0 6px 14px rgba(122,21,12,.22));
+  animation:sealFloat 3.2s ease-in-out infinite;
+  transition:filter .12s ease;
 }
-/* 印章内描边 */
-.seal::before{
-  content:'';position:absolute;inset:4px;border:1px solid rgba(247,233,201,.55);border-radius:8px;pointer-events:none;
-}
-/* 金色流光扫过 */
-.seal::after{
-  content:'';position:absolute;top:0;bottom:0;left:-70%;width:45%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
-  transform:skewX(-20deg);animation:sealShine 3.6s ease-in-out infinite;pointer-events:none;
-}
-/* 凤凰额饰 */
-.phoenix{
-  display:block;width:126px;height:52px;margin:0 auto 4px;overflow:visible;pointer-events:none;
-  filter:drop-shadow(0 1px 2px rgba(201,162,39,.35));
-}
+@keyframes sealFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 /* 九印（九重位份收集进度） */
 .seal-dots{display:flex;justify-content:center;gap:7px;margin-top:12px}
 .seal-dot{
@@ -194,11 +177,6 @@ nav.tabbar{
   border-color:#C9A227;
   box-shadow:0 0 6px rgba(201,162,39,.85);
 }
-@keyframes sealBreathe{
-  0%,100%{box-shadow:0 4px 14px rgba(122,21,12,.4),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55)}
-  50%{box-shadow:0 6px 22px rgba(201,60,30,.55),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55)}
-}
-@keyframes sealShine{0%,55%{left:-70%}100%{left:130%}}
 .chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
 .chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
@@ -374,20 +352,51 @@ nav.tabbar{
           </svg>
         </div>
         <div class="seal-wrap" id="sealWrap" onclick="startGame()" role="button" aria-label="点击凤印，盖章入宫">
-          <svg class="phoenix" viewBox="0 0 150 64" fill="none" stroke="#C9A227" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M75 46 C69 42 67 34 69 28 L75 20 L81 28 C83 34 81 42 75 46Z" fill="#C9A227" stroke="none" opacity=".92"/>
-            <path d="M75 20 C71 14 67 10 61 8" stroke-width="1.3"/>
-            <path d="M75 20 C75 12 75 7 75 4" stroke-width="1.3"/>
-            <path d="M75 20 C79 14 83 10 89 8" stroke-width="1.3"/>
-            <path d="M69 30 C55 26 39 26 25 32 C39 34 49 34 57 32" stroke-width="1.4"/>
-            <path d="M57 32 C53 40 45 48 35 52 C41 44 45 38 51 34" stroke-width="1.4"/>
-            <path d="M81 30 C95 26 111 26 125 32 C111 34 101 34 93 32" stroke-width="1.4"/>
-            <path d="M93 32 C97 40 105 48 115 52 C109 44 105 38 99 34" stroke-width="1.4"/>
-            <path d="M75 46 C69 54 61 58 51 58" stroke-width="1.3"/>
-            <path d="M75 46 C75 55 75 59 75 61" stroke-width="1.3"/>
-            <path d="M75 46 C81 54 89 58 99 58" stroke-width="1.3"/>
+          <svg class="seal-svg" viewBox="0 0 120 144" aria-hidden="true">
+            <defs>
+              <linearGradient id="jadeG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FBF7EC"/>
+                <stop offset=".55" stop-color="#EDE4CC"/>
+                <stop offset="1" stop-color="#D7CBB0"/>
+              </linearGradient>
+              <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#F2D98F"/>
+                <stop offset=".5" stop-color="#D9B64C"/>
+                <stop offset="1" stop-color="#A67C0B"/>
+              </linearGradient>
+              <linearGradient id="ribG" x1="0" y1="0" x2=".3" y2="1">
+                <stop offset="0" stop-color="#D64541"/>
+                <stop offset="1" stop-color="#8E1E14"/>
+              </linearGradient>
+            </defs>
+            <!-- 底座投影 -->
+            <ellipse cx="60" cy="130" rx="43" ry="6.5" fill="rgba(122,21,12,.16)"/>
+            <!-- 玉质印台 -->
+            <rect x="28" y="48" width="64" height="78" rx="7" fill="url(#jadeG)" stroke="#C9A227" stroke-width="1.6"/>
+            <!-- 台面冰裂纹理 -->
+            <path d="M40 62 L52 60 L46 72 L58 74" fill="none" stroke="#D9CDB0" stroke-width="1" opacity=".8"/>
+            <path d="M74 58 L82 66 L76 76" fill="none" stroke="#D9CDB0" stroke-width="1" opacity=".8"/>
+            <!-- 内金框 -->
+            <rect x="33.5" y="53.5" width="53" height="67" rx="4" fill="none" stroke="#B8860B" stroke-width="1.2" opacity=".6"/>
+            <!-- 印文：竖排「凤印」 -->
+            <text x="60" y="79" text-anchor="middle" font-size="24" fill="#8E1E14" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600">凤</text>
+            <text x="60" y="108" text-anchor="middle" font-size="24" fill="#8E1E14" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600">印</text>
+            <!-- 印绶：两条红绶带自印钮垂落 -->
+            <path d="M88 24 C96 34 100 48 95 64 C92 74 98 82 102 90 C103 94 100 98 96 98 C93 98 90 94 91 90 C95 80 88 72 91 62 C95 50 90 38 82 28 Z" fill="url(#ribG)" opacity=".9"/>
+            <path d="M32 24 C24 34 20 48 25 64 C28 74 22 82 18 90 C17 94 20 98 24 98 C27 98 30 94 29 90 C25 80 32 72 29 62 C25 50 30 38 38 28 Z" fill="url(#ribG)" opacity=".9"/>
+            <!-- 金凤钮：蹲踞回首，冠羽与长尾 -->
+            <g stroke="#8C6A12" stroke-width="1.5" stroke-linejoin="round">
+              <path d="M57 43 C49 41 44 34 46 27 C48 20 56 18 62 22 C69 27 67 38 61 43 C59.8 43.8 58.2 43.8 57 43 Z" fill="url(#goldG)"/>
+              <path d="M61 26 C64 20 69 16 75 16 C79 16 81 20 79 23 C76 25 72 24 69 27 C67 30 64 32 62 33" fill="url(#goldG)"/>
+              <path d="M79 20 C82 19 84 21 83 23" fill="none" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M73 16 C74 11 78 8 83 7" fill="none" stroke="#B8860B" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M75 16 C78 12 82 10 87 11" fill="none" stroke="#B8860B" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M57 31 C50 28 44 29 42 35 C47 38 53 38 57 35" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+              <path d="M55 42 C48 46 41 47 35 45 C39 41 43 41 47 43" fill="none" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M56 43 C50 50 43 53 37 55 C42 52 46 48 49 47" fill="none" stroke="#D9B64C" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M58 43 C54 51 51 55 48 59 C52 56 55 52 57 48" fill="none" stroke="#B8860B" stroke-width="1.3" stroke-linecap="round"/>
+            </g>
           </svg>
-          <div class="seal">凤印</div>
           <div class="seal-dots" id="sealDots"></div>
         </div>
         <div class="decor-line"></div>
