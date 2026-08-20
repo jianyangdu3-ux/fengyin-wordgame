@@ -509,6 +509,10 @@ body{background:#241816}
 .journey-node{position:relative;z-index:1;width:43px;text-align:center;color:#695950;font-size:11px}.journey-dot{width:36px;height:36px;margin:0 auto 6px;border:1px solid #d7c49e;background:#f9f1e3;border-radius:50% 50% 45% 45%;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:12px}.journey-node.current .journey-dot{background:#a93429;border:3px solid #ecd697;color:#fff5d9;box-shadow:0 4px 12px rgba(153,47,39,.18)}.journey-node.past .journey-dot{color:#a23228;border-color:#ba776c}.journey-node.future:nth-child(n+8){display:none}
 .home-stats{border:1px solid #decba9;border-radius:18px;background:rgba(255,253,248,.74);display:grid;grid-template-columns:repeat(3,1fr);padding:17px 5px;margin-bottom:14px;box-shadow:0 8px 24px rgba(86,54,31,.05)}
 .home-stat{text-align:center;border-right:1px solid #eadcc5}.home-stat:last-child{border-right:0}.home-stat span{display:block;color:#8b7769;font-size:11px;margin-bottom:6px}.home-stat b{font-family:Georgia,"Songti SC",serif;font-size:23px;font-weight:500;color:#36261f}.home-stat em{font-style:normal;font-size:10px;color:#a28e7c;margin-left:2px}
+.coverage-card{margin:12px 0 14px;padding:13px 14px;border:1px solid #ddc99f;border-radius:15px;background:rgba(255,253,248,.76);box-shadow:0 5px 18px rgba(83,50,29,.04)}
+.coverage-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#6f5a50}.coverage-head b{font-size:14px;color:#8d281f}
+.coverage-track{height:7px;margin-top:9px;border-radius:8px;overflow:hidden;background:#eadfca}.coverage-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a7352b,#c9a227);border-radius:8px;transition:width .45s ease}
+.coverage-note{margin-top:7px;font-size:11px;color:#8b7669;line-height:1.5}
 .home-v7 .task-panel{margin:0;background:rgba(255,253,248,.7);border-color:#decba9;border-radius:18px;padding:15px}.home-v7 .task-title{font-family:"Songti SC",serif;font-size:15px;letter-spacing:2px}.home-v7 .task-item{padding:9px 0}.home-v7 .task-fill{background:linear-gradient(90deg,#b8892b,#dfc174)}
 .home-v7 .love-entry{margin-top:12px}.home-v7 .hint{margin:14px 6px 0;font-size:10px;opacity:.7}
 @media(max-width:370px){.home-v7{padding-left:13px;padding-right:13px}.home-brand{font-size:20px}.resource-pill{padding:0 7px}.rank-hero{height:330px}.home-rank{font-size:48px}.hero-person{right:-39px}.journey-node{width:38px;font-size:10px}.journey-dot{width:33px;height:33px}.rank-journey:before{top:16px}}
@@ -655,6 +659,11 @@ body{background:#241816}
           <div class="home-stat"><span>已掌握</span><b id="homeMastered">0</b><em>词</em></div>
           <div class="home-stat"><span>最佳连胜</span><b id="homeStreak">0</b><em>题</em></div>
           <div class="home-stat"><span>正确率</span><b id="homeAccuracy">0</b><em>%</em></div>
+        </div>
+        <div class="coverage-card">
+          <div class="coverage-head"><span>剧情词汇覆盖</span><b id="storyCoverageTotal">0 / 0</b></div>
+          <div class="coverage-track"><i id="storyCoverageFill"></i></div>
+          <div class="coverage-note" id="storyCoverageMine">你已在剧情中遇见 0 个词</div>
         </div>
         <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
         <!-- 每日任务面板 -->
@@ -1009,8 +1018,8 @@ var STORY=[
 {
   title:'第一章 · 选秀入宫', sub:'宫门一入深似海',
   scenes:[
-    {t:'大周王朝，三年一选秀。你出身寒门，母亲临终前只留一句：“深宫 dangerous，务必 careful。”', w:['careful','dangerous','ancient']},
-    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨已下，必须 obey；若想 escape，便是抗旨。', w:['obey','command','escape']},
+    {t:'大周王朝沿袭 ancient 旧制，三年一选秀。你出身寒门，母亲临终前只留一句：“深宫 dangerous，务必 careful。”', w:['careful','dangerous','ancient']},
+    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨便是 command，必须 obey；若想 escape，便是抗旨。', w:['obey','command','escape']},
     {t:'宫门前，掌事姑姑上下打量你：“先过宫门 test。本宫要 examine 你的才学，答得出，才 admit 你入宫。”', w:['examine','admit','test']}
   ],
   quiz:5, battle:null, choice:null, case:null, reward:1,
@@ -1019,9 +1028,9 @@ var STORY=[
 {
   title:'第二章 · 初入宫闱', sub:'御前风波',
   scenes:[
-    {t:'入宫第一夜，华妃的贴身宫女故意打翻你的茶盏，尖声道："不懂规矩的贱婢！见了华妃娘娘还不跪下！"', w:['spill','rude','kneel']},
-    {t:'满殿的目光都落在你身上。华妃端坐主位，慢悠悠地呷了一口茶，等你开口。', w:['silence','observe','judge']},
-    {t:'你明白，这一晚若退一步，往后人人可欺；若贸然顶撞，便是大不敬之罪。这宫里的每一句话，都要拿捏分寸。', w:['offend','measure','wisdom']}
+    {t:'入宫第一夜，华妃的贴身宫女故意 spill 茶盏，语气 rude，逼你当众 kneel。', w:['spill','rude','kneel']},
+    {t:'满殿陷入 silence，所有人都在 observe 你的反应，等着华妃 judge 你的去留。', w:['silence','observe','judge']},
+    {t:'你明白，贸然顶撞会 offend 华妃，退让又会受欺。如何 measure 分寸，考验的是你的 wisdom。', w:['offend','measure','wisdom']}
   ],
   quiz:4, battle:{enemy:'华妃',hp:100}, choice:{
     q:'夜色已深，敬事房的太监来报——圣驾今夜翻牌，指了你侍寝。华妃的人却堵在门口："娘娘说了，妹妹初来乍到，不懂规矩，这牌子该让给姐姐。"',
@@ -1037,9 +1046,9 @@ var STORY=[
 {
   title:'第三章 · 风波乍起', sub:'一封密信',
   scenes:[
-    {t:'晨起，枕下多了一封密信。你展开一看，冷汗直流——信上写的，竟是英文。', w:['secret','message','tremble']},
-    {t:'信中提到"I am innocent. I never betray you."——落款竟是你素不相识的外臣之名。若此信被搜出，便是私通外臣的铁证。', w:['innocent','betray','evidence']},
-    {t:'门外响起脚步声，皇后的凤驾已至。你必须在那之前，读懂这封信里真正的意思。', w:['approach','understand','hurry']}
+    {t:'晨起，枕下多了一封 secret 密信。你展开 message，双手不由得 tremble——信上写的竟是英文。', w:['secret','message','tremble']},
+    {t:'信中写着“I am innocent. I never betray you.”若被搜出，这封信就会成为 evidence。', w:['innocent','betray','evidence']},
+    {t:'门外脚步正在 approach，皇后的凤驾已至。你必须 hurry，在她进门前 understand 信中真意。', w:['approach','understand','hurry']}
   ],
   quiz:0, battle:null, choice:null, case:{
     letter:'I am innocent. I never betray you. Someone wants to hurt me. Please help me.',
@@ -1055,6 +1064,45 @@ var STORY=[
   gateText:'凤驾将至，你必须立刻做出判断。'
 }
 ];
+
+/* ---------- V10 全词库剧情引擎 ---------- */
+var STORY_EVENT_TYPES=[
+  {name:'尚宫错账',sub:'一页账簿，牵动六宫赏罚',place:'尚宫局送来一册英文账簿，华妃认定其中有人暗改用度。',end:'你辨清朱批，账册背后的关系渐渐浮出水面。'},
+  {name:'御前密折',sub:'字里行间，藏着朝堂风向',place:'御前新到一封外邦密折，皇后命你在早朝前译出关键线索。',end:'词义彼此咬合，一条隐秘证词终于成形。'},
+  {name:'太医院疑案',sub:'药香之下，也可能藏着杀机',place:'太医院药柜被人调换了签条，温太医只敢把线索写成英文。',end:'你核对药案，离真正动手的人又近了一步。'},
+  {name:'宫宴口供',sub:'席间一句话，足以定人生死',place:'宫宴之后有人失踪，席上众人的口供却彼此矛盾。',end:'关键词补上口供缺口，也让说谎的人露出破绽。'},
+  {name:'边关军报',sub:'烽火入宫，真假只在一词之间',place:'八百里军报送入宫门，沈将军用英文标出了最紧要的情报。',end:'你读懂军报暗号，为宫中争取到应对时间。'},
+  {name:'冷宫旧卷',sub:'被抹去的名字，仍在纸上说话',place:'冷宫墙缝里藏着一册旧卷，每页都留下不同的英文记号。',end:'尘封词义重新连成往事，旧案中的名字再次被提起。'},
+  {name:'使臣考问',sub:'答错一词，便失一国体面',place:'外邦使臣当殿设问，要以英文考校大周女官的见识。',end:'你接住问难，殿中原本的轻慢悄然收敛。'},
+  {name:'凤印暗纹',sub:'金印无言，暗纹却指向真相',place:'新铸凤印出现陌生暗纹，工匠说那是英文词的缩记。',end:'你对应暗纹与词义，发现凤印并非出自原模。'},
+  {name:'书院辩词',sub:'近义易混，最见真章',place:'御前书院开讲，顾教习让你用词义替一名受罚宫女申辩。',end:'你没有放过细微差别，原本含混的罪名开始动摇。'},
+  {name:'夜巡暗号',sub:'宫门将闭，暗号只念一次',place:'夜巡换防忽然提前，值守名册只留下几枚英文暗号。',end:'你在宫门落锁前破解暗号，避开一场埋伏。'},
+  {name:'织造密纹',sub:'锦缎经纬，织着无人敢说的话',place:'江南织造送来贡缎，纹样之间藏着英文标记与求救线索。',end:'零散词义连成一封藏在锦缎里的信。'},
+  {name:'廷前审问',sub:'证词反复，唯有词义不能作假',place:'内廷会审开始，三份证词都在关键位置留下英文原词。',end:'你校正证词，找到三份供状中唯一的矛盾。'}
+];
+function storyMeaning(w){
+  var it=VOCAB_MAP[w]; if(!it)return '待查词义';
+  var p=extractPOS(it.def),mean=(p.mean||it.def||'').replace(/[；;]/g,'，');
+  return mean.length>22?mean.slice(0,22)+'…':mean;
+}
+function makeStoryScene(words,event,sceneNo){
+  var joins=['第一处写着','紧接着出现','另一枚朱批是','最后的暗记为'];
+  var clues=words.map(function(w,i){return joins[i]+' '+w+'，指向“'+storyMeaning(w)+'”';}).join('；');
+  var leads=[event.place,'你翻到下一页，前后的证词忽然有了关联。','掌事太监催问不休，你只能继续往下查。','殿外脚步渐近，有人显然不愿你读完卷宗。','你与上一页对照，发现有人故意混淆词义。','天色将明，这是卷宗中最后一组关键记号。'];
+  return {t:(leads[sceneNo]||event.place)+clues+'。'+event.end,w:words};
+}
+function buildFullVocabStory(){
+  var fixed={};
+  STORY.forEach(function(ch){(ch.scenes||[]).forEach(function(s){(s.w||[]).forEach(function(w){fixed[w]=1;});});});
+  var pool=Object.keys(VOCAB_MAP).filter(function(w){return !fixed[w];});
+  var size=24,total=Math.ceil(pool.length/size);
+  for(var u=0;u<total;u++){
+    var words=pool.slice(u*size,(u+1)*size),event=STORY_EVENT_TYPES[u%STORY_EVENT_TYPES.length],scenes=[];
+    for(var i=0;i<words.length;i+=4)scenes.push(makeStoryScene(words.slice(i,i+4),event,Math.floor(i/4)));
+    STORY.push({title:'第'+(u+4)+'章 · '+event.name,sub:event.sub+' · 本章 '+words.length+' 词',scenes:scenes,quiz:words.length,battle:null,choice:null,case:null,reward:Math.min(8,3+Math.floor((u+1)*6/total)),gateText:'卷宗已读完。辨清本章词义，才能把证据呈到御前。',generated:true});
+  }
+}
+buildFullVocabStory();
 
 /* ---------- 情缘·私奔支线（rank>=3 贵人解锁；剧情词全部取自词库） ---------- */
 var LOVES=[
@@ -1116,7 +1164,7 @@ var S={
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
-  wrongs:{}, favs:{}, learning:{}
+  wrongs:{}, favs:{}, learning:{}, covered:{}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -1138,7 +1186,7 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -1510,6 +1558,10 @@ function renderHomeDashboard(){
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
   var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
+  var totalWords=Object.keys(VOCAB_MAP).length,coveredN=Object.keys(S.covered||{}).length;
+  var covTotal=$('storyCoverageTotal');if(covTotal)covTotal.textContent=totalWords+' / '+totalWords;
+  var covFill=$('storyCoverageFill');if(covFill)covFill.style.width=totalWords?'100%':'0%';
+  var covMine=$('storyCoverageMine');if(covMine)covMine.textContent=STORY.length+' 章 · 全词库已编入剧情 · 你已遇见 '+coveredN+' 词';
   var next=$('rankNext');
   if(next) next.textContent=r>=8?'九重凤印已集齐，凤临天下':('距离下一次晋封还差 '+(8-r)+' 枚凤印');
   var journey=$('homeJourney');
@@ -1843,7 +1895,7 @@ function startQuiz(cfg){
   var items=[];
   var spellCount=Math.max(1,Math.floor(count*0.3));
   for(var i=0;i<count;i++){
-    var w=words[i%words.length];
+    var w=words[Math.min(words.length-1,Math.floor(i*words.length/count))];
     if(i>=words.length){
       var keys=Object.keys(VOCAB_MAP);
       for(var t=0;t<60;t++){
@@ -2449,6 +2501,10 @@ function openStory(){
   $(ui.storyHint).textContent='';
   var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
   $(ui.storyText).innerHTML=linkWords(s.t,s.w);
+  if(!S.covered)S.covered={};
+  var coverageChanged=false;
+  (s.w||[]).forEach(function(w){if(!S.covered[w]){S.covered[w]=1;coverageChanged=true;}});
+  if(coverageChanged)save();
   bindWordClicks();
   if(S.storyIdx>=ch.scenes.length){
     $(ui.storyText).innerHTML='<p class="p-text">'+(ch.gateText||'')+'</p>';
@@ -2948,7 +3004,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=90').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=100').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -2960,8 +3016,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v90')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v90','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v100')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v100','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
@@ -3019,6 +3075,10 @@ window.markWrong=markWrong;
 window.markRight=markRight;
 window.wrongWords=wrongWords;
 window.favWords=favWords;
+window.getStoryMeta=function(){
+  var assigned={};STORY.forEach(function(ch){(ch.scenes||[]).forEach(function(s){(s.w||[]).forEach(function(w){assigned[w]=1;});});});
+  return {chapters:STORY.length,assigned:Object.keys(assigned).length,total:Object.keys(VOCAB_MAP).length,firstGenerated:STORY[3]&&{title:STORY[3].title,scenes:STORY[3].scenes.length,words:STORY[3].scenes.reduce(function(a,s){return a.concat(s.w);},[]),sample:STORY[3].scenes[0].t},last:STORY[STORY.length-1]&&STORY[STORY.length-1].title};
+};
 window.S=S;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
