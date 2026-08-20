@@ -22,8 +22,9 @@ header.topbar{
   background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
   color:#F5E9C9;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;box-shadow:0 2px 8px rgba(0,0,0,.18);
 }
-.topbar h1{font-size:19px;letter-spacing:2px;font-weight:600}
+.topbar h1{font-size:19px;letter-spacing:2px;font-weight:600;text-align:center}
 .topbar .sub{font-size:13px;color:#E4C87A;margin-top:3px}
+.manual-back{position:absolute;left:12px;top:calc(11px + env(safe-area-inset-top));border:1px solid rgba(245,233,201,.5);border-radius:16px;background:rgba(255,255,255,.08);color:#f5e9c9;padding:6px 10px;font-size:12px;text-decoration:none}.manual-back:active{background:rgba(255,255,255,.18)}
 main{padding:16px 16px 40px}
 .sec{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .sec h2{font-size:16px;color:var(--red);font-weight:600;margin-bottom:10px;letter-spacing:1px;display:flex;align-items:center;gap:6px}
@@ -65,26 +66,46 @@ main{padding:16px 16px 40px}
 .char-card .cdesc{color:var(--ink2);font-size:11px;margin-top:2px}
 .footer{text-align:center;padding:20px 0 10px;font-size:12px;color:var(--ink2);line-height:1.8}
 .footer b{color:var(--red)}
+.quick-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 14px}.quick-nav a{background:#fffaf0;border:1px solid var(--line2);border-radius:10px;padding:10px 8px;text-align:center;color:var(--red);font-size:13px;text-decoration:none}.quick-nav a:active{background:#f3e5ce}.sec[id]{scroll-margin-top:90px}.path{margin:10px 0;padding:12px;border-left:3px solid var(--gold);background:#fbf2e3;font-size:13px;line-height:1.9}.path b{color:var(--red)}
 </style>
 </head>
 <body>
 <div id="app">
 <header class="topbar">
+  <a href="index.html" class="manual-back">‹ 返回游戏</a>
   <h1>凤印九重</h1>
-  <div class="sub">游戏说明书 · 宫斗背词</div>
+  <div class="sub" style="text-align:center">游戏说明书 · 宫斗背词</div>
 </header>
 <main>
+
+<div class="quick-nav">
+  <a href="#quickstart">第一次怎么玩</a>
+  <a href="#fengyin">凤印与晋位</a>
+  <a href="#review">忘词怎么复习</a>
+  <a href="#trouble">卡住怎么办</a>
+</div>
+
+<div class="sec" id="quickstart">
+  <h2><span class="num">先</span>第一次打开：照着这条路线玩</h2>
+  <div class="path"><b>首页点“入宫选秀”</b> → 阅读剧情 → 点击红色英文词查义 → 点“继续”进入考校 → 答对至少 60% → 完成斗法或抉择 → 晋位并获得凤印。</div>
+  <ul>
+    <li>不知道下一步做什么：点底部“首页”，再点最大的红色按钮继续当前进度</li>
+    <li>底部五个入口：<b>首页</b>看总进度、<b>闯关</b>继续剧情、<b>藏录</b>查词、<b>复习</b>完成今日任务、<b>宫册</b>看成长记录</li>
+    <li>忘记规则时：点页面右上角的 <b>？</b>，随时打开本说明书</li>
+    <li>每次离开前无需手动保存，同一浏览器会自动记住进度</li>
+  </ul>
+</div>
 
 <!-- 1. 游戏简介 -->
 <div class="sec">
   <h2><span class="num">1</span>游戏简介</h2>
   <p>《凤印九重》是一款<b>宫斗背词游戏</b>。你扮演一名寒门秀女，从选秀入宫到母仪天下，历经九重位份晋升。</p>
-  <p>5491 个考研核心词汇藏在每一幕剧情、每一场考校、每一次斗法之中。<b>记不住词，就活不过这一章。</b></p>
+  <p>5496 个考研核心词汇藏在剧情、考校、斗法与扩展章节之中。<b>记不住词，就活不过这一章。</b></p>
   <div class="tip"><b>核心设计</b>：所有玩法（剧情、考校、斗法、抉择、查案、情缘）<b>全部绑定考词</b>——不是看小说，也不是刷题软件，而是用单词当武器在深宫博弈。</div>
 </div>
 
 <!-- 2. 位份体系 -->
-<div class="sec">
+<div class="sec" id="fengyin">
   <h2><span class="num">2</span>位份体系 · 九重晋升</h2>
   <p>从秀女到皇后共九级，每晋一级<b>获赐一枚凤印</b>，首页角色立绘随位份自动切换：</p>
   <div class="rank-table">
@@ -190,11 +211,11 @@ main{padding:16px 16px 40px}
 </div>
 
 <!-- 7. 复习系统 -->
-<div class="sec">
-  <h2><span class="num">7</span>复习系统 · 错词本与收藏</h2>
-  <h3>词库三 Tab</h3>
+<div class="sec" id="review">
+  <h2><span class="num">7</span>复习系统 · 艾宾浩斯召回</h2>
+  <h3>藏录与学习状态</h3>
   <ul>
-    <li><b>全部词</b>：5491 词库，搜索浏览，点开看释义+听发音</li>
+    <li><b>全部词</b>：5496 词库，搜索浏览，点开看释义和听发音</li>
     <li><b>⭐ 收藏</b>：手动星标的词，随时温习</li>
     <li><b>❌ 错词</b>：答题/斗法/情缘暗号答错的词<b>自动收录</b>，带错次统计</li>
   </ul>
@@ -206,8 +227,11 @@ main{padding:16px 16px 40px}
   </ul>
   <h3>一键复习</h3>
   <ul>
+    <li>首页“今日待复习”与底部“复习”会自动召回到期单词</li>
+    <li>复习间隔依次为：<b>20 分钟、1 天、2 天、4 天、7 天、15 天、30 天</b></li>
+    <li>答对后进入下一档；答错会重新进入待复习并加强练习</li>
     <li>在收藏/错词 Tab 点「📖 复习」→ 进入复习考校（限时出招那套）</li>
-    <li>复习入场消耗 <b>5 心力</b></li>
+    <li>今日到期复习免费，不消耗心力</li>
     <li>答对的词<b>自动从错词本销账</b>（错次清零移除）</li>
     <li>错词本全清空显示「错词本已清空 ✨」</li>
   </ul>
@@ -343,9 +367,21 @@ main{padding:16px 16px 40px}
   </ul>
 </div>
 
+<div class="sec" id="trouble">
+  <h2><span class="num">救</span>卡住了怎么办</h2>
+  <ul>
+    <li><b>找不到首页：</b>点底部最左侧“首页”</li>
+    <li><b>想看凤印规则：</b>首页点卡片里的“凤印 ›”，会直接跳到晋位说明</li>
+    <li><b>按钮没有反应：</b>先刷新网页；仍无效就关闭当前页面，再从原链接打开</li>
+    <li><b>一直过不了考校：</b>点底部“藏录”复习错词，达到 60% 后再闯关</li>
+    <li><b>今日复习没有词：</b>只有到达复习日期的词才会出现，这是正常状态</li>
+    <li><b>换手机进度没了：</b>旧设备在“宫册”导出存档，新设备再导入</li>
+  </ul>
+</div>
+
 <div class="footer">
   凤印九重 · 宫斗背词<br>
-  <b>5491 词 · 九重位份 · 三章剧情 · 三线情缘</b><br>
+  <b>5496 词 · 九重位份 · 231 章剧情 · 三线情缘</b><br>
   本地自动存档 · 云端同步 · 纯 HTML/CSS/JS
 </div>
 
