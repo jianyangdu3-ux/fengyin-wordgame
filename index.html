@@ -492,6 +492,8 @@ body{background:#241816}
 .home-resources{margin-left:auto;display:flex;gap:6px}
 .resource-pill{height:32px;padding:0 10px;border:1px solid #d8c39a;border-radius:18px;background:rgba(255,253,248,.78);display:flex;align-items:center;gap:5px;color:#4a3730;font-size:12px;white-space:nowrap;box-shadow:0 3px 12px rgba(83,50,29,.04)}
 .resource-pill b{font-size:13px;font-weight:600}.resource-pill .bolt{color:#c89022}
+.help-circle{width:32px;height:32px;flex:0 0 32px;border:1px solid #cda96b;border-radius:50%;background:#fffaf0;color:#9b3029;display:grid;place-items:center;font-family:Georgia,serif;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(83,50,29,.06);padding:0}.help-circle:active{transform:scale(.92)}
+.top-help{position:absolute;right:14px;top:calc(13px + env(safe-area-inset-top));z-index:3}.topbar{position:relative}.topbar .sub{padding-right:42px}
 .rank-hero{height:360px;border:1px solid #d8bd88;border-radius:24px 24px 18px 18px;background:rgba(255,253,248,.72);box-shadow:0 14px 35px rgba(92,52,27,.10);position:relative;overflow:hidden;padding:34px 24px}
 .rank-hero:before,.rank-hero:after{content:'';position:absolute;width:22px;height:22px;border-color:#caa45c;border-style:solid;opacity:.7}
 .rank-hero:before{left:9px;top:9px;border-width:1px 0 0 1px;border-radius:9px 0 0 0}.rank-hero:after{right:9px;bottom:9px;border-width:0 1px 1px 0;border-radius:0 0 9px 0}
@@ -500,7 +502,7 @@ body{background:#241816}
 .rank-copy{position:relative;z-index:10;width:52%}
 .eyebrow{font-family:"Songti SC",serif;font-size:15px;letter-spacing:4px;color:#5f463b;margin-bottom:17px}.eyebrow:before{content:'◆';font-size:7px;color:#bc8b37;margin-right:8px;vertical-align:3px}
 .home-rank{font-family:"Songti SC","STSong",serif;color:#a23228;font-size:56px;line-height:1;letter-spacing:7px;font-weight:700;text-shadow:0 2px 0 #fff;margin-bottom:25px}
-.seal-progress-label{display:flex;justify-content:space-between;color:#59433a;font-size:13px;margin-bottom:9px}.seal-progress-label span:last-child{color:#a23228;font-weight:600}
+.seal-progress-label{display:flex;justify-content:space-between;color:#59433a;font-size:13px;margin-bottom:9px;cursor:pointer;border-radius:8px;padding:5px 7px;margin-left:-7px;margin-right:-7px}.seal-progress-label:active{background:rgba(163,50,40,.08)}.seal-progress-label span:first-child:after{content:' ›';color:#a23228;font-weight:700}.seal-progress-label span:last-child{color:#a23228;font-weight:600}
 .seal-progress{height:8px;border:1px solid #dcc8a4;background:#f8f0e2;border-radius:8px;overflow:hidden}.seal-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98625,#e1c37a);border-radius:8px;transition:width .5s}
 .rank-next{margin-top:12px;color:#78665d;font-size:11px;line-height:1.55}
 .hero-person{position:absolute;z-index:2;right:-18px;bottom:-12px;width:59%;height:96%;object-fit:cover;object-position:67% center;mix-blend-mode:multiply;pointer-events:none;filter:drop-shadow(-7px 10px 12px rgba(65,37,27,.12));-webkit-mask-image:linear-gradient(to left,#000 88%,transparent 100%);mask-image:linear-gradient(to left,#000 88%,transparent 100%)}
@@ -630,6 +632,7 @@ body{background:#241816}
     <header class="topbar">
       <h1 onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</h1>
       <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
+      <button class="help-circle top-help" type="button" onclick="openManual('quickstart')" aria-label="打开玩法说明">?</button>
     </header>
     <div class="rank-bar" id="rankBar"></div>
   </div>
@@ -642,6 +645,7 @@ body{background:#241816}
           <div class="home-resources">
             <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
             <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
+            <button class="help-circle" type="button" onclick="openManual('quickstart')" aria-label="打开玩法说明">?</button>
           </div>
         </div>
         <div class="home-location" id="homeLocation">首页 · 当前位份 <b>秀女</b> · 第 1 章</div>
@@ -651,7 +655,7 @@ body{background:#241816}
             <div class="rank-copy">
               <div class="eyebrow">今日晋封</div>
               <div class="home-rank" id="heroRank">秀女</div>
-              <div class="seal-progress-label"><span>凤印</span><span id="htNum">0 / 9</span></div>
+              <div class="seal-progress-label" onclick="event.stopPropagation();openManual('fengyin')" role="button" tabindex="0" aria-label="查看凤印与晋位说明"><span>凤印</span><span id="htNum">0 / 9</span></div>
               <div class="seal-progress"><i id="htFill" style="width:0%"></i></div>
               <div class="rank-next" id="rankNext">踏入宫门，完成首章即可获赐第一枚凤印</div>
             </div>
@@ -1649,6 +1653,9 @@ function goTab(which){
     else{ showPage('page-library'); renderLibCounts(); renderLibrary(''); setTab('review'); toast('今日到期复习已完成 · 可在藏录查看其他词'); }
   }
   else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
+}
+function openManual(section){
+  window.location.href='manual.html'+(section?'#'+section:'');
 }
 
 /* ---------- 剧情词高亮 ---------- */
@@ -3071,7 +3078,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=112').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=113').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
