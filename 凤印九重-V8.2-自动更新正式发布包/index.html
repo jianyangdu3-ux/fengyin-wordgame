@@ -1,0 +1,2986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#8E2B2B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="凤印九重">
+<link rel="manifest" href="manifest.webmanifest?v=82">
+<link rel="icon" href="assets/app-icon.svg?v=82" type="image/svg+xml">
+<link rel="preload" href="assets/char-maid.webp?v=80" as="image" type="image/webp">
+<title>凤印九重 · 宫斗背词</title>
+<style>
+:root{
+  --bg:#FAF6EF; --bg-card:#FFFDF8; --ink:#3A2A2A; --ink2:#7A6A5F;
+  --red:#8E2B2B; --red2:#B54A3A; --gold:#C9A227; --gold2:#E4C87A;
+  --line:#E5D5B8; --line2:#D9C3A0; --danger:#B33A3A; --ok:#3E7A4E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%}
+body{
+  background:#2E2222; font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink); display:flex; justify-content:center;
+}
+#app{width:100%;max-width:430px;height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column;overflow:hidden}
+.header-wrap{position:sticky;top:0;z-index:50}
+header.topbar{
+  background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
+  color:#F5E9C9;padding:10px 14px 8px;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.topbar h1{font-size:19px;letter-spacing:2px;font-weight:600}
+.topbar .sub{font-size:13px;color:#E4C87A;margin-top:3px;display:flex;justify-content:space-between;align-items:center}
+.topbar .fav{font-size:12px;color:#F5E9C9;background:rgba(255,255,255,.12);border:1px solid rgba(228,200,122,.5);padding:2px 8px;border-radius:10px}
+.rank-bar{
+  display:flex;gap:6px;overflow-x:auto;padding:8px 14px;
+  background:var(--bg);border-bottom:1px solid var(--line);scrollbar-width:none;
+}
+.rank-bar::-webkit-scrollbar{display:none}
+.rank-chip{flex:0 0 auto;font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:var(--bg-card);padding:4px 12px;border-radius:14px;white-space:nowrap;font-weight:500}
+.rank-chip.cur{background:var(--red);color:#F5E9C9;border-color:var(--red);font-weight:500}
+.rank-chip.past{color:var(--red);border-color:var(--red2);background:#FBEEE8}
+main{flex:1;padding:14px 14px 20px;overflow-y:auto;overflow-x:hidden}
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes stamp{0%{transform:scale(2) rotate(-10deg);opacity:0}60%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(1) rotate(-4deg);opacity:1}}
+@keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.panel{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.panel h2{font-size:15px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.panel h2 .en{color:var(--gold);font-size:12px;margin-left:6px;font-weight:400}
+.p-text{font-size:14.5px;line-height:2;color:var(--ink);text-indent:2em}
+.gword{color:var(--red);border-bottom:1px dashed var(--red2);cursor:pointer;font-weight:500}
+.gword:active{background:var(--gold2)}
+.btn{
+  display:block;width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;letter-spacing:2px;
+  background:var(--red);color:#F5E9C9;cursor:pointer;margin-top:12px;
+}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--bg-card);color:var(--red);border:1px solid var(--red2)}
+.btn.gold{background:var(--gold);color:#3A2A2A}
+.btn:disabled{opacity:.45}
+.quiz-word{font-size:26px;font-weight:500;color:var(--red);text-align:center;letter-spacing:1px;cursor:pointer;-webkit-tap-highlight-color:rgba(201,162,39,.2)}
+.quiz-word:active{transform:scale(.97);transition:transform .1s}
+.word-wrap{display:flex;align-items:center;justify-content:center;gap:8px}
+.speak-icon{font-size:22px;background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--gold);line-height:1}
+.speak-icon:active{transform:scale(.9)}
+.quiz-pho{text-align:center;color:var(--ink2);font-size:14px;margin:6px 0 2px}
+.quiz-pos{text-align:center;font-size:12px;color:var(--gold);margin-bottom:14px}
+.qopt{
+  display:block;width:100%;text-align:left;background:var(--bg-card);border:1px solid var(--line2);
+  border-radius:12px;padding:12px 14px;font-size:14.5px;color:var(--ink);margin-top:10px;cursor:pointer;line-height:1.5;
+}
+.qopt:active{background:#FBEEE8}
+.qopt .pos{color:var(--gold);margin-right:6px;font-size:12.5px}
+.qopt.right{background:#E8F3EA;border-color:var(--ok);color:var(--ok)}
+.qopt.wrong{background:#FBE9E9;border-color:var(--danger);color:var(--danger)}
+.progress{display:flex;gap:4px;margin-bottom:12px}
+.pdot{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.pdot.done{background:var(--red)}
+.pdot.cur{background:var(--gold)}
+.hp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.hp-name{font-size:13px;color:var(--ink2)}
+.hp-bar{flex:1;height:10px;background:#F0E4D0;border-radius:5px;margin:0 10px;overflow:hidden}
+.hp-fill{height:100%;background:linear-gradient(90deg,var(--red2),var(--red));border-radius:5px;transition:width .3s}
+.hp-fill.friend{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.battle-title{text-align:center;font-size:15px;color:var(--red);font-weight:500;margin:6px 0 2px}
+.battle-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:10px}
+.battle-log{font-size:13px;color:var(--ink2);text-align:center;min-height:20px;margin-top:10px;line-height:1.6}
+.letter{
+  background:#F4E8CF;border:1px solid var(--gold);border-radius:10px;padding:14px;font-family:Georgia,serif;
+  font-size:15px;line-height:1.9;color:#5A4632;margin:10px 0;
+}
+.letter .gword{color:#8E5A1E;border-color:#C9A227}
+.reward-big{text-align:center;padding:20px 0 6px}
+.reward-big .rn{font-size:34px;color:var(--red);font-weight:500;letter-spacing:4px}
+.reward-big .rf{font-size:13px;color:var(--gold);margin-top:6px}
+.stats-row{display:flex;gap:8px;margin-top:12px}
+.stat{flex:1;background:#FBEEE8;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:18px;color:var(--red);font-weight:500}
+.stat span{font-size:11px;color:var(--ink2)}
+nav.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:60;
+  background:var(--bg-card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);
+}
+.tab{flex:1;padding:9px 0 8px;text-align:center;font-size:11px;color:var(--ink2);cursor:pointer;background:none;border:none}
+.tab .ti{display:block;font-size:16px;line-height:1.3}
+.tab.active{color:var(--red)}
+.tab.active .ti{transform:translateY(-1px)}
+.library-top{position:sticky;top:120px;z-index:30;background:var(--bg);padding:4px 0 10px}
+.lib-search{
+  width:100%;padding:10px 14px;border:1px solid var(--line2);border-radius:12px;font-size:14px;
+  background:var(--bg-card);color:var(--ink);outline:none;
+}
+.lib-list{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lib-item{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+.lib-item:last-child{border-bottom:none}
+.lib-item .w{font-size:14px;color:var(--ink);font-weight:500}
+.lib-item .d{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lib-item .pos{color:var(--gold);font-size:11px;margin-right:4px}
+.lib-empty{text-align:center;color:var(--ink2);padding:30px 0;font-size:13px}
+.rec-item{border-left:3px solid var(--gold);background:var(--bg-card);border:1px solid var(--line);border-left-color:var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.rec-item .q{font-size:13.5px;color:var(--ink);line-height:1.7}
+.rec-item .a{font-size:12px;color:var(--ok);margin-top:6px}
+.rec-item .a.bad{color:var(--danger)}
+.sheet-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(46,34,34,.5);z-index:90;display:none}
+.sheet{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;z-index:91;
+  background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px 26px;
+  padding:18px 18px calc(26px + env(safe-area-inset-bottom));
+  box-shadow:0 -6px 24px rgba(0,0,0,.15);
+  max-height:80vh;overflow-y:auto;
+  display:none; /* 默认隐藏，openSheet 时显示，closeSheet 时隐藏 */
+}
+.sheet .sw{font-size:24px;color:var(--red);font-weight:500}
+.sheet .sp{font-size:13px;color:var(--ink2);margin:4px 0 10px}
+.sheet .sd{font-size:15px;line-height:1.9;color:var(--ink)}
+.sheet .btn{margin-top:16px}
+.sheet .btn:last-child{margin-bottom:12px}
+/* V6.2 存档迁移 */
+.save-modal{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% - 48px);max-width:380px;z-index:91;
+  background:var(--bg-card);border:1px solid var(--gold);border-radius:16px;padding:18px 16px 16px;
+  box-shadow:0 10px 40px rgba(0,0,0,.3);display:none;
+}
+.save-modal .sv-title{font-size:17px;color:var(--red);font-weight:500;text-align:center;margin-bottom:4px;letter-spacing:2px}
+.save-modal .sv-sub{font-size:12px;color:var(--ink2);text-align:center;margin-bottom:12px;line-height:1.6}
+.save-modal textarea{
+  width:100%;box-sizing:border-box;min-height:120px;max-height:220px;resize:vertical;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--ink);
+  font-size:12px;line-height:1.6;padding:10px;margin-bottom:10px;
+}
+.save-modal .sv-actions{display:flex;gap:8px;flex-wrap:wrap}
+.save-modal .sv-actions .btn{flex:1;min-width:100px;margin:0}
+.save-modal .sv-tip{font-size:11.5px;color:var(--ink2);line-height:1.7;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.save-modal .sv-tip b{color:var(--gold)}
+.save-btn-row{display:flex;gap:8px;margin-bottom:12px}
+.save-btn-row .btn{flex:1;margin:0}
+/* V6.3 云同步 */
+.cloud-status{
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px;
+  font-size:12.5px;color:var(--ink2);line-height:1.8;
+}
+.cloud-status b{color:var(--red)}
+.cloud-status .ok{color:var(--ok)}
+.cloud-status .off{color:var(--ink2)}
+.cloud-code{
+  width:100%;box-sizing:border-box;
+  font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;letter-spacing:5px;color:var(--red);
+  background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px;text-align:center;margin:8px 0;
+  user-select:all;cursor:text;
+}
+.cloud-code::placeholder{font-size:13px;letter-spacing:1px;color:var(--ink2);opacity:.55}
+/* V6.5 云端三步引导 */
+.cloud-guide{border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0 12px;background:var(--bg-card)}
+.guide-title{font-size:12.5px;color:var(--gold);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.guide-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:8px}
+.guide-step:last-child{margin-bottom:0}
+.guide-num{
+  flex:0 0 18px;height:18px;border-radius:50%;background:var(--red);color:#F5E9C9;
+  font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.guide-txt{flex:1;min-width:0}
+.guide-txt strong{color:var(--ink);font-weight:500}
+.guide-link{color:var(--gold);text-decoration:none;white-space:nowrap;border-bottom:1px dashed var(--gold);padding-bottom:1px}
+.guide-link:active{opacity:.7}
+.guide-done{color:var(--ok);white-space:nowrap;font-size:11.5px}
+/* V6.6 云端详细说明折叠区 */
+.cloud-details{margin-top:8px;border-top:1px dashed var(--line);padding-top:7px;font-size:12px;color:var(--ink2);line-height:1.75}
+.cloud-details summary{cursor:pointer;list-style:none;color:var(--ink);font-weight:500;margin-bottom:2px;user-select:none;font-size:12.5px}
+.cloud-details summary::-webkit-details-marker{display:none}
+.cloud-details summary::before{content:'▸ ';color:var(--gold)}
+.cloud-details[open] summary::before{content:'▾ '}
+.cloud-details b{color:var(--ink);font-weight:500}
+.cloud-details .step-sub{margin:5px 0 1px}
+.cloud-details .tip-inline{background:rgba(0,0,0,0.05);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:11.5px;line-height:1.65}
+.cloud-row{margin-bottom:10px}
+.cloud-row label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
+.cloud-row input{
+  width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  color:var(--ink);font-size:13px;padding:9px 10px;
+}
+.cloud-row .btn{width:100%;margin:0;margin-top:4px}
+.cloud-actions{display:flex;gap:8px;margin-top:4px}
+.cloud-actions .btn{flex:1;margin:0}
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
+  background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.toast.show{opacity:1}
+.cover{text-align:center;padding:16px 10px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 120px)}
+.cover .logo{
+  font-size:28px;color:var(--red);letter-spacing:6px;font-weight:500;margin:12px 0 4px;
+}
+.cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
+.cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
+.cover .desc b{color:var(--red);font-weight:500}
+/* ===== 首页主视觉·古风画框+角色立绘（工笔淡彩风格） ===== */
+.hero-badge{
+  position:relative;display:inline-block;margin:4px auto 14px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+  text-align:center;
+}
+.hero-badge:active .hero-frame{transform:scale(.96)}
+/* 古风画框 */
+.hero-frame{
+  position:relative;width:130px;height:172px;margin:0 auto 10px;
+  border-radius:3px;border:2.5px solid var(--gold);
+  background:linear-gradient(145deg,#FFFDF8,#F5EDD0);
+  box-shadow:0 6px 20px rgba(122,21,12,.18),inset 0 0 14px rgba(201,162,39,.1);
+  padding:4px;transition:transform .12s ease;
+}
+/* 内衬线 */
+.hero-frame::before{
+  content:'';position:absolute;top:3px;left:3px;right:3px;bottom:3px;
+  border:1px solid rgba(201,162,39,.4);border-radius:1px;pointer-events:none;
+}
+/* 四角回纹 */
+.hero-frame .corner{
+  position:absolute;width:10px;height:10px;
+  border-color:var(--gold);border-style:solid;pointer-events:none;
+}
+.hero-frame .corner.tl{top:-1px;left:-1px;border-width:2.5px 0 0 2.5px}
+.hero-frame .corner.tr{top:-1px;right:-1px;border-width:2.5px 2.5px 0 0}
+.hero-frame .corner.bl{bottom:-1px;left:-1px;border-width:0 0 2.5px 2.5px}
+.hero-frame .corner.br{bottom:-1px;right:-1px;border-width:0 2.5px 2.5px 0}
+/* 角色立绘 */
+.hero-avatar{
+  width:100%;height:100%;object-fit:cover;object-position:top center;
+  border-radius:1px;display:block;
+  background:#E8DCC8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 172'%3E%3Crect width='130' height='172' fill='%23E8DCC8'/%3E%3Cg fill='none' stroke='%23B8A67A' stroke-width='.8' opacity='.35'%3E%3Cpath d='M0 35 Q65 10 130 35'/%3E%3Cpath d='M10 35 L10 172 M25 35 L25 172 M40 35 L40 172 M55 35 L55 172 M75 35 L75 172 M90 35 L90 172 M105 35 L105 172 M120 35 L120 172'/%3E%3Crect x='35' y='55' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='75' y='55' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='35' y='100' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='75' y='100' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3C/g%3E%3C/svg%3E") center/cover;
+}
+/* 位份名 */
+.hero-rank{
+  font-size:17px;color:var(--red);font-weight:600;letter-spacing:4px;
+  margin-bottom:3px;font-family:"Songti SC","STSong","SimSun",serif;
+}
+/* 凤印进度 */
+.hero-track{
+  display:flex;align-items:center;gap:7px;justify-content:center;margin-top:5px;
+}
+.hero-track .ht-label{font-size:10px;color:var(--gold);letter-spacing:1px}
+.hero-track .ht-bar{
+  width:90px;height:3px;background:rgba(201,162,39,.15);border-radius:2px;overflow:hidden;
+}
+.hero-track .ht-fill{
+  height:100%;background:linear-gradient(90deg,var(--gold),#F0D488);border-radius:2px;
+  transition:width .5s ease;
+}
+.hero-track .ht-num{font-size:10px;color:var(--gold);min-width:28px;text-align:right}
+/* 入宫提示 */
+.hero-hint{font-size:11px;color:var(--gold);margin-top:7px;letter-spacing:2px;opacity:.75}
+.chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
+.chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
+.hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
+.task-panel{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;text-align:left}
+.task-title{font-size:13px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.task-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+.task-item:last-child{border-bottom:none}
+.task-label{font-size:12px;color:var(--ink)}
+.task-bar{flex:1;height:6px;background:var(--line);border-radius:3px;margin:0 10px;overflow:hidden}
+.task-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .4s}
+.task-num{font-size:11px;color:var(--ink2);min-width:36px;text-align:right}
+.task-check{font-size:14px;color:var(--ok);margin-left:6px}
+.task-reward{margin-top:10px;text-align:center}
+.char-box{display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:10px;animation:fadeIn .4s ease}
+.char-emoji{font-size:36px;line-height:1}
+.char-info{flex:1}
+.char-name{font-size:13px;color:var(--red);font-weight:500}
+.char-quote{font-size:11px;color:var(--ink2);margin-top:2px;font-style:italic}
+.anim-pop{animation:pop .3s ease}
+.anim-shake{animation:shake .3s ease}
+.seal-stamp{animation:stamp .5s ease forwards}
+.coin-float{position:fixed;pointer-events:none;font-size:20px;animation:floatUp .8s ease forwards;z-index:200}
+.qopt.right{background:#E8F5E9!important;color:#2E7D32!important;border-color:#A5D6A7!important;animation:pop .25s ease}
+.qopt.wrong{background:#FFEBEE!important;color:#C62828!important;border-color:#EF9A9A!important;animation:shake .3s ease}
+/* 考校结果面板 */
+.quiz-result{text-align:center;padding:16px 12px}
+.result-stamp{display:inline-block;font-size:22px;font-weight:600;padding:8px 28px;border-radius:24px;margin-bottom:12px}
+.result-stamp.pass{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;border:1px solid #A5D6A7}
+.result-stamp.fail{background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;border:1px solid #EF9A9A}
+.result-score{font-size:15px;color:var(--ink);margin-bottom:10px}
+.result-score b{font-size:18px;color:var(--red)}
+.result-wrong-title{font-size:13px;color:var(--muted);margin:10px 0 6px}
+.result-wrong-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.result-wrong-item{background:#FFFDF8;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;text-align:left}
+.result-word{font-size:15px;font-weight:500;color:var(--red)}
+.result-def{font-size:12.5px;color:var(--muted);margin-top:2px}
+/* 角色台词 */
+.quiz-char{display:flex;align-items:flex-start;gap:8px;background:linear-gradient(135deg,#FBEEE8,#FFFDF8);border:1px solid var(--line2);border-left:3px solid var(--red);border-radius:10px;padding:10px 12px;margin-bottom:12px;animation:fadeIn .3s ease}
+.quiz-char-emoji{font-size:28px;line-height:1;flex-shrink:0}
+.quiz-char-line{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic;flex:1;padding-top:4px}
+/* 卷轴效果 */
+.scroll-panel{position:relative;background:linear-gradient(180deg,#F4E8CF 0%,#FFFDF8 8%,#FFFDF8 92%,#F4E8CF 100%);border:1px solid var(--gold);border-radius:6px;padding:22px 16px 20px}
+.scroll-panel::before,.scroll-panel::after{content:'';display:block;position:absolute;left:-2px;right:-2px;height:8px;background:linear-gradient(180deg,#C9A227,#8E5A1E,#C9A227);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.scroll-panel::before{top:-5px}
+.scroll-panel::after{bottom:-5px}
+.scroll-corner{position:absolute;width:16px;height:16px;border:2px solid var(--gold);border-radius:50%;opacity:.35;pointer-events:none}
+.scroll-corner.tl{top:8px;left:8px}
+.scroll-corner.tr{top:8px;right:8px}
+.scroll-corner.bl{bottom:8px;left:8px}
+.scroll-corner.br{bottom:8px;right:8px}
+/* 拼写题 */
+.spell-hint{font-size:16px;color:var(--red);text-align:center;margin-bottom:12px;font-weight:500;line-height:1.6}
+.spell-input{width:100%;padding:14px;border:2px solid var(--line2);border-radius:12px;font-size:20px;text-align:center;letter-spacing:2px;color:var(--ink);background:var(--bg-card);outline:none;font-family:Georgia,serif;transition:border-color .2s}
+.spell-input:focus{border-color:var(--red)}
+.spell-input.right{border-color:var(--ok);background:#E8F5E9;color:var(--ok)}
+.spell-input.wrong{border-color:var(--danger);background:#FFEBEE;color:var(--danger);animation:shake .3s ease}
+.spell-tip{font-size:12px;color:var(--ink2);text-align:center;margin:8px 0 10px;line-height:1.6}
+
+/* ===== 古风视觉升级 ===== */
+/* 宣纸暖色背景 */
+#app{background:linear-gradient(180deg,#FAF5E8 0%,#F5EDD0 50%,#FAF5E8 100%)}
+/* 宋体标题 */
+.cover .logo,.chap-title,.battle-title,.letter,.reward-big .rn{font-family:"Songti SC","STSong","SimSun","Hiragino Mincho ProN","Yu Mincho",serif}
+/* 角色卡片重做 */
+.char-box{
+  background:linear-gradient(135deg,#FFFDF8,#F4ECD8);
+  border:2px solid #C9A227;
+  border-radius:14px;
+  padding:12px 14px;
+  position:relative;
+  box-shadow:0 2px 12px rgba(142,43,43,.08);
+  overflow:hidden;
+  align-items:flex-start;
+}
+.char-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,#C9A227,#E4C87A,#C9A227,transparent);
+}
+.char-box::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#C9A227,transparent);
+}
+.char-img{
+  width:76px;height:110px;object-fit:cover;border-radius:8px;
+  border:2px solid #C9A227;box-shadow:0 2px 8px rgba(0,0,0,.15);
+  flex-shrink:0;background:#FFFDF8;
+}
+/* 测验角色 */
+.quiz-char{
+  background:linear-gradient(135deg,#FBEEE8,#FFFDF8);
+  border:1px solid var(--line2);
+  border-left:3px solid var(--red);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:12px;
+  animation:fadeIn .3s ease;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  position:relative;
+  overflow:hidden;
+}
+.quiz-char-img{
+  width:56px;height:80px;object-fit:cover;border-radius:6px;
+  border:2px solid #C9A227;box-shadow:0 2px 6px rgba(0,0,0,.12);flex-shrink:0;
+}
+.quiz-char-line-wrap{flex:1;padding-top:4px}
+/* 斗法敌人角色 */
+.enemy-char{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.enemy-char-img{width:64px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #C9A227;box-shadow:0 2px 8px rgba(0,0,0,.12);flex-shrink:0}
+.enemy-char-info{flex:1}
+.enemy-char-name{font-size:13px;color:var(--red);font-weight:500}
+.enemy-char-quote{font-size:11px;color:var(--ink2);margin-top:2px;font-style:italic}
+/* 面板装饰 */
+.panel{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#FFFDF8,#F8F0E0);
+  box-shadow:0 2px 14px rgba(142,43,43,.06);
+}
+.panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#C9A227,#E4C87A,#C9A227,transparent);
+}
+/* 封面氛围 */
+/* 装饰线 */
+.decor-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line2),transparent);
+  margin:10px 0;
+}
+/* 回纹角花 */
+.corner-flower{
+  position:absolute;width:20px;height:20px;opacity:.3;pointer-events:none;
+}
+.corner-flower.tl{top:4px;left:4px}
+.corner-flower.tr{top:4px;right:4px}
+.corner-flower.bl{bottom:4px;left:4px}
+.corner-flower.br{bottom:4px;right:4px}
+/* 封面宫殿剪影 */
+.palace-silhouette{
+  width:100%;height:80px;opacity:.18;pointer-events:none;margin-bottom:-8px;
+}
+/* 情缘·私奔支线 */
+.love-entry{background:var(--bg-card);color:var(--red);border:1px solid var(--gold);margin-top:10px}
+.love-card{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(142,43,43,.05)}
+.love-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.love-emoji{font-size:26px}
+.love-name{font-size:16px;color:var(--red);font-weight:500}
+.love-title{font-size:12px;color:var(--ink2);margin-top:2px}
+.love-tag{margin-left:auto;font-size:11px;color:var(--gold);border:1px solid var(--gold2);padding:2px 8px;border-radius:10px;white-space:nowrap}
+.love-bar{height:8px;background:#F0E4D0;border-radius:4px;margin:8px 0 4px;overflow:hidden}
+.love-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:4px;transition:width .4s}
+.love-pts{font-size:11px;color:var(--ink2);margin-bottom:6px}
+.love-end{font-size:12px;color:var(--red);margin-bottom:8px}
+/* ===== V6.0 博弈化：倒计时 / 连击 / 斗法特效 ===== */
+.timer-bar{height:6px;background:#F0E4D0;border-radius:3px;overflow:hidden;position:relative;margin-bottom:10px}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:3px;transition:width 1s linear}
+.timer-fill.low{background:linear-gradient(90deg,#E8A0A0,var(--danger))}
+.timer-num{position:absolute;right:0;top:-15px;font-size:11px;color:var(--ink2)}
+.enemy-move{
+  text-align:center;font-size:14px;color:var(--red);font-weight:500;margin:0 0 10px;
+  background:#FBEEE8;border:1px dashed var(--red2);border-radius:10px;padding:8px 10px;
+  animation:fadeIn .3s ease;line-height:1.6;
+}
+.combo-badge{
+  text-align:center;font-size:13px;color:var(--gold);font-weight:500;margin-bottom:8px;letter-spacing:1px;
+  animation:pop .35s ease;
+}
+.dmg-float{position:fixed;pointer-events:none;font-size:24px;font-weight:600;z-index:210;animation:floatUp 1s ease forwards}
+.dmg-float.hit{color:var(--red)}
+.dmg-float.miss{color:var(--danger)}
+@keyframes hpFlash{0%{filter:brightness(1.9)}100%{filter:brightness(1)}}
+.hp-flash{animation:hpFlash .5s ease}
+#app.shake{animation:shake .35s ease}
+.battle-log{min-height:44px;white-space:pre-line}
+.spell-mode-tag{text-align:center;font-size:12px;color:var(--gold);letter-spacing:3px;margin-bottom:6px;font-weight:500}
+.result-stamp.perfect{background:var(--gold);color:#3A2A2A}
+.energy-low{color:var(--danger)!important}
+/* V6.1 复习系统 */
+.lib-tabs{display:flex;gap:8px;margin-bottom:10px}
+.lib-tab{flex:1;padding:7px 0;text-align:center;font-size:13px;color:var(--ink2);background:var(--bg-card);border:1px solid var(--line);border-radius:12px;cursor:pointer;font-weight:500}
+.lib-tab.active{background:var(--red);color:#F5E9C9;border-color:var(--red)}
+.lib-tab .n{font-size:11px;opacity:.75;margin-left:2px}
+.lib-item .star{color:var(--gold);margin-right:6px;font-size:12px}
+.review-bar{display:flex;align-items:center;gap:10px;margin:10px 0 12px}
+.review-bar .rev-info{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
+.review-bar .btn{flex:0 0 auto;padding:8px 14px}
+.lib-empty{color:var(--ink2);text-align:center;padding:26px 0;font-size:13px;line-height:1.7}
+/* ===== V7 首页重设计：凤印宫笺 ===== */
+body{background:#241816}
+#app{background:#f8f2e8}
+.page-start-active .header-wrap{display:none}
+.page-start-active main{padding:0;scrollbar-width:none}
+.page-start-active main::-webkit-scrollbar{display:none}
+.home-v7{min-height:100%;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));position:relative;overflow:hidden;background:
+  radial-gradient(circle at 88% 9%,rgba(201,162,39,.09),transparent 26%),
+  linear-gradient(180deg,#fbf7f0 0%,#f7efe3 58%,#f4eadb 100%)}
+.home-v7:before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E")}
+.home-v7>*{position:relative;z-index:1}
+.home-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.home-seal{width:38px;height:38px;border:2px solid #a33b2f;border-radius:7px;color:#a33b2f;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:18px;font-weight:700;transform:rotate(-2deg);box-shadow:inset 0 0 0 2px #fbf7f0, inset 0 0 0 3px rgba(163,59,47,.35)}
+.home-brand{font-family:"Songti SC","STSong",serif;font-size:23px;letter-spacing:4px;color:#38251f;font-weight:700;white-space:nowrap}
+.home-resources{margin-left:auto;display:flex;gap:6px}
+.resource-pill{height:32px;padding:0 10px;border:1px solid #d8c39a;border-radius:18px;background:rgba(255,253,248,.78);display:flex;align-items:center;gap:5px;color:#4a3730;font-size:12px;white-space:nowrap;box-shadow:0 3px 12px rgba(83,50,29,.04)}
+.resource-pill b{font-size:13px;font-weight:600}.resource-pill .bolt{color:#c89022}
+.rank-hero{height:360px;border:1px solid #d8bd88;border-radius:24px 24px 18px 18px;background:rgba(255,253,248,.72);box-shadow:0 14px 35px rgba(92,52,27,.10);position:relative;overflow:hidden;padding:34px 24px}
+.rank-hero:before,.rank-hero:after{content:'';position:absolute;width:22px;height:22px;border-color:#caa45c;border-style:solid;opacity:.7}
+.rank-hero:before{left:9px;top:9px;border-width:1px 0 0 1px;border-radius:9px 0 0 0}.rank-hero:after{right:9px;bottom:9px;border-width:0 1px 1px 0;border-radius:0 0 9px 0}
+.palace-wash{position:absolute;inset:auto 0 0;height:47%;opacity:.16;background:linear-gradient(180deg,transparent,#cfae79 72%)}
+.palace-wash:after{content:'宫';position:absolute;right:24px;bottom:-22px;font-family:"Songti SC",serif;font-size:180px;color:#9d6d3b;opacity:.12}
+.rank-copy{position:relative;z-index:10;width:52%}
+.eyebrow{font-family:"Songti SC",serif;font-size:15px;letter-spacing:4px;color:#5f463b;margin-bottom:17px}.eyebrow:before{content:'◆';font-size:7px;color:#bc8b37;margin-right:8px;vertical-align:3px}
+.home-rank{font-family:"Songti SC","STSong",serif;color:#a23228;font-size:56px;line-height:1;letter-spacing:7px;font-weight:700;text-shadow:0 2px 0 #fff;margin-bottom:25px}
+.seal-progress-label{display:flex;justify-content:space-between;color:#59433a;font-size:13px;margin-bottom:9px}.seal-progress-label span:last-child{color:#a23228;font-weight:600}
+.seal-progress{height:8px;border:1px solid #dcc8a4;background:#f8f0e2;border-radius:8px;overflow:hidden}.seal-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98625,#e1c37a);border-radius:8px;transition:width .5s}
+.rank-next{margin-top:12px;color:#78665d;font-size:11px;line-height:1.55}
+.hero-person{position:absolute;z-index:2;right:-18px;bottom:-12px;width:59%;height:96%;object-fit:cover;object-position:67% center;mix-blend-mode:multiply;pointer-events:none;filter:drop-shadow(-7px 10px 12px rgba(65,37,27,.12));-webkit-mask-image:linear-gradient(to left,#000 88%,transparent 100%);mask-image:linear-gradient(to left,#000 88%,transparent 100%)}
+.hero-badge{display:block;margin:0;text-align:left;cursor:default}.hero-badge:active .hero-frame{transform:none}
+.home-primary{width:calc(100% - 28px);height:68px;margin:-18px auto 0;border:1px solid #81261f;border-radius:18px;background:linear-gradient(135deg,#a93429,#8f281f);color:#fff4d6;box-shadow:0 12px 24px rgba(126,37,30,.22),inset 0 0 0 1px rgba(255,225,163,.18);font-family:"Songti SC",serif;font-size:24px;letter-spacing:7px;display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:5}
+.home-primary:after{content:'›';width:29px;height:29px;border:1px solid rgba(255,239,199,.7);border-radius:50%;display:grid;place-items:center;font-family:serif;font-size:25px;letter-spacing:0;line-height:1}.home-primary:active{transform:scale(.985)}
+.today-count{text-align:center;font-family:"Songti SC",serif;font-size:14px;letter-spacing:2px;color:#5f4b42;margin:14px 0 20px}.today-count b{color:#a23228;font-size:18px}
+.rank-journey{display:flex;align-items:center;justify-content:space-between;position:relative;margin:0 3px 22px}.rank-journey:before{content:'';position:absolute;left:7%;right:7%;top:17px;height:1px;background:#d2b370}
+.journey-node{position:relative;z-index:1;width:43px;text-align:center;color:#695950;font-size:11px}.journey-dot{width:36px;height:36px;margin:0 auto 6px;border:1px solid #d7c49e;background:#f9f1e3;border-radius:50% 50% 45% 45%;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:12px}.journey-node.current .journey-dot{background:#a93429;border:3px solid #ecd697;color:#fff5d9;box-shadow:0 4px 12px rgba(153,47,39,.18)}.journey-node.past .journey-dot{color:#a23228;border-color:#ba776c}.journey-node.future:nth-child(n+8){display:none}
+.home-stats{border:1px solid #decba9;border-radius:18px;background:rgba(255,253,248,.74);display:grid;grid-template-columns:repeat(3,1fr);padding:17px 5px;margin-bottom:14px;box-shadow:0 8px 24px rgba(86,54,31,.05)}
+.home-stat{text-align:center;border-right:1px solid #eadcc5}.home-stat:last-child{border-right:0}.home-stat span{display:block;color:#8b7769;font-size:11px;margin-bottom:6px}.home-stat b{font-family:Georgia,"Songti SC",serif;font-size:23px;font-weight:500;color:#36261f}.home-stat em{font-style:normal;font-size:10px;color:#a28e7c;margin-left:2px}
+.home-v7 .task-panel{margin:0;background:rgba(255,253,248,.7);border-color:#decba9;border-radius:18px;padding:15px}.home-v7 .task-title{font-family:"Songti SC",serif;font-size:15px;letter-spacing:2px}.home-v7 .task-item{padding:9px 0}.home-v7 .task-fill{background:linear-gradient(90deg,#b8892b,#dfc174)}
+.home-v7 .love-entry{margin-top:12px}.home-v7 .hint{margin:14px 6px 0;font-size:10px;opacity:.7}
+@media(max-width:370px){.home-v7{padding-left:13px;padding-right:13px}.home-brand{font-size:20px}.resource-pill{padding:0 7px}.rank-hero{height:330px}.home-rank{font-size:48px}.hero-person{right:-39px}.journey-node{width:38px;font-size:10px}.journey-dot{width:33px;height:33px}.rank-journey:before{top:16px}}
+/* ===== V7.1 剧情 / 考校 / 斗法统一视觉 ===== */
+.page-story-active .rank-bar,.page-quiz-active .rank-bar,.page-battle-active .rank-bar{display:none!important}
+.page-story-active header.topbar,.page-quiz-active header.topbar,.page-battle-active header.topbar{
+  background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7;padding:calc(9px + env(safe-area-inset-top)) 16px 9px
+}
+.page-story-active .topbar h1,.page-quiz-active .topbar h1,.page-battle-active .topbar h1{font-family:"Songti SC",serif;font-size:17px;letter-spacing:4px;color:#38251f}
+.page-story-active .topbar .sub,.page-quiz-active .topbar .sub,.page-battle-active .topbar .sub{margin-top:5px;color:#9a6a2c}
+.page-story-active .topbar .fav,.page-quiz-active .topbar .fav,.page-battle-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399;padding:3px 9px}
+.page-story-active main,.page-quiz-active main,.page-battle-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:
+  radial-gradient(circle at 90% 0,rgba(201,162,39,.08),transparent 24%),linear-gradient(180deg,#faf6ee,#f5ecde)}
+.page-story-active nav.tabbar,.page-quiz-active nav.tabbar,.page-battle-active nav.tabbar{background:rgba(255,253,248,.96);border-top-color:#dfcba7;box-shadow:0 -8px 26px rgba(74,42,25,.06)}
+
+/* 剧情：人物来信式叙事 */
+#page-story .char-box{height:150px;padding:0 15px;border:1px solid #dcc18d;border-radius:20px;background:linear-gradient(105deg,#f6ead7,#fffaf2);box-shadow:0 12px 28px rgba(80,47,27,.09);align-items:center;margin-bottom:18px}
+#page-story .char-box:before{height:100%;width:42%;right:auto;background:radial-gradient(circle at 30% 40%,rgba(192,139,51,.16),transparent 65%)}
+#page-story .char-box:after{content:'宫';left:auto;right:8px;bottom:-32px;width:auto;height:auto;background:none;font-family:"Songti SC",serif;font-size:130px;color:#a9793b;opacity:.06}
+#page-story .char-img{width:112px;height:148px;margin-left:-8px;align-self:flex-end;object-fit:cover;object-position:64% 24%;border:0;border-radius:0;background:transparent;mix-blend-mode:multiply;box-shadow:none;-webkit-mask-image:linear-gradient(#000 86%,transparent);mask-image:linear-gradient(#000 86%,transparent)}
+#page-story .char-info{padding-left:8px;position:relative;z-index:2}
+#page-story .char-name{font-family:"Songti SC",serif;font-size:17px;letter-spacing:3px;color:#982e27;margin-bottom:8px}
+#page-story .char-quote{font-size:12px;line-height:1.75;color:#6c584c;font-style:normal}
+#page-story .chap-title{font-size:22px;line-height:1.4;letter-spacing:4px;margin:8px 0 5px;color:#8f2c27}
+#page-story .chap-sub{font-size:11px;letter-spacing:2px;color:#ad843e;margin-bottom:13px}
+#page-story .panel{border:1px solid #dfc9a3;border-radius:18px;background:rgba(255,253,248,.82);padding:23px 20px;box-shadow:0 10px 28px rgba(77,47,28,.06)}
+#page-story .panel:before{left:22px;right:22px;background:linear-gradient(90deg,transparent,#c3943e,transparent)}
+#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:justify}
+#page-story #btnStoryNext{height:54px;border:1px solid #84241f;border-radius:15px;background:linear-gradient(135deg,#a7352b,#8d281f);box-shadow:0 9px 18px rgba(137,39,31,.18);font-family:"Songti SC",serif;font-size:17px;letter-spacing:5px}
+
+/* 考校：高专注单词宫笺 */
+#page-quiz .progress{height:5px;margin:0 2px 13px;gap:5px}.page-quiz-active .pdot{height:5px;background:#e3d7c2}.page-quiz-active .pdot.done{background:#9d352c}.page-quiz-active .pdot.cur{background:#c99639;box-shadow:0 0 0 3px rgba(201,150,57,.12)}
+#page-quiz .timer-bar{height:7px;margin:0 2px 16px;background:#eadfcd}.page-quiz-active .timer-num{top:10px;right:4px;font-size:10px;color:#a17938}
+#page-quiz .quiz-char{min-height:88px;border:1px solid #dfc7a0;border-left:0;border-radius:17px;padding:0 14px;background:rgba(255,251,244,.86);align-items:center;box-shadow:0 7px 20px rgba(78,45,27,.05)}
+#page-quiz .quiz-char-img{width:72px;height:86px;align-self:flex-end;object-fit:cover;object-position:65% 22%;border:0;border-radius:0;background:transparent;mix-blend-mode:multiply;box-shadow:none;-webkit-mask-image:linear-gradient(#000 86%,transparent);mask-image:linear-gradient(#000 86%,transparent)}
+#page-quiz .quiz-char-line{font-family:"Songti SC",serif;font-size:13px;line-height:1.7;color:#624c42;font-style:normal}
+#page-quiz .scroll-panel{border:1px solid #d9bd88;border-radius:22px;padding:29px 18px 22px;background:rgba(255,253,248,.9);box-shadow:0 14px 32px rgba(81,48,28,.08)}
+#page-quiz .scroll-panel:before,#page-quiz .scroll-panel:after{display:none}#page-quiz .scroll-corner{width:19px;height:19px;border-width:1px;border-radius:7px;opacity:.55}
+#page-quiz .quiz-word{font-family:Georgia,"Songti SC",serif;font-size:33px;color:#8d2c27;font-weight:500;letter-spacing:.5px}
+#page-quiz .speak-icon{width:38px;height:38px;padding:0;border:1px solid #dcc69d;border-radius:50%;background:#fff9ef;color:#b17b25;font-size:17px}
+#page-quiz .listen-row,#page-battle .listen-row{display:none}
+#page-quiz .quiz-pho{font-family:Georgia,serif;font-size:13px;color:#7d6c61}.page-quiz-active .quiz-pos{color:#a57931;letter-spacing:1px}
+#page-quiz .qopt{min-height:52px;border-color:#e1d1b7;border-radius:14px;padding:13px 15px;background:#fffdfa;box-shadow:0 3px 10px rgba(70,42,25,.035);transition:transform .12s,border-color .12s,background .12s}
+#page-quiz .qopt:active{transform:scale(.985);border-color:#bd7e72}.page-quiz-active .qopt .pos{display:inline-flex;min-width:30px;color:#b1843a}
+
+/* 斗法：朱砂宫墙与双阵营 */
+.page-battle-active main{background:radial-gradient(circle at 50% -10%,rgba(183,126,48,.22),transparent 32%),linear-gradient(180deg,#48231f 0,#6f2925 31%,#f5ecde 31.2%,#f5ecde 100%)}
+#page-battle .battle-title{font-family:"Songti SC",serif;color:#fff2cf;font-size:22px;letter-spacing:5px;margin:3px 0 5px;text-shadow:0 2px 7px rgba(0,0,0,.24)}
+#page-battle .battle-sub{color:#e8c98b;font-size:11px;letter-spacing:1px;margin-bottom:15px}
+#page-battle .timer-bar{height:7px;background:rgba(255,255,255,.18);margin-bottom:13px}#page-battle .timer-num{color:#f6dfae}
+#page-battle .enemy-move{border:1px solid rgba(239,204,143,.55);border-radius:14px;background:rgba(48,13,12,.35);color:#fff0ce;padding:10px 12px;margin-bottom:9px;font-family:"Songti SC",serif;font-size:13px;box-shadow:inset 0 0 16px rgba(0,0,0,.08)}
+#page-battle .combo-badge{min-height:18px;color:#f3ce7c;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+#page-battle .enemy-char{height:108px;margin-bottom:-14px;position:relative;z-index:2;align-items:flex-end}
+#page-battle .enemy-char-img{width:112px;height:125px;object-fit:cover;object-position:65% 20%;border:0;border-radius:0;mix-blend-mode:screen;box-shadow:none;-webkit-mask-image:linear-gradient(#000 82%,transparent);mask-image:linear-gradient(#000 82%,transparent)}
+#page-battle .enemy-char-info{align-self:center}.page-battle-active .enemy-char-name{font-family:"Songti SC",serif;color:#fff1ce;font-size:16px;letter-spacing:3px}.page-battle-active .enemy-char-quote{color:#e6cfa9;line-height:1.65;font-style:normal}
+#page-battle .panel{border:1px solid #d7ba85;border-radius:22px;background:rgba(255,253,248,.96);padding:20px 17px;box-shadow:0 15px 34px rgba(54,25,20,.18)}
+#page-battle .hp-row{margin-bottom:10px}.page-battle-active .hp-name{font-size:11px;color:#79645a;min-width:37px}.page-battle-active .hp-bar{height:9px;background:#eee2cf}.page-battle-active .hp-fill{background:linear-gradient(90deg,#c35b4d,#8d2c27)}.page-battle-active .hp-fill.friend{background:linear-gradient(90deg,#c69a43,#e4c87a)}
+#page-battle .quiz-word{font-family:Georgia,serif;font-size:30px;color:#8d2c27}.page-battle-active .speak-icon{width:36px;height:36px;padding:0;border:1px solid #dcc69d;border-radius:50%;background:#fff9ef;font-size:16px}
+#page-battle .qopt{min-height:50px;border-radius:14px;border-color:#dfcfb5;background:#fffdfa;padding:12px 14px}.page-battle-active .battle-log{color:#875b43;font-family:"Songti SC",serif;line-height:1.75}
+@media(max-width:370px){#page-story .char-box{height:132px}#page-story .char-img{width:96px;height:130px}#page-story .p-text{font-size:15px}#page-battle .enemy-char{height:96px}#page-battle .enemy-char-img{width:96px;height:112px}}
+/* ===== V7.2 操作反馈与晋升仪式 ===== */
+.answer-flash{position:fixed;left:50%;top:28%;transform:translate(-50%,-50%) scale(.88);width:calc(100% - 54px);max-width:360px;z-index:220;border-radius:20px;padding:18px 19px;text-align:center;pointer-events:none;opacity:0;animation:answerReveal .28s ease forwards;box-shadow:0 18px 48px rgba(53,27,20,.23);backdrop-filter:blur(10px)}
+.answer-flash.right{background:rgba(246,251,239,.96);border:1px solid #93aa6e;color:#37502e}.answer-flash.wrong{background:rgba(255,245,239,.97);border:1px solid #c36e5f;color:#7f2f29}
+.answer-flash .af-mark{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:white}.answer-flash.right .af-mark{background:#718f53}.answer-flash.wrong .af-mark{background:#aa4035}
+.answer-flash .af-title{font-family:"Songti SC",serif;font-size:18px;letter-spacing:3px;font-weight:700}.answer-flash .af-detail{font-size:12px;line-height:1.7;margin-top:6px;color:#69564c}.answer-flash .af-word{font-family:Georgia,serif;font-size:16px;font-weight:700;color:#8f2c27;margin-right:5px}
+@keyframes answerReveal{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.qopt.right{box-shadow:0 0 0 3px rgba(75,128,76,.12),0 8px 18px rgba(52,111,57,.1)!important}.qopt.wrong{box-shadow:0 0 0 3px rgba(179,58,58,.1)!important}
+.battle-skill{position:fixed;left:50%;top:30%;transform:translate(-50%,-50%) scale(.7);z-index:225;pointer-events:none;color:#fff0c2;font-family:"Songti SC",serif;font-size:29px;letter-spacing:6px;text-shadow:0 3px 0 #7d211c,0 0 18px #efc76d;white-space:nowrap;animation:skillBurst .85s ease forwards}
+@keyframes skillBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{opacity:0;transform:translate(-50%,-70%) scale(.94)}}
+
+.page-reward-active .rank-bar{display:none!important}.page-reward-active header.topbar{background:#671d1b;color:#f5dfad;box-shadow:none}.page-reward-active main{padding:0 16px calc(88px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#6f201c 0,#8d2d25 44%,#f6eddf 44.2%);position:relative}
+#page-reward{text-align:center;padding-top:18px;min-height:690px;overflow:hidden}
+.reward-gates{height:185px;position:relative;margin:-18px -16px 0;overflow:hidden;background:radial-gradient(circle at 50% 70%,rgba(244,207,122,.2),transparent 35%)}
+.reward-gate{position:absolute;top:12px;width:52%;height:180px;background:linear-gradient(90deg,#451613,#7a241e);border:2px solid #c79a4a;transition:transform 1.1s cubic-bezier(.2,.75,.15,1);box-shadow:0 0 24px rgba(0,0,0,.25)}.reward-gate.left{left:0;transform:translateX(-72%);border-radius:0 30px 0 0}.reward-gate.right{right:0;transform:translateX(72%);border-radius:30px 0 0 0}
+.reward-gate:before{content:'';position:absolute;inset:15px;border:1px solid rgba(232,197,124,.5);background:repeating-linear-gradient(90deg,transparent 0 26px,rgba(235,198,117,.12) 27px 29px)}
+.reward-rays{position:absolute;left:50%;top:50%;width:220px;height:220px;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,224,148,.26) 0 8deg,transparent 8deg 18deg);animation:raysTurn 15s linear infinite}@keyframes raysTurn{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.reward-seal{position:absolute;left:50%;top:62px;transform:translateX(-50%) rotate(-7deg) scale(0);width:92px;height:92px;border:5px double #f0c86e;border-radius:16px;color:#f7d788;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:34px;font-weight:700;text-shadow:0 2px 0 #761e1a;box-shadow:inset 0 0 0 4px #8f2b25,0 8px 20px rgba(0,0,0,.25);animation:royalStamp .55s .55s cubic-bezier(.2,1.4,.4,1) forwards}@keyframes royalStamp{to{transform:translateX(-50%) rotate(-7deg) scale(1)}}
+#page-reward .reward-big{padding:11px 0 8px;position:relative;z-index:3}#page-reward .reward-big .chap-sub{color:#a77833;letter-spacing:2px;margin-bottom:8px}#page-reward .reward-big .rn{font-family:"Songti SC",serif;font-size:46px;letter-spacing:9px;color:#992f28;text-shadow:0 2px #fff}#page-reward .reward-big .rf{color:#745c4d;letter-spacing:2px}
+#page-reward .panel{border:1px solid #ddc49a;border-radius:18px;background:rgba(255,253,248,.92);padding:18px 19px;text-align:left;box-shadow:0 11px 28px rgba(71,39,25,.08)}#page-reward .p-text{font-family:"Songti SC",serif;font-size:14px;line-height:1.95;color:#534037}
+.reward-unlocks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.reward-unlock{border:1px solid #e0ceb0;border-radius:12px;background:#fffaf1;padding:10px 5px;text-align:center}.reward-unlock b{display:block;color:#9b322b;font-size:14px;margin-bottom:4px}.reward-unlock span{font-size:10px;color:#8b7668}
+#page-reward #btnRewardNext{height:55px;border-radius:16px;background:linear-gradient(135deg,#a6362c,#8d281f);border:1px solid #7e211d;color:#fff0cf;font-family:"Songti SC",serif;font-size:17px;letter-spacing:4px;box-shadow:0 9px 19px rgba(137,39,31,.2)}
+/* ===== V7.3 新手引导 / 词库 / 藏录 ===== */
+.onboard-mask{position:fixed;inset:0;z-index:300;background:rgba(31,19,17,.62);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:18px 18px calc(22px + env(safe-area-inset-bottom));animation:fadeIn .25s ease}
+.onboard-card{width:100%;max-width:394px;border:1px solid #d3ad68;border-radius:24px;background:linear-gradient(145deg,#fffdf8,#f6ead8);padding:22px 20px 18px;box-shadow:0 24px 70px rgba(29,14,11,.36);position:relative;overflow:hidden}.onboard-card:before{content:'凤';position:absolute;right:-8px;top:-30px;font-family:"Songti SC",serif;font-size:145px;color:#a43830;opacity:.045}
+.onboard-step{font-size:11px;color:#aa7d35;letter-spacing:2px}.onboard-icon{width:54px;height:54px;border:1px solid #d8bd8a;border-radius:18px;display:grid;place-items:center;margin:14px 0 13px;background:#fff9ee;font-size:27px}.onboard-title{font-family:"Songti SC",serif;font-size:22px;color:#922e28;letter-spacing:3px}.onboard-text{font-size:14px;line-height:1.85;color:#5b4940;margin:9px 0 16px}.onboard-demo{border:1px dashed #c79643;border-radius:13px;padding:11px 12px;background:rgba(255,255,255,.54);font-size:12px;color:#6b5548;margin-bottom:16px}.onboard-demo .demo-word{color:#9d3029;border-bottom:1px dashed #9d3029;font-family:Georgia,serif;font-weight:700}
+.onboard-actions{display:flex;gap:9px}.onboard-actions .btn{margin:0;height:48px}.onboard-actions .skip{flex:.36;background:transparent;color:#8a7769;border:1px solid #d8c8ae}.onboard-actions .next{flex:1;background:#9d332b}.onboard-dots{display:flex;gap:6px;position:absolute;right:20px;top:24px}.onboard-dots i{width:6px;height:6px;border-radius:50%;background:#decdb1}.onboard-dots i.active{width:18px;border-radius:5px;background:#a6372e}
+
+.page-library-active .rank-bar,.page-record-active .rank-bar{display:none!important}.page-library-active header.topbar,.page-record-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-library-active .topbar h1,.page-record-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-library-active .topbar .fav,.page-record-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
+.page-library-active main,.page-record-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#faf6ee,#f3e9db)}
+.section-head{text-align:center;margin:3px 0 16px}.section-head b{display:block;font-family:"Songti SC",serif;font-size:24px;letter-spacing:5px;color:#8f2e28}.section-head span{display:block;font-size:10px;letter-spacing:3px;color:#a98245;margin-top:5px}
+#page-library .lib-tabs{gap:7px;background:rgba(255,253,248,.72);border:1px solid #ddcaa9;border-radius:16px;padding:5px;margin-bottom:12px}#page-library .lib-tab{border:0;background:transparent;height:39px;border-radius:12px;color:#766359}#page-library .lib-tab.active{background:#9d332b;color:#fff2d4;box-shadow:0 5px 12px rgba(136,43,36,.16)}
+#page-library .library-top{top:0;background:transparent;padding:0 0 12px}#page-library .lib-search{height:48px;border:1px solid #dcc7a4;border-radius:15px;background:#fffdf8;padding-left:42px;box-shadow:0 6px 18px rgba(65,39,24,.04)}#page-library .library-top:before{content:'⌕';position:absolute;left:15px;top:6px;font-family:Georgia,serif;font-size:27px;color:#b18a4a;z-index:2}
+#page-library .lib-list{border:1px solid #ddc9a7;border-radius:18px;background:rgba(255,253,248,.82);box-shadow:0 9px 25px rgba(70,41,24,.05)}#page-library .lib-item{min-height:58px;padding:11px 15px;border-bottom-color:#eadfcd}#page-library .lib-item .w{font-family:Georgia,serif;font-size:16px;color:#8f302a}#page-library .lib-item .d{max-width:62%;font-size:11px}#page-library .stats-row .stat{background:#fffaf2;border-color:#ddc9a7}
+#page-record .panel{border:1px solid #dcc7a4;border-radius:19px;background:rgba(255,253,248,.86);padding:17px;box-shadow:0 9px 25px rgba(70,41,24,.06)}#page-record .panel h2{font-family:"Songti SC",serif;font-size:19px;letter-spacing:3px;color:#922e28;border-bottom:1px solid #eadcc5;padding-bottom:11px;margin-bottom:13px}#page-record .panel h2 .en{float:right;font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:1px;color:#ac8648;margin-top:5px}
+#page-record .stat{padding:13px 5px;border-radius:13px;background:#fff9ef}#page-record .stat b{font-family:Georgia,serif;font-size:22px}#page-record .save-btn-row{margin-top:15px}#page-record .save-btn-row .btn,#page-record .panel>a.btn,#page-record .panel>button.btn{min-height:46px;border-radius:13px;letter-spacing:1px}#page-record .cloud-status{border-color:#ddcaa9;background:#faf3e7;padding:12px 13px}.page-record-active .rec-item{border:1px solid #e1ceb0;border-left:4px solid #b18438;border-radius:13px;background:#fffaf2}
+/* ===== V7.4 抉择 / 查案 / 情缘 / 放榜 ===== */
+.page-choice-active .rank-bar,.page-case-active .rank-bar,.page-love-active .rank-bar{display:none!important}.page-choice-active header.topbar,.page-case-active header.topbar,.page-love-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-choice-active .topbar h1,.page-case-active .topbar h1,.page-love-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-choice-active .topbar .fav,.page-case-active .topbar .fav,.page-love-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
+.page-choice-active main,.page-case-active main,.page-love-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:radial-gradient(circle at 85% 0,rgba(174,115,39,.09),transparent 28%),linear-gradient(180deg,#faf6ee,#f3e9db)}
+#page-choice:before{content:'朱 批 抉 择';display:block;text-align:center;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#b4873e;margin:0 0 8px}#page-choice .chap-title{font-size:24px;letter-spacing:4px;margin:0 0 15px;color:#8f2e28}#page-choice .panel{border:1px solid #d9bd89;border-radius:19px;background:rgba(255,253,248,.9);padding:22px 19px;box-shadow:0 10px 28px rgba(70,39,23,.07)}#page-choice .panel:after{content:'择';position:absolute;right:3px;bottom:-32px;font-family:"Songti SC",serif;font-size:112px;color:#9d322b;opacity:.045}#page-choice .p-text{font-family:"Songti SC",serif;font-size:15px;line-height:2;color:#4c3931;text-align:justify}#page-choice #choiceOpts{display:grid;gap:10px}#page-choice .qopt{margin:0;min-height:58px;border:1px solid #dcc7a5;border-radius:15px;background:#fffaf2;padding:14px 15px;box-shadow:0 5px 15px rgba(68,39,23,.04)}#page-choice .qopt:before{content:'◆';font-size:7px;color:#b58940;margin-right:9px;vertical-align:2px}
+#page-case:before{content:'内 廷 密 卷';display:block;text-align:center;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#b4873e;margin-bottom:8px}#page-case .chap-title{font-size:24px;letter-spacing:4px;margin:0 0 15px;color:#8f2e28}#page-case .panel{border:1px solid #d4b67e;border-radius:20px;background:#fffaf3;padding:20px 17px;box-shadow:0 12px 30px rgba(65,37,22,.08)}#page-case .panel:after{content:'密';position:absolute;right:14px;top:10px;width:43px;height:43px;border:2px solid #aa3c32;border-radius:8px;color:#aa3c32;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:21px;transform:rotate(-8deg);opacity:.65}#page-case #caseIntro{padding-right:48px;font-family:"Songti SC",serif;font-size:14px;line-height:1.9}#page-case .letter{margin:17px 0;border:1px solid #cda96a;border-radius:14px;background:linear-gradient(135deg,#efe0bd,#f9efda);padding:18px 16px;box-shadow:inset 0 0 24px rgba(115,74,31,.06);font-family:Georgia,"Songti SC",serif;line-height:1.9}#page-case #caseQ{font-family:"Songti SC",serif;font-size:15px;color:#70483b;line-height:1.7;margin:14px 0}#page-case #caseOpts{display:grid;gap:9px}#page-case .qopt{margin:0;min-height:52px;border-radius:14px;background:#fffdfa}
+#page-love>.chap-title{font-size:25px;letter-spacing:4px;margin:2px 0 8px;color:#922f35}#page-love>.chap-sub{border:1px solid #e0c6b0;border-radius:15px;background:rgba(255,250,246,.78);padding:12px 14px;line-height:1.8;color:#876d63;margin-bottom:15px}#page-love .love-card{border:1px solid #dfc5ae;border-radius:19px;padding:16px;background:linear-gradient(145deg,rgba(255,253,249,.94),rgba(248,237,228,.9));box-shadow:0 9px 24px rgba(88,42,42,.06);position:relative;overflow:hidden}#page-love .love-card:after{content:'缘';position:absolute;right:-4px;bottom:-31px;font-family:"Songti SC",serif;font-size:100px;color:#a94145;opacity:.045}#page-love .love-head{position:relative;z-index:2}.page-love-active .love-emoji{width:48px;height:48px;border:1px solid #d9bda4;border-radius:50%;background:#fff8f1;display:grid;place-items:center;font-size:24px}.page-love-active .love-name{font-family:"Songti SC",serif;font-size:18px;letter-spacing:2px;color:#91313a}.page-love-active .love-tag{border-color:#d8b693;color:#9b6d39;background:#fff9ef}.page-love-active .love-bar{height:7px;background:#eadcd1}.page-love-active .love-fill{background:linear-gradient(90deg,#b56267,#d39a79)}#page-love .love-card .btn{position:relative;z-index:2;border-radius:13px;background:#96353a;color:#fff0e4}#page-love .love-card .btn.gold{background:#a86f3f}
+#page-quiz .quiz-result{padding:24px 5px 8px}#page-quiz .quiz-result:before{content:'考 校 放 榜';display:block;font-family:"Songti SC",serif;font-size:11px;letter-spacing:5px;color:#ad8240;margin-bottom:15px}#page-quiz .result-stamp{min-width:150px;border-radius:15px;background:#fff8e9;font-family:"Songti SC",serif;font-size:24px;letter-spacing:5px;color:#8f2e28;border:3px double #bd8d3d;box-shadow:0 8px 20px rgba(81,47,26,.09);transform:rotate(-2deg)}#page-quiz .result-stamp.pass{background:#f5f7e9;color:#4d743d;border-color:#8ca477}#page-quiz .result-stamp.fail{background:#fff0eb;color:#9a382f;border-color:#c77d6f}#page-quiz .result-stamp.perfect{background:linear-gradient(135deg,#f8e8ae,#fff7dc);color:#8b5a1f;border-color:#c19136}#page-quiz .result-score{font-size:14px;line-height:1.8;margin:15px 0}#page-quiz .result-score b{font-family:Georgia,serif;font-size:24px}#page-quiz .result-wrong-title{text-align:left;color:#8c6c5a;border-bottom:1px solid #e6d8c2;padding-bottom:7px}#page-quiz .result-wrong-item{border:1px solid #e1cfb3;border-radius:13px;background:#fffaf2;padding:10px 12px}#page-quiz .result-word{font-family:Georgia,serif}#page-quiz .quiz-result>.btn{height:50px;border-radius:14px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reward-rays{display:none}.answer-flash{backdrop-filter:none}}
+.update-pill{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:500;background:rgba(48,29,25,.94);color:#fff0d0;border:1px solid rgba(224,190,119,.55);border-radius:22px;padding:9px 16px;font-size:12px;letter-spacing:1px;box-shadow:0 8px 24px rgba(0,0,0,.2);white-space:nowrap;animation:fadeIn .2s ease}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header-wrap">
+    <header class="topbar">
+      <h1>凤印九重</h1>
+      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
+    </header>
+    <div class="rank-bar" id="rankBar"></div>
+  </div>
+
+  <main id="main">
+    <div class="page active" id="page-start">
+      <div class="home-v7">
+        <div class="home-head">
+          <div class="home-seal">凤</div><div class="home-brand">凤印九重</div>
+          <div class="home-resources">
+            <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
+            <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
+          </div>
+        </div>
+        <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="当前位份，点击继续闯关">
+          <section class="rank-hero">
+            <div class="palace-wash"></div>
+            <div class="rank-copy">
+              <div class="eyebrow">今日晋封</div>
+              <div class="home-rank" id="heroRank">秀女</div>
+              <div class="seal-progress-label"><span>凤印</span><span id="htNum">0 / 9</span></div>
+              <div class="seal-progress"><i id="htFill" style="width:0%"></i></div>
+              <div class="rank-next" id="rankNext">踏入宫门，完成首章即可获赐第一枚凤印</div>
+            </div>
+            <img class="hero-person hero-avatar" id="heroAvatar" src="assets/char-maid.webp?v=80" alt="当前宫廷角色" fetchpriority="high" decoding="async">
+          </section>
+        </div>
+        <button class="home-primary" id="btnStart" onclick="startGame()">入宫选秀</button>
+        <div class="today-count">今日已习 <b id="todayWords">0</b> / 20 词</div>
+        <div class="rank-journey" id="homeJourney" aria-label="九重位份进度"></div>
+        <div class="home-stats">
+          <div class="home-stat"><span>已掌握</span><b id="homeMastered">0</b><em>词</em></div>
+          <div class="home-stat"><span>最佳连胜</span><b id="homeStreak">0</b><em>题</em></div>
+          <div class="home-stat"><span>正确率</span><b id="homeAccuracy">0</b><em>%</em></div>
+        </div>
+        <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
+        <!-- 每日任务面板 -->
+        <div class="task-panel" id="taskPanel" style="display:none">
+          <div class="task-title">今日宫务</div>
+          <div class="task-list" id="taskList"></div>
+          <div class="task-reward" id="taskReward" style="display:none">
+            <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
+          </div>
+        </div>
+        <div class="hint">5491 个考研核心词 · 本地自动存档</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-story">
+      <div class="char-box" id="charBox" style="display:none">
+        <img class="char-img" id="charImg" src="" alt="">
+        <div class="char-info">
+          <div class="char-name" id="charName"></div>
+          <div class="char-quote" id="charQuote"></div>
+        </div>
+      </div>
+      <div class="chap-title" id="storyTitle"></div>
+      <div class="chap-sub" id="storySub"></div>
+      <div class="panel"><p class="p-text" id="storyText"></p></div>
+      <button class="btn" id="btnStoryNext" onclick="storyNext()">继续</button>
+      <div class="hint" id="storyHint"></div>
+    </div>
+
+    <div class="page" id="page-quiz">
+      <div class="progress" id="quizProgress"></div>
+      <div class="timer-bar" id="quizTimer"><div class="timer-fill" id="qtFill"></div><span class="timer-num" id="qtNum"></span></div>
+      <div class="quiz-char" id="quizChar" style="display:none">
+        <img class="quiz-char-img" id="quizCharImg" src="" alt="">
+        <div class="quiz-char-line-wrap">
+          <span class="quiz-char-line" id="quizCharLine"></span>
+        </div>
+      </div>
+      <div class="panel scroll-panel">
+        <span class="scroll-corner tl"></span><span class="scroll-corner tr"></span>
+        <span class="scroll-corner bl"></span><span class="scroll-corner br"></span>
+        <div class="word-wrap">
+          <div class="quiz-word" id="qWord" onclick="speakWord()"></div>
+          <button class="speak-icon" onclick="speakWord()" title="听发音">🔊</button>
+        </div>
+        <div class="quiz-pho" id="qPho"></div>
+        <div class="quiz-pos" id="qPos"></div>
+        <div class="listen-row" style="text-align:center;margin:4px 0 10px">
+          <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+        </div>
+        <div id="qOpts"></div>
+        <div id="qSpell" style="display:none">
+          <div class="spell-mode-tag" id="spellTag">飞 花 令 · 限时 20 秒写词</div>
+          <div class="spell-hint" id="spellHint"></div>
+          <div style="text-align:center;margin:6px 0">
+            <button class="btn ghost" onclick="speakSpell()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+          </div>
+          <input class="spell-input" id="spellInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼写英文单词…">
+          <div class="spell-tip" id="spellTip"></div>
+          <button class="btn gold" id="spellSubmit" onclick="answerSpell()">呈 卷</button>
+        </div>
+      </div>
+      <div class="hint" id="quizHint"></div>
+      <div id="quizResult" style="display:none"></div>
+    </div>
+
+    <div class="page" id="page-battle">
+      <div class="battle-title" id="battleTitle"></div>
+      <div class="battle-sub" id="battleSub"></div>
+      <div class="timer-bar" id="battleTimer"><div class="timer-fill" id="btFill"></div><span class="timer-num" id="btNum"></span></div>
+      <div class="enemy-move" id="enemyMove"></div>
+      <div class="combo-badge" id="battleCombo"></div>
+      <div class="enemy-char" id="enemyChar" style="display:none">
+        <img class="enemy-char-img" id="enemyCharImg" src="" alt="">
+        <div class="enemy-char-info">
+          <div class="enemy-char-name" id="enemyCharName"></div>
+          <div class="enemy-char-quote" id="enemyCharQuote"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="hp-row"><span class="hp-name" id="enemyName">华妃</span><div class="hp-bar"><div class="hp-fill" id="enemyHp"></div></div><span class="hp-name" id="enemyHpText"></span></div>
+        <div class="hp-row"><span class="hp-name">你</span><div class="hp-bar"><div class="hp-fill friend" id="myHp"></div></div><span class="hp-name" id="myHpText"></span></div>
+        <div class="word-wrap" style="margin-top:14px">
+          <div class="quiz-word" id="bWord" onclick="speakWord()"></div>
+          <button class="speak-icon" onclick="speakWord()" title="听发音">🔊</button>
+        </div>
+        <div class="quiz-pho" id="bPho"></div>
+        <div class="quiz-pos" id="bPos"></div>
+        <div class="listen-row" style="text-align:center;margin:4px 0 10px">
+          <button class="btn ghost" onclick="speakWord()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
+        </div>
+        <div id="bOpts"></div>
+        <div class="battle-log" id="battleLog"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-choice">
+      <div class="chap-title" id="choiceTitle"></div>
+      <div class="panel"><p class="p-text" id="choiceText"></p></div>
+      <div id="choiceOpts"></div>
+      <div class="hint" id="choiceHint"></div>
+    </div>
+
+    <div class="page" id="page-case">
+      <div class="chap-title" id="caseTitle"></div>
+      <div class="panel">
+        <p class="p-text" id="caseIntro"></p>
+        <div class="letter" id="caseLetter"></div>
+        <div class="battle-sub" id="caseQ"></div>
+        <div id="caseOpts"></div>
+      </div>
+      <div class="hint" id="caseHint"></div>
+    </div>
+
+    <div class="page" id="page-reward">
+      <div class="reward-gates" aria-hidden="true">
+        <div class="reward-rays"></div><div class="reward-gate left"></div><div class="reward-gate right"></div>
+        <div class="reward-seal" id="rewardSeal">凤印</div>
+      </div>
+      <div class="reward-big">
+        <div class="chap-sub" id="rewardFrom"></div>
+        <div class="rn" id="rewardRank"></div>
+        <div class="rf" id="rewardSlogan"></div>
+      </div>
+      <div class="panel"><p class="p-text" id="rewardText"></p><div class="reward-unlocks" id="rewardUnlocks"></div></div>
+      <button class="btn gold" id="btnRewardNext" onclick="rewardNext()">继续</button>
+    </div>
+
+    <div class="page" id="page-library">
+      <div class="section-head"><b>御书房</b><span>词 库 · 温 故 知 新</span></div>
+      <div class="lib-tabs">
+        <button class="lib-tab active" id="libTabAll" onclick="libTab('all')">全部词</button>
+        <button class="lib-tab" id="libTabFav" onclick="libTab('fav')">⭐ 收藏<span class="n" id="libFavN">0</span></button>
+        <button class="lib-tab" id="libTabWrong" onclick="libTab('wrong')">❌ 错词<span class="n" id="libWrongN">0</span></button>
+      </div>
+      <div class="library-top"><input class="lib-search" id="libSearch" placeholder="搜单词，如 abandon" oninput="libTab('all');renderLibrary(this.value)"></div>
+      <div id="reviewBar" style="display:none"></div>
+      <div class="lib-list" id="libList"></div>
+      <div class="stats-row">
+        <div class="stat"><b id="libTotal">0</b><span>词库总量</span></div>
+        <div class="stat"><b id="libKnow">0</b><span>已见词汇</span></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-record">
+      <div class="section-head"><b>宫册藏录</b><span>功 绩 · 抉 择 · 存 档</span></div>
+      <div class="panel"><h2>藏录 <span class="en">抉择回望</span></h2><div id="recList"></div></div>
+      <div class="panel"><h2>宫册 <span class="en">你的功绩</span></h2>
+        <div class="stats-row">
+          <div class="stat"><b id="stRight">0</b><span>答对</span></div>
+          <div class="stat"><b id="stWrong">0</b><span>答错</span></div>
+          <div class="stat"><b id="stStreak">0</b><span>最高连击</span></div>
+        </div>
+        <div class="save-btn-row">
+          <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
+          <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
+        </div>
+        <div class="cloud-status" id="cloudStatus">☁️ 云同步未开启</div>
+        <a href="manual.html" class="btn ghost" style="text-decoration:none;text-align:center;display:block">📖 游戏说明</a>
+        <button class="btn ghost" onclick="openCloudCfg()">☁️ 云端配置</button>
+        <button class="btn ghost" onclick="resetGame()">重入轮回（清空进度）</button>
+      </div>
+    </div>
+
+    <div class="page" id="page-love">
+      <div class="chap-title">🌸 情缘 · 私奔支线</div>
+      <div class="chap-sub" id="loveIntro">位份晋至贵人，宫墙外的缘分悄然靠近。<br>情缘考校同样绑定词库——答对 60% 即过，答错只能重来。</div>
+      <div id="loveList"></div>
+      <div class="hint">每位男主四段情缘 · 最终抉择答对即私奔成功<br>各线结局独立，可全部攻略</div>
+    </div>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" onclick="goTab('story')"><span class="ti">📜</span>剧情</button>
+    <button class="tab" onclick="goTab('library')"><span class="ti">📖</span>词库</button>
+    <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>藏录</button>
+  </nav>
+
+  <div class="sheet-mask" id="sheetMask"></div>
+  <div class="sheet" id="sheet">
+    <div class="sw" id="sWord"></div>
+    <div class="sp" id="sPho"></div>
+    <div class="sd" id="sDef"></div>
+    <button class="btn ghost" id="sSpeakBtn">🔊 听发音</button>
+    <button class="btn gold" id="sFavBtn" onclick="toggleFav()">⭐ 收藏</button>
+    <button class="btn" id="sCloseBtn">收起</button>
+  </div>
+
+  <!-- V6.2 存档迁移弹层 -->
+  <div class="sheet-mask" id="saveMask" onclick="closeSaveModal()"></div>
+  <div class="save-modal" id="saveModal">
+    <div class="sv-title" id="saveTitle">导出存档</div>
+    <div class="sv-sub" id="saveSub"></div>
+    <textarea id="saveCode" placeholder="此处显示/粘贴存档密文"></textarea>
+    <div class="sv-actions">
+      <button class="btn gold" id="saveCopyBtn">复制密文</button>
+      <button class="btn ghost" id="saveDownBtn" style="display:none">下载文件</button>
+      <button class="btn ghost" onclick="closeSaveModal()">关闭</button>
+    </div>
+    <div class="sv-tip" id="saveTip"></div>
+  </div>
+
+  <!-- V6.3 云同步配置弹层 -->
+  <div class="sheet-mask" id="cloudMask" onclick="closeCloudCfg()"></div>
+  <div class="save-modal" id="cloudModal">
+    <div class="sv-title">☁️ 云端同步配置</div>
+    <div class="sv-sub">自动上传/拉取进度，多设备无缝续玩</div>
+    <input class="cloud-code" id="cloudCode" placeholder="自动生成存档码" autocomplete="off" spellcheck="false">
+    <div class="sv-sub" style="margin-top:0">⬆️ 你的存档码（换设备时把它抄到新设备即可接管）</div>
+    <div class="cloud-row">
+      <label>GitHub 用户名</label>
+      <input id="cfgOwner" placeholder="如 jianyangdu3-ux">
+    </div>
+    <div class="cloud-row">
+      <label>私有仓库名（用来存存档）</label>
+      <input id="cfgRepo" placeholder="如 fengyin-saves">
+    </div>
+    <div class="cloud-row">
+      <label>Token（只勾选该仓库 Contents 读写权限）</label>
+      <input id="cfgToken" type="password" placeholder="github_pat_xxx">
+      <button class="btn ghost" onclick="saveCloudCfgForm()">保存配置</button>
+    </div>
+    <div class="cloud-guide" id="cloudGuide">
+      <div class="guide-title">三步开通（约 5 分钟）</div>
+      <div class="guide-step">
+        <span class="guide-num">1</span>
+        <span class="guide-txt">新建<strong>私有</strong>仓库，名字随意</span>
+        <a class="guide-link" href="https://github.com/new" target="_blank" rel="noopener">去建仓库 ↗</a>
+      </div>
+      <div class="guide-step">
+        <span class="guide-num">2</span>
+        <span class="guide-txt">创建 Token，只勾该仓库 <strong>Contents: Read and write</strong></span>
+        <a class="guide-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">去建 Token ↗</a>
+      </div>
+      <div class="guide-step">
+        <span class="guide-num">3</span>
+        <span class="guide-txt">填好上方三项，点「保存配置」自动校验</span>
+        <span class="guide-done">已保存 ✓</span>
+      </div>
+      <details class="cloud-details">
+        <summary>每步怎么点？照着做就行</summary>
+        <div>
+          <div class="step-sub"><b>第 1 步 · 建私有仓库</b>（github.com/new）</div>
+          ① Repository name 填 <b>fengyin-saves</b>（名字随意）<br>
+          ② 可见性选 <b>Private（私有）</b>，千万别选 Public<br>
+          ③ 其余不用动，点 <b>Create repository</b> 完成
+          <div class="step-sub"><b>第 2 步 · 建 Token（只给这一个仓库开权限）</b></div>
+          ① 打开上面「去建 Token」链接，用 GitHub 账号登录<br>
+          ② Token name 随意填；Expiration 选 <b>90 天</b>（到期可再建）或 No expiration<br>
+          ③ Repository access 选 <b>Only select repositories</b> → 勾选刚建的仓库<br>
+          ④ Permissions → Repository permissions → <b>Contents</b> → 选 <b>Read and write</b><br>
+          ⑤ 点最下方 <b>Generate token</b> → 立刻复制（<b>只显示这一次！</b>）
+          <div class="step-sub"><b>第 3 步 · 回来粘贴保存</b></div>
+          把 用户名 / 仓库名 / Token 填进上方三个框 → 点「保存配置」→ 看到"配置已保存"即成功
+        </div>
+      </details>
+      <details class="cloud-details">
+        <summary>📱 换手机 / 换电脑怎么接着玩？</summary>
+        <div>
+          <b>旧设备：</b>打开这个配置弹层，记下上方「存档码」（如 A3K9XQ2P）<br>
+          <b>新设备：</b>打开游戏 → 云端配置 → 填同样的三项配置 + 输入旧存档码 → 保存 → 自动拉回进度 ✓<br>
+          <div class="tip-inline">存档码相当于你这份存档的"暗号"，两设备填同一个码 + 同一套 GitHub 配置，就是同一份存档。</div>
+        </div>
+      </details>
+      <details class="cloud-details">
+        <summary>❓ 常见问题</summary>
+        <div>
+          <b>Token 安全吗？</b>它只是"开这一个仓库"的钥匙，只勾了 Contents 读写，碰不到你其他仓库和账号。<br>
+          <b>Token 没复制就关了页面？</b>去 GitHub 重新生成一个，游戏里换上新的保存即可。<br>
+          <b>存档码忘了？</b>随时打开这个弹层就能看到，建议抄到备忘录。<br>
+          <b>两台设备同时玩？</b>以时间最近的存档为准，打开游戏会自动比对并弹窗提示，放心点。<br>
+          <b>不想同步了？</b>清空三项配置保存即可断开，本地进度不受影响。
+        </div>
+      </details>
+    </div>
+    <div class="cloud-actions">
+      <button class="btn gold" onclick="cloudNow('up')">⬆️ 立即上传</button>
+      <button class="btn ghost" onclick="cloudNow('down')">⬇️ 云端恢复</button>
+    </div>
+    <div class="sv-tip" id="cloudTip"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="vocab.js"></script>
+<script>
+(function(){
+"use strict";
+var VOCAB_MAP = {};
+try{
+  if(window.VOCAB && window.VOCAB.length){
+    window.VOCAB.forEach(function(it){
+      var k=String(it.word).toLowerCase();
+      if(!VOCAB_MAP[k]) VOCAB_MAP[k]=it;
+    });
+  }
+}catch(e){}
+
+/* ---------- 位份体系：九重位份，每晋一级获赐一枚凤印 ---------- */
+var RANKS=[
+  {n:'秀女',s:'初入宫闱，谨言慎行'},
+  {n:'答应',s:'得见天颜，一步之遥'},
+  {n:'常在',s:'常在御前，如履薄冰'},
+  {n:'贵人',s:'贵人之位，开始有名有姓'},
+  {n:'嫔',s:'一宫主位，初掌宫务'},
+  {n:'妃',s:'妃位之上，众人侧目'},
+  {n:'贵妃',s:'位同副后，权倾六宫'},
+  {n:'皇贵妃',s:'统摄六宫，凤印在望'},
+  {n:'皇后',s:'母仪天下，凤临深宫'}
+];
+var SLOGAN=['守拙安分，方能活命','宫门一入，步步为营','不争，是争','凤印之下，皆是因果','这一局，才刚刚开始','高处不胜寒','六宫大权，尽在我手','凤印未落，胜负未分','这深宫，终究是我的了'];
+
+/* ---------- 角色（每章一个对手/盟友） ---------- */
+var CHARACTERS={
+  0:{name:'掌事姑姑',emoji:'👵',quote:'深宫不养闲人，先过考校。',img:'assets/char-steward.webp?v=80'},
+  1:{name:'华妃',emoji:'👸',quote:'本宫倒要看看，你有多少斤两。',img:'assets/char-consort.webp?v=80'},
+  2:{name:'皇后',emoji:'👑',quote:'能走到这里，你倒有些本事。',img:'assets/char-queen.webp?v=80'}
+};
+
+function findCharByName(name){
+  for(var i=0;i<3;i++) if(CHARACTERS[i].name===name) return CHARACTERS[i];
+  return null;
+}
+
+/* ---------- 测验角色台词（每题答题前角色说一句） ---------- */
+var QUIZ_LINES={
+  0:[
+    '这词都记不住，还想进宫？',
+    '嬷嬷考你，答不上来趁早回去。',
+    '宫里处处要认字，先过我这关。',
+    '记住了，这词往后常用。',
+    '答对了才许进门，答错了……哼。'
+  ],
+  1:[
+    '这词儿都认不得，还敢来争宠？',
+    '本宫倒要看看你有多少斤两。',
+    '答不上来，就跪着回你的住处。',
+    '这个词，可是后宫生存的命根子。',
+    '你以为光靠脸就能在这宫里活？'
+  ],
+  2:[
+    '一词之差，天壤之别。你说说。',
+    '能读懂这词，才配在御前说话。',
+    '本宫考你，不可敷衍。',
+    '这词的意思，你要刻在心里。',
+    '答对了，本宫记你一功。'
+  ]
+};
+
+/* ---------- 章节数据（剧情词全部来自词库） ---------- */
+var STORY=[
+{
+  title:'第一章 · 选秀入宫', sub:'宫门一入深似海',
+  scenes:[
+    {t:'大周王朝，三年一选秀。你出身寒门，母亲临终前只留一句："深宫险恶，务必小心。"', w:['careful','dangerous','ancient']},
+    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨已下，抗旨便是死罪。', w:['obey','command','escape']},
+    {t:'宫门前，掌事姑姑上下打量你："深宫不养闲人，先过宫门考校。答得出，才进得了这扇门。"', w:['examine','admit','test']}
+  ],
+  quiz:5, battle:null, choice:null, case:null, reward:1,
+  gateText:'你深吸一口气，走向宫门考校的案台。'
+},
+{
+  title:'第二章 · 初入宫闱', sub:'御前风波',
+  scenes:[
+    {t:'入宫第一夜，华妃的贴身宫女故意打翻你的茶盏，尖声道："不懂规矩的贱婢！见了华妃娘娘还不跪下！"', w:['spill','rude','kneel']},
+    {t:'满殿的目光都落在你身上。华妃端坐主位，慢悠悠地呷了一口茶，等你开口。', w:['silence','observe','judge']},
+    {t:'你明白，这一晚若退一步，往后人人可欺；若贸然顶撞，便是大不敬之罪。这宫里的每一句话，都要拿捏分寸。', w:['offend','measure','wisdom']}
+  ],
+  quiz:4, battle:{enemy:'华妃',hp:100}, choice:{
+    q:'夜色已深，敬事房的太监来报——圣驾今夜翻牌，指了你侍寝。华妃的人却堵在门口："娘娘说了，妹妹初来乍到，不懂规矩，这牌子该让给姐姐。"',
+    opts:[
+      {k:'let',t:'忍让退让，把机会让出去'},
+      {k:'insist',t:'据理力争，坚持自己的机会'}
+    ],
+    good:'insist', goodText:'你欠身一笑："娘娘厚爱，可圣意难违。"这句话不卑不亢，反倒让华妃不好发作。', 
+    badText:'你退了一步，把牌子让了出去。华妃满意地点头，可你在宫人眼中，从此成了"好欺负的"那一个。'
+  }, case:null, reward:2,
+  gateText:'圣宠加身，却也招了人的眼。'
+},
+{
+  title:'第三章 · 风波乍起', sub:'一封密信',
+  scenes:[
+    {t:'晨起，枕下多了一封密信。你展开一看，冷汗直流——信上写的，竟是英文。', w:['secret','message','tremble']},
+    {t:'信中提到"I am innocent. I never betray you."——落款竟是你素不相识的外臣之名。若此信被搜出，便是私通外臣的铁证。', w:['innocent','betray','evidence']},
+    {t:'门外响起脚步声，皇后的凤驾已至。你必须在那之前，读懂这封信里真正的意思。', w:['approach','understand','hurry']}
+  ],
+  quiz:0, battle:null, choice:null, case:{
+    letter:'I am innocent. I never betray you. Someone wants to hurt me. Please help me.',
+    q:'这封密信，到底在说什么？',
+    opts:[
+      {t:'写信的人被人陷害，正求救', good:true},
+      {t:'写信的人与人密谋造反', good:false},
+      {t:'写信的人想逃离皇宫', good:false}
+    ],
+    goodText:'你读懂了一一这封信是求救，不是密谋！真正的幕后黑手，是想借这封信除掉你。',
+    badText:'你没能读懂信里的意思，慌乱中把信攥成一团——这一幕恰好被皇后的眼线看在眼里。'
+  }, reward:3,
+  gateText:'凤驾将至，你必须立刻做出判断。'
+}
+];
+
+/* ---------- 情缘·私奔支线（rank>=3 贵人解锁；剧情词全部取自词库） ---------- */
+var LOVES=[
+{
+  id:'doctor', name:'温既明', title:'太医院医正', emoji:'🌿', tag:'药石仁心',
+  words:['heal','cure','medicine','health','pain','wound','fever','relief','remedy','symptom','disease','patient','treat','recover','vital','pulse','poison','physician','bandage','dizzy','fatigue','virus','cell','sick','anxiety','panic','faint','chronic'],
+  nodes:[
+    {t:'初遇 · 太医院', d:'你奉皇后懿旨到太医院取药。廊下悬着一块旧匾，刻着两个褪色的词——cure 与 heal。他正伏案写方，见你进来抬眸，指腹轻搭你腕脉：「娘娘脉象虚浮，需静养。」宫人说这位医正医术高明，却从不攀附任何一派。你忽然觉得，这深宫里总算有个不设防的人。'},
+    {t:'夜诊 · 三更灯火', d:'你摔伤了膝盖，不敢声张。三更时分，他提着药箱翻窗而入，替你缠上 bandage，动作比宫人还轻。他低声说：「伤口不深，但若不及时 treat，恐留病根。」月光照着他额角的细汗，你忽然想——这宫里能为你深夜赶来的人，竟只有一个他。'},
+    {t:'传情 · 一盒药膏', d:'他托人送来一盒药膏，笺上只有一行字：「病来如山倒，病去如抽丝。愿你无病无忧，心无恐惧。」你认出那字迹，是他在太医院写方子的手。盒底压着一枚竹符，上刻 recover——他说，这是他开给天下人的方子，独这一味，想开给你。'},
+    {t:'密约 · 西角门外', d:'秋猎在即，宫中松懈。他递来一方帕子，帕角绣着一个词：escape。他望着你：「宫墙再高，也高不过人心。若你愿意，三日后子时，西角门外，我备好马车。」你攥紧帕子，听见自己心跳如擂鼓。'}
+  ],
+  final:{
+    q:'三日后子时，你如期赴约。他站在马车旁，月色照着他清瘦的脸。他递来一枚竹简，只刻着一个词——他低声问：你可还记得，它是什么意思？',
+    heText:'你轻声念出那个词。他眼眶一红，把你扶上马车，鞭声清脆，马蹄踏碎满地月光。三年后江南药庐，你为他熬药，他为你看诊。这世间再没有宫墙，只有药香与晨昏。',
+    beText:'你一时记不起那个词的意思，愣在原地。他眼中的光暗了暗，正要开口——身后传来侍卫的厉喝：「什么人！」马车惊散，他被押下，你被带回宫。这一夜，成了你此生最长的夜。'
+  }
+},
+{
+  id:'general', name:'沈破军', title:'镇北大将军', emoji:'⚔️', tag:'沙场点兵',
+  words:['brave','battle','army','soldier','sword','shield','victory','defeat','danger','courage','fierce','camp','march','guard','protect','defend','attack','conquer','enemy','troop','siege','strategy','tactic','surrender','retreat','glory','honor','loyal','duty','arrow','blade','fight','resist','invade','revolt','ally','raid','occupy'],
+  nodes:[
+    {t:'初遇 · 凯旋', d:'镇北将军班师回朝，你随宫人挤在御道旁。城门洞开，百姓高呼 victory。他一身玄甲跨马而过，目光掠过人潮，在你脸上顿了一瞬。城楼上有人喊他的名字，他扬手——手中长枪映着日光，像一道不驯的闪电。宫人议论：这位将军，是从死人堆里杀出来的，从不把宫规放在眼里。'},
+    {t:'教习 · 校场弯弓', d:'圣上命将军教习侍卫骑射，你因司职路过校场。他见你立在烈日下，把水囊抛过来：「站那么远，怕马？」你接住水囊，他咧嘴一笑：「军中无戏言。要学，便认真学。」他教你拉弓，说：「握弓的手要稳，心里更要稳——如 brave 二字，不是不怕，是怕了还往前走。」'},
+    {t:'传情 · 火漆密信', d:'他奉旨北巡，临行前托人塞给你一封火漆密信。信上只有一句：「若边关有变，我护你出城。」落款是他的军印，印旁画着一柄 sword。你捧着信，指尖发烫——他竟把身家性命，写进了给一个宫人的信里。'},
+    {t:'密约 · 雁门关外', d:'他回京述职，夜里翻墙来见你。月光下他摊开一张舆图：「雁门关外三千里，有草场，有马群。你愿意，我这就去向圣上请辞，带你远走高飞。」他顿了顿：「若你不愿，我便当今夜从未来过。」'}
+  ],
+  final:{
+    q:'他等你到子时。你推开角门，他卸了甲，站在月色里，手里攥着一枚刻着词的木牌——他低声问：跟不跟我走？你可还记得这个词的意思？',
+    heText:'你念出那个词，声音不大，却像军令。他大笑一声，将你抱上马背：「好！此生不负。」大漠孤烟，他教你骑马，你教他认字。边关的风再烈，也吹不散并肩的人。',
+    beText:'你念错了那个词。他眼神一凝，远处传来巡夜的脚步声。他护着你退回角门内：「今夜之事，从未发生。」木牌落在他掌中，被攥得发白。此后边关来信，你一封也没再收到。'
+  }
+},
+{
+  id:'scholar', name:'顾青衿', title:'御前教习', emoji:'🖋️', tag:'诗书风流',
+  words:['poem','verse','ink','paper','read','write','learn','wisdom','scholar','literature','talent','genius','elegant','culture','ancient','classic','soul','dream','beauty','grace','harmony','music','melody','style','imagination','inspire','passion','romance','tender','gentle','poet','charm','admire','emotion'],
+  nodes:[
+    {t:'初遇 · 御前授课', d:'新来一位教习，姓顾，江南人，掌一宫书文。他讲学时不爱之乎者也，倒爱引外邦新词：他说 wisdom 不在书里，在人心。宫里规矩重，他却在无人处教你研墨临帖，一笔一画，写得极慢，像怕惊着谁。'},
+    {t:'相知 · 上元灯会', d:'上元灯会，你隔着人潮望见他。他提一盏兔子灯挤过来，袖口沾了墨：「猜谜吗？谜底是一个词，猜对了，灯送你。」你红着脸猜中，他笑：「灯送你。谜底……也送你。」灯影摇晃，满街喧嚣，你只听清自己心跳的声音。'},
+    {t:'传情 · 手抄诗集', d:'他托书童送来一册手抄诗集，扉页只有一句：「人间词话三千，不敌你窗前研墨一回。」书页间夹着一枚书签，上写 romance——他注：此词意为"浪漫"，亦意为"私奔"。你忽然懂了什么，把书签贴身藏好。'},
+    {t:'密约 · 画舫南下', d:'他告诉你，下月初五，江南有一艘画舫北行，可直下扬州。「我有功名在身，却从不想困在庙堂。」他摊开一幅山水：「扬州城外，我有一间书斋，三亩荷塘。若你愿来，便是书斋主人。」'}
+  ],
+  final:{
+    q:'初五夜，你提着包袱走到西角门。画舫泊在护城河外，他立在船头，手里擎着一盏灯，灯上写着一个词——他遥遥喊：你可认得？认得，便上船。',
+    heText:'你高声念出那个词。他长笑一声，船头灯晃了晃：「好！好得很！」你提裙踏上跳板，画舫离岸，顺水南下。青灯古卷，他写诗，你研墨，三亩荷塘，一生长安。',
+    beText:'你没能认出那个词，犹豫间画舫已渐行渐远。他站在船头久久未动，灯影在水面碎成一片。第二天你收到一页素笺：「山长水远，各自珍重。」你攥着那页纸，哭了一夜。'
+  }
+}
+];
+
+/* ---------- 全局状态 ---------- */
+var S={
+  v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
+  right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[],
+  // V6.0 心力（体力）：考校/斗法入场与答错消耗，每日回满
+  energy:100, energyDate:'',
+  // 每日任务
+  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
+  // 情缘·私奔支线（rank>=3 贵人解锁）
+  love:{char:null,stage:0,points:0,endings:{}},
+  // V6.1 复习系统：错词本（词→错次）与收藏
+  wrongs:{}, favs:{}
+};
+var SAVE_KEY='gd12_state_v1';
+var cur=null;      // 当前测验上下文
+var ui={};
+
+/* ---------- 工具 ---------- */
+function $(id){return document.getElementById(id);}
+function extractPOS(def){
+  var m=/^([a-zA-Z.]+)\s*(.*)$/.exec(def||'');
+  if(m) return {pos:m[1], mean:m[2]};
+  return {pos:'',mean:def||''};
+}
+function save(){
+  S.savedAt=Date.now();
+  try{localStorage.setItem(SAVE_KEY, JSON.stringify(S));}catch(e){}
+  scheduleAutoSync();
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(SAVE_KEY);
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; try{window.S=S;}catch(e){} return true;}}
+  }catch(e){}
+  return false;
+}
+
+/* ---------- V6.1 复习系统（错词本/收藏/复习考校） ---------- */
+function markWrong(w){
+  if(!w) return;
+  try{
+    S.wrongs[w]=(S.wrongs[w]||0)+1;
+  }catch(e){ S.wrongs={}; S.wrongs[w]=1; }
+  save();
+}
+function markRight(w){
+  if(!w) return;
+  if(S.wrongs[w]){
+    S.wrongs[w]--;
+    if(S.wrongs[w]<=0) delete S.wrongs[w];
+  }
+  save();
+}
+function isFav(w){ return S.favs&&S.favs[w]; }
+function toggleFav(){
+  var w=$(ui.sWord).textContent; if(!w) return;
+  try{
+    if(S.favs[w]){ delete S.favs[w]; }
+    else{ S.favs[w]=1; }
+  }catch(e){ S.favs={}; S.favs[w]=1; }
+  save();
+  renderFavBtn(w);
+  toast(S.favs[w]?'已收藏，可在词库「⭐收藏」复习':'已取消收藏');
+  if(curLibTab==='fav') renderLibrary();
+}
+function renderFavBtn(w){
+  var b=$('sFavBtn');
+  if(b) b.textContent=S.favs&&S.favs[w]?'★ 已收藏':'☆ 收藏';
+}
+var curLibTab='all';
+function libTab(t){
+  curLibTab=t;
+  var map={all:'libTabAll',fav:'libTabFav',wrong:'libTabWrong'};
+  for(var k in map){ var el=$(map[k]); if(el) el.classList.toggle('active',k===t); }
+  renderLibrary();
+}
+function wrongWords(){
+  var arr=[];
+  for(var k in (S.wrongs||{})) if(VOCAB_MAP[k]) arr.push(k);
+  return arr;
+}
+function favWords(){
+  var arr=[];
+  for(var k in (S.favs||{})) if(VOCAB_MAP[k]) arr.push(k);
+  return arr;
+}
+function startReview(type){
+  var words=(type==='wrong')?wrongWords():favWords();
+  if(words.length<2){
+    toast(type==='wrong'?'暂无错词，答题后再来复习':'先点开词条 ⭐ 收藏几个词吧');
+    return;
+  }
+  if(!costEnergy(5,'复习')) return;
+  // 组题：优先选择题，1 道拼写收尾
+  var items=[];
+  var n=Math.min(words.length,8);
+  var pick=words.slice();
+  for(var i=0;i<n;i++){
+    var w=pick[i%pick.length];
+    var isSpell=(i===n-1 && n>=3);
+    items.push(isSpell?{word:w,mode:'spell',type:'spell',options:null}:
+      {word:w,mode:(i%2===0)?'en2zh':'zh2en',type:'choice',options:makeOptions(w,4,(i%2===0)?'en2zh':'zh2en')});
+  }
+  cur={stage:'quiz',items:items,i:0,gate:'',wrongCount:0,wrongWords:[],chapterCfg:{review:type}};
+  renderQuiz();
+}
+function finishReviewCleanup(){
+  // 复习结束：答对的词从错词本销账
+  if(!cur||!cur.chapterCfg||!cur.chapterCfg.review) return;
+  var done={};
+  cur.items.forEach(function(it){
+    if(done[it.word]) return; done[it.word]=1;
+    if(cur.wrongWords.indexOf(it.word)===-1) markRight(it.word);
+  });
+}
+
+/* ---------- V6.0 心力系统（体力/风险代价） ---------- */
+function initEnergy(){
+  if(typeof S.energy!=='number') S.energy=100;
+  if(S.energy>100) S.energy=100;
+  if(S.energy<0) S.energy=0;
+  var t=todayStr();
+  if(S.energyDate!==t){
+    S.energy=100; S.energyDate=t; save();
+  }
+}
+function costEnergy(n,tag){
+  initEnergy();
+  if(S.energy<n){
+    toast('⚡ 心力不足（'+S.energy+'/'+100+'）：'+tag+'，先去温书恢复');
+    showRestoreHint();
+    return false;
+  }
+  S.energy-=n; save(); renderRankBar();
+  return true;
+}
+function showRestoreHint(){
+  var pg=document.querySelector('.page.active'); if(!pg) return;
+  var old=document.getElementById('restoreBtn'); if(old) old.remove();
+  var b=document.createElement('button');
+  b.id='restoreBtn'; b.className='btn ghost';
+  b.textContent='📖 温书恢复心力（+30）';
+  b.onclick=function(){
+    S.energy=Math.min(100,(S.energy||0)+30); S.energyDate=todayStr(); save(); renderRankBar();
+    b.remove();
+    toast('温故知新，心力 +30');
+    goTab('library');
+  };
+  pg.appendChild(b);
+}
+function restoreEnergy(n){
+  S.energy=Math.min(100,(S.energy||0)+(n||30)); S.energyDate=todayStr(); save(); renderRankBar();
+}
+/* ---------- V6.0 倒计时（统一管理，切页即清） ---------- */
+var _timer=null;
+function clearTimer(){ if(_timer){clearInterval(_timer);_timer=null;} }
+function startCountdown(sec,fillId,numId,onTimeout){
+  clearTimer();
+  var left=sec;
+  var fill=$(fillId),num=$(numId);
+  if(fill){ fill.classList.remove('low'); fill.style.transition='none'; fill.style.width='100%'; }
+  if(num) num.textContent=left;
+  _timer=setInterval(function(){
+    left--;
+    if(fill){ fill.style.transition='width 1s linear'; fill.style.width=Math.max(0,(left/sec)*100)+'%'; if(left<=3) fill.classList.add('low'); }
+    if(num) num.textContent=Math.max(0,left);
+    if(left<=0){
+      clearTimer();
+      if(onTimeout) onTimeout();
+    }
+  },1000);
+}
+/* ---------- V6.0 斗法特效 ---------- */
+function dmgFloat(el,text,cls){
+  if(!el) return;
+  var r=el.getBoundingClientRect();
+  var s=document.createElement('span');
+  s.className='dmg-float '+(cls||'hit');
+  s.textContent=text;
+  s.style.left=(r.left+r.width/2-12)+'px';
+  s.style.top=(r.top)+'px';
+  document.body.appendChild(s);
+  setTimeout(function(){s.remove();},1000);
+}
+function flashHp(id){
+  var el=$(id); if(!el) return;
+  el.classList.remove('hp-flash'); void el.offsetWidth; el.classList.add('hp-flash');
+}
+function shakeApp(){
+  var a=document.getElementById('app'); if(!a) return;
+  a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+}
+function showAnswerFeedback(ok,title,word,detail){
+  var old=document.querySelector('.answer-flash'); if(old) old.remove();
+  var box=document.createElement('div');
+  box.className='answer-flash '+(ok?'right':'wrong');
+  box.innerHTML='<div class="af-mark">'+(ok?'✓':'×')+'</div><div class="af-title">'+title+'</div>'+
+    '<div class="af-detail">'+(word?'<span class="af-word">'+word+'</span>':'')+(detail||'')+'</div>';
+  document.body.appendChild(box);
+  setTimeout(function(){if(box&&box.parentNode)box.remove();},ok?760:1350);
+}
+function showBattleSkill(name){
+  if(!name) return;
+  var s=document.createElement('div'); s.className='battle-skill'; s.textContent=name;
+  document.body.appendChild(s); setTimeout(function(){if(s.parentNode)s.remove();},900);
+}
+
+/* ---------- 每日任务 ---------- */
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+function initTasks(){
+  if(!S.tasks) S.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
+  var t=todayStr();
+  if(S.tasks.date!==t){
+    S.tasks={date:t,done:[0,0,0],claimed:[0,0,0]};
+    save();
+  }
+}
+function getTasks(){
+  initTasks();
+  return [
+    {label:'背词 20 个', target:20, key:'words'},
+    {label:'答对 10 题', target:10, key:'correct'},
+    {label:'晋升 1 级', target:1, key:'promote'}
+  ];
+}
+function renderTasks(){
+  var list=$('taskList'); if(!list) return;
+  var tasks=getTasks(); var h=''; var allDone=true;
+  for(var i=0;i<tasks.length;i++){
+    var t=tasks[i]; var done=S.tasks.done[i]||0; var pct=Math.min(100,Math.round(done/t.target*100));
+    var finished=done>=t.target;
+    if(!finished) allDone=false;
+    h+='<div class="task-item">'+
+      '<span class="task-label">'+(finished?'✅ ':'')+t.label+'</span>'+
+      '<div class="task-bar"><div class="task-fill" style="width:'+pct+'%"></div></div>'+
+      '<span class="task-num">'+done+'/'+t.target+'</span>'+
+      '</div>';
+  }
+  list.innerHTML=h;
+  var panel=$('taskPanel'); if(panel) panel.style.display='block';
+  var reward=$('taskReward');
+  if(reward) reward.style.display=(allDone && !S.tasks.claimed[0])?'block':'none';
+}
+function claimTaskReward(){
+  S.tasks.claimed=[1,1,1];
+  S.points+=30; save();
+  toast('领取赏赐 +30 圣宠！');
+  renderTasks(); renderRankBar();
+}
+function taskInc(key,n){
+  initTasks();
+  var tasks=getTasks();
+  for(var i=0;i<tasks.length;i++){
+    if(tasks[i].key===key){
+      S.tasks.done[i]=(S.tasks.done[i]||0)+(n||1);
+      if(S.tasks.done[i]>tasks[i].target) S.tasks.done[i]=tasks[i].target;
+    }
+  }
+  save();
+  renderTasks();
+}
+function toast(msg){
+  var t=$(ui.toast);
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},1600);
+}
+function spawnCoin(el,emoji){
+  if(!el) return;
+  var r=el.getBoundingClientRect();
+  var span=document.createElement('span');
+  span.className='coin-float';
+  span.textContent=emoji;
+  span.style.left=(r.left+r.width/2)+'px';
+  span.style.top=(r.top)+'px';
+  document.body.appendChild(span);
+  setTimeout(function(){span.remove();},900);
+}
+/* ---------- 音频初始化（解决 iOS/微信自动播放限制） ---------- */
+var audioCtx=null;
+function initAudio(){
+  if(!audioCtx){
+    try{ audioCtx=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume().catch(function(){}); }
+}
+/* 首次用户交互时解锁音频 */
+function onceAudioUnlock(){
+  initAudio();
+  document.removeEventListener('touchstart',onceAudioUnlock);
+  document.removeEventListener('click',onceAudioUnlock);
+}
+document.addEventListener('touchstart',onceAudioUnlock,{passive:true});
+document.addEventListener('click',onceAudioUnlock);
+
+function speak(word){
+  if(!word) return;
+  initAudio();
+  // 优先 Web Speech API（iOS 更可靠）
+  try{
+    if(window.speechSynthesis){
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(word);
+      u.lang='en-US';
+      u.rate=0.85;
+      speechSynthesis.speak(u);
+      return;
+    }
+  }catch(e){}
+  // fallback 到有道
+  try{
+    var url='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
+    var a=new Audio(url);
+    a.play().catch(function(){});
+  }catch(e){}
+}
+function speakWord(){
+  var w;
+  if(cur && cur.stage==='quiz') w=cur.items[cur.i].word;
+  else if(cur && cur.stage==='battle') w=cur.q.word;
+  else w='';
+  if(!w) return;
+  speak(w);
+  toast('🔊 发音：'+w);
+}
+function speakSpell(){
+  var w=cur && cur.items ? cur.items[cur.i].word : '';
+  if(!w) return;
+  speak(w);
+  toast('🔊 发音：'+w);
+}
+function rand(n){return Math.floor(Math.random()*n);}
+function pick(arr){return arr[rand(arr.length)];}
+
+/* ---------- 渲染基础 ---------- */
+function renderRankBar(){
+  var bar=$(ui.rankBar); var h='';
+  for(var i=0;i<RANKS.length;i++){
+    h+='<span class="rank-chip'+(i<S.rank?' past':(i===S.rank?' cur':''))+'" title="'+(i<S.rank?'已获得此位份凤印':'当前位份')+'">'+(i<S.rank?'✓ ':'')+RANKS[i].n+'</span>';
+  }
+  var sealEl=$('sealText');
+  if(sealEl) sealEl.textContent=S.rank>0?('凤印×'+S.rank):'';
+  bar.innerHTML=h;
+  $(ui.favText).textContent='圣宠 '+S.points;
+  var et=$('energyText');
+  if(et){
+    initEnergy();
+    et.textContent='⚡ '+S.energy;
+    et.classList.toggle('energy-low',S.energy<=15);
+  }
+  renderHeroBadge();
+}
+/* 首页主视觉渲染：金钗 + 位份圆环 + 九印进度 */
+function renderHeroBadge(){
+  var imgs=['assets/char-maid.webp?v=80','assets/char-maid.webp?v=80','assets/char-maid.webp?v=80',
+            'assets/char-consort.webp?v=80','assets/char-consort.webp?v=80','assets/char-consort.webp?v=80',
+            'assets/char-queen.webp?v=80','assets/char-queen.webp?v=80','assets/char-queen.webp?v=80'];
+  var r=S.rank||0;
+  var ha=$('heroAvatar'); if(ha) ha.src=imgs[r]||imgs[0];
+  var hr=$('heroRank'); if(hr) hr.textContent=(RANKS[r]||RANKS[0]).n;
+  var hf=$('htFill'); if(hf) hf.style.width=Math.min((r/8)*100,100)+'%';
+  var hn=$('htNum'); if(hn) hn.textContent=r+' / 9';
+  var st=$('sealText'); if(st) st.textContent=r>0?('凤印×'+r):'';
+  renderHomeDashboard();
+}
+function renderHomeDashboard(){
+  var r=S.rank||0;
+  var he=$('homeEnergy'); if(he) he.textContent=S.energy;
+  var hp=$('homeFavor'); if(hp) hp.textContent=S.points;
+  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.done&&S.tasks.done[0])||0;
+  var mastered=$('homeMastered'); if(mastered) mastered.textContent=Object.keys(S.seen||{}).length;
+  var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
+  var total=(S.right||0)+(S.wrong||0);
+  var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
+  var next=$('rankNext');
+  if(next) next.textContent=r>=8?'九重凤印已集齐，凤临天下':('距离下一次晋封还差 '+(8-r)+' 枚凤印');
+  var journey=$('homeJourney');
+  if(journey){
+    var html='';
+    for(var i=0;i<RANKS.length;i++){
+      var cls=i<r?'past':(i===r?'current':'future');
+      html+='<div class="journey-node '+cls+'"><div class="journey-dot">'+(i<r?'✓':(i+1))+'</div><span>'+RANKS[i].n+'</span></div>';
+    }
+    journey.innerHTML=html;
+  }
+}
+function showPage(id){
+  clearTimer();
+  var pages=document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  $(id).classList.add('active');
+  // 首页也显示 rank-bar，让用户随时看到位份进度；tabbar 仍隐藏
+  var tb=document.querySelector('.tabbar');
+  if(tb) tb.style.display=(id==='page-start')?'none':'flex';
+  var rb=document.querySelector('.rank-bar');
+  if(rb) rb.style.display='flex';
+  document.body.classList.toggle('page-start-active',id==='page-start');
+  var viewClasses=['page-story-active','page-quiz-active','page-battle-active','page-reward-active','page-library-active','page-record-active','page-choice-active','page-case-active','page-love-active'];
+  for(var c=0;c<viewClasses.length;c++) document.body.classList.remove(viewClasses[c]);
+  if(id==='page-story') document.body.classList.add('page-story-active');
+  if(id==='page-quiz') document.body.classList.add('page-quiz-active');
+  if(id==='page-battle') document.body.classList.add('page-battle-active');
+  if(id==='page-reward') document.body.classList.add('page-reward-active');
+  if(id==='page-library') document.body.classList.add('page-library-active');
+  if(id==='page-record') document.body.classList.add('page-record-active');
+  if(id==='page-choice') document.body.classList.add('page-choice-active');
+  if(id==='page-case') document.body.classList.add('page-case-active');
+  if(id==='page-love') document.body.classList.add('page-love-active');
+  window.scrollTo(0,0);
+}
+function setTab(which){
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+  var map={story:0,library:1,record:2};
+  var idx=map[which];
+  if(idx!==undefined&&tabs[idx]) tabs[idx].classList.add('active');
+}
+function goTab(which){
+  if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} if(loveActive){ loveStory(); return; } openStory(); }
+  else if(which==='library'){ showPage('page-library'); renderLibCounts(); renderLibrary(''); setTab('library'); }
+  else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
+}
+
+/* ---------- 剧情词高亮 ---------- */
+function linkWords(text, words, cls){
+  var out=text;
+  (words||[]).forEach(function(w){
+    var key=String(w).toLowerCase();
+    if(!VOCAB_MAP[key]) return;
+    var esc=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    var re=new RegExp('('+esc+')','i');
+    var spanRe=new RegExp('class="gword[^"]*"[^>]*>'+esc+'<','i');
+    if(out.match(re) && !spanRe.test(out)){
+      out=out.replace(re,'<span class="gword '+cls+'" data-w="'+key+'">$1</span>');
+    }
+  });
+  return out;
+}
+function bindWordClicks(root){
+  var spans=root?root.querySelectorAll('.gword'):document.querySelectorAll('.gword');
+  for(var i=0;i<spans.length;i++){
+    spans[i].onclick=function(){ openSheet(this.getAttribute('data-w')); };
+  }
+}
+
+/* ---------- 释义弹层 ---------- */
+function openSheet(key){
+  var it=VOCAB_MAP[key]; if(!it) return;
+  var p=extractPOS(it.def);
+  $(ui.sWord).textContent=it.word;
+  $(ui.sPho).textContent=it.phonetic||'';
+  $(ui.sDef).textContent=(p.pos?p.pos+' ':'')+p.mean;
+  $(ui.sheetMask).style.display='block';
+  $(ui.sheet).style.display='block';
+  renderFavBtn(key);
+  try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
+}
+function speakSheet(){
+  var w=$(ui.sWord).textContent; if(w) speak(w);
+}
+function closeSheet(){
+  $(ui.sheetMask).style.display='none';
+  $(ui.sheet).style.display='none';
+}
+
+/* ---------- 情缘·私奔支线 ---------- */
+var loveActive=false;   // 情缘剧情模式（storyNext 分支用）
+function currentLove(){
+  for(var i=0;i<LOVES.length;i++) if(LOVES[i].id===S.love.char) return LOVES[i];
+  return LOVES[0];
+}
+function renderLoveEntry(){
+  var el=$('loveEntry');
+  if(el) el.style.display=(S.rank>=3)?'block':'none';
+}
+function openLove(){
+  loveActive=false;
+  showPage('page-love');
+  var h='';
+  for(var i=0;i<LOVES.length;i++){
+    var L=LOVES[i];
+    var e=S.love.endings[L.id]||null;
+    var p=S.love.char===L.id?Math.min(100,S.love.points):0;
+    var ongoing=(S.love.char===L.id && S.love.stage>0 && S.love.stage<5);
+    h+='<div class="love-card">'+
+      '<div class="love-head"><span class="love-emoji">'+L.emoji+'</span>'+
+      '<div class="love-meta"><div class="love-name">'+L.name+'</div><div class="love-title">'+L.title+'</div></div>'+
+      '<div class="love-tag">'+L.tag+'</div></div>'+
+      '<div class="love-bar"><div class="love-fill" style="width:'+p+'%"></div></div>'+
+      '<div class="love-pts">好感 '+p+' / 100'+(e?(' · '+(e==='he'?'✅ 已私奔':'💔 事败')):(ongoing?' · 情缘进行中':''))+'</div>'+
+      (e?'<div class="love-end">'+(e==='he'?'这一世，你随他出了宫墙。':'那一夜之后，你们再未相见。')+'</div>':'')+
+      '<button class="btn '+(ongoing?'gold':'')+'" onclick="loveSelect(\''+L.id+'\')">'+
+      (e?'回顾结局':(ongoing?'继续情缘':'结缘'))+'</button>'+
+      '</div>';
+  }
+  $(ui.loveList).innerHTML=h;
+  setTab('story');
+}
+function loveSelect(id){
+  var L=null;
+  for(var i=0;i<LOVES.length;i++) if(LOVES[i].id===id) L=LOVES[i];
+  if(!L) return;
+  if(S.love.endings[id]){ loveEnding(S.love.endings[id]==='he'); return; }
+  if(S.love.char!==id){ S.love.char=id; S.love.stage=0; S.love.points=0; }
+  save();
+  loveStory();
+}
+function loveStory(){
+  if(S.love.stage>=5){ loveEnding(S.love.endings[S.love.char]==='he'); return; }
+  var L=currentLove();
+  loveActive=true;
+  var st=S.love.stage;
+  showPage('page-story');
+  var cb=$('charBox'); if(cb) cb.style.display='none';
+  if(st===4){
+    $(ui.storyTitle).textContent=L.name+' · 私奔密约';
+    $(ui.storySub).textContent='好感 '+Math.min(100,S.love.points)+' / 100';
+    $(ui.storyText).innerHTML=linkWords(L.final.q,L.words);
+    $(ui.btnStoryNext).textContent='作出抉择';
+  }else{
+    $(ui.storyTitle).textContent=L.name+' · '+L.nodes[st].t;
+    $(ui.storySub).textContent='情缘 · 好感 '+Math.min(100,S.love.points)+' / 100';
+    $(ui.storyText).innerHTML=linkWords(L.nodes[st].d,L.words);
+    $(ui.btnStoryNext).textContent='情缘考校';
+  }
+  bindWordClicks();
+  $(ui.storyHint).textContent='剧情中的词可点开看释义 · 考校答对 60% 即过';
+  setTab('story');
+}
+function loveNext(){
+  var st=S.love.stage;
+  if(st<4){
+    var L=currentLove();
+    startQuiz({scenes:[{w:L.words}],quiz:4,love:{}});
+  }else if(st===4){
+    loveFinalChoice();
+  }else{
+    openLove();
+  }
+}
+function loveFinish(passed,correct,total,passLine,wrongWords,cfg){
+  var charBox=$('quizChar'); if(charBox) charBox.style.display='none';
+  var qPanel=$('qOpts'); if(qPanel) qPanel.style.display='none';
+  var qSpell=$('qSpell'); if(qSpell) qSpell.style.display='none';
+  $(ui.quizHint).textContent='';
+  var resBox=$('quizResult');
+  resBox.style.display='block';
+  var L=currentLove();
+  if(passed){
+    var gain=20+correct*2;
+    S.love.points=Math.min(100,S.love.points+gain);
+    S.love.stage++;
+    save();
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp pass">情缘渐深</div>'+
+      '<div class="result-score">'+L.name+' 好感 +'+gain+'（当前 '+Math.min(100,S.love.points)+' / 100）</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">错词复习（点单词可听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="loveContinueBtn" style="margin-top:6px">继续情缘</button>'+
+    '</div>';
+    var b=$('loveContinueBtn');
+    if(b) b.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      if(qSpell) qSpell.style.display='none';
+      cur=null;
+      loveStory();
+    };
+  }else{
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp fail">考校未过</div>'+
+      '<div class="result-score">答对 <b>'+correct+'</b> / '+total+' 题 · 需 '+passLine+' 题通过</div>'+
+      '<div class="result-wrong-title">错词复习（点单词可听发音），记住后重新考校</div>'+
+      '<div class="result-wrong-list">'+wrongWords.map(function(w){
+        var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+        return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+      }).join('')+'</div>'+
+      '<button class="btn ghost" id="loveRevBtn" style="margin-top:6px">📖 先去错词本复习</button>'+
+      '<button class="btn gold" id="loveRetryBtn" style="margin-top:6px">重新考校</button>'+
+    '</div>';
+    var b2=$('loveRetryBtn');
+    if(b2) b2.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      cur=null;
+      if(cfg) startQuiz(cfg);
+    };
+    var bRev=$('loveRevBtn');
+    if(bRev) bRev.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      cur=null;
+      goTab('library');
+      libTab('wrong');
+    };
+  }
+}
+function loveFinalChoice(){
+  var L=currentLove();
+  cur={stage:'loveFinal',answered:false};
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=L.name+' · 私奔密约';
+  $(ui.choiceText).innerHTML=linkWords(L.final.q,L.words);
+  bindWordClicks($(ui.choiceText));
+  var word=L.words[rand(L.words.length)];
+  cur.finalWord=word;
+  var opts=makeOptions(word,4,'en2zh');
+  var h='';
+  for(var i=0;i<opts.length;i++){
+    h+='<button class="qopt" data-i="'+i+'"'+(opts[i].is?' data-ok="1"':'')+'><span class="pos">'+opts[i].pos+'</span>'+opts[i].label+'</button>';
+  }
+  $(ui.choiceOpts).innerHTML=h;
+  var btns=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var j=0;j<btns.length;j++) btns[j].onclick=function(){ answerLoveFinal(this.getAttribute('data-i')); };
+  $(ui.choiceHint).textContent='他给的暗号——答对，随他远走；答错，或许就再也见不到了。';
+}
+function answerLoveFinal(idx){
+  if(!cur||cur.answered) return;
+  cur.answered=true;
+  var L=currentLove();
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  var isRight=!!opts[parseInt(idx,10)].getAttribute('data-ok');
+  opts[parseInt(idx,10)].classList.add(isRight?'right':'wrong');
+  if(!isRight){
+    for(var k=0;k<opts.length;k++) if(opts[k].getAttribute('data-ok')){
+      opts[k].classList.add('right'); break;
+    }
+  }
+  for(var m=0;m<opts.length;m++) opts[m].style.pointerEvents='none';
+  S.love.endings[L.id]=isRight?'he':'be';
+  S.love.stage=5;
+  if(isRight){ S.love.points=100; S.points+=50; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('你念对了暗号，随他远走高飞！+50 圣宠'); }
+  else{ S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; markWrong(cur.finalWord); toast('暗号答错，功亏一篑 -15 圣宠'); }
+  save();
+  setTimeout(function(){ loveEnding(isRight); },900);
+}
+function loveEnding(he){
+  var L=currentLove();
+  loveActive=false;
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=L.name+' · '+(he?'得偿所愿 · 私奔':'事败 · 一别两宽');
+  $(ui.choiceText).innerHTML='<p class="p-text" style="text-indent:0">'+(he?L.final.heText:L.final.beText)+'</p>';
+  $(ui.choiceOpts).style.display='none';
+  $(ui.choiceHint).textContent='';
+  var parent=$(ui.choiceHint).parentNode;
+  var old=parent.querySelector('.love-end-btn');
+  if(old) old.remove();
+  var b=document.createElement('button');
+  b.className='btn gold love-end-btn';
+  b.textContent=he?'回到情缘':'再试一次';
+  b.onclick=function(){
+    if(he){ openLove(); }
+    else{ S.love.stage=4; S.love.points=Math.max(0,S.love.points-10); save(); loveFinalChoice(); }
+  };
+  parent.appendChild(b);
+  renderLoveEntry();
+}
+
+/* ---------- 测验（词关） ---------- */
+function makeOptions(word, count, mode){
+  var ans=VOCAB_MAP[word];
+  var p=extractPOS(ans.def);
+  var pool=[];
+  var keys=Object.keys(VOCAB_MAP);
+  var tries=0;
+  while(pool.length<count-1 && tries<keys.length*3){
+    tries++;
+    var k=keys[rand(keys.length)];
+    if(k===word) continue;
+    var o=VOCAB_MAP[k];
+    var op=extractPOS(o.def);
+    if(mode==='en2zh' && op.pos!==p.pos) continue;
+    if(mode==='zh2en' && op.pos!==p.pos) continue;
+    if(pool.indexOf(k)===-1) pool.push(k);
+  }
+  var opts=[];
+  var wrong=pool.slice(0,count-1);
+  wrong.forEach(function(k){
+    var o=VOCAB_MAP[k]; var op=extractPOS(o.def);
+    opts.push({k:k,label:mode==='en2zh'?op.mean:(mode==='zh2en'?o.word:o.word),pos:op.pos,is:false});
+  });
+  opts.push({k:word,label:mode==='en2zh'?p.mean:(mode==='zh2en'?ans.word:ans.word),pos:p.pos,is:true});
+  for(var i=opts.length-1;i>0;i--){var j=rand(i+1);var tmp=opts[i];opts[i]=opts[j];opts[j]=tmp;}
+  return opts;
+}
+function buildOptsHTML(opts, clickFn){
+  var h='';
+  opts.forEach(function(o,idx){
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.is?' data-ok="1"':'')+'><span class="pos">'+o.pos+'</span>'+o.label+'</button>';
+  });
+  return h;
+}
+
+function startQuiz(cfg){
+  if(!costEnergy(5,'考校')) return;
+  var words=[];
+  (cfg.scenes||[]).forEach(function(s){ (s.w||[]).forEach(function(x){ if(words.indexOf(x)===-1 && VOCAB_MAP[x]) words.push(x); }); });
+  var count=cfg.quiz||5;
+  if(words.length===0){ var _keys=Object.keys(VOCAB_MAP); for(var _t=0;_t<10;_t++) words.push(_keys[rand(_keys.length)]); }
+  var items=[];
+  var spellCount=Math.max(1,Math.floor(count*0.3));
+  for(var i=0;i<count;i++){
+    var w=words[i%words.length];
+    if(i>=words.length){
+      var keys=Object.keys(VOCAB_MAP);
+      for(var t=0;t<60;t++){
+        var k=keys[rand(keys.length)];
+        if(k!==w && words.indexOf(k)===-1){w=k;break;}
+      }
+    }
+    var isSpell=(i>=count-spellCount);
+    if(isSpell){
+      items.push({word:w,mode:'spell',type:'spell',options:null});
+    }else{
+      var mode=(i%2===0)?'en2zh':'zh2en';
+      items.push({word:w,mode:mode,type:'choice',options:makeOptions(w,4,mode)});
+    }
+  }
+  cur={stage:'quiz',items:items,i:0,gate:cfg.gateText,wrongCount:0,wrongWords:[],chapterCfg:cfg};
+  renderQuiz();
+}
+function renderQuiz(){
+  showPage('page-quiz');
+  /* 重置结果面板 */
+  var rb=$('quizResult'); if(rb){rb.style.display='none';rb.innerHTML='';}
+  var qOptsEl=$('qOpts'); if(qOptsEl) qOptsEl.style.display='block';
+  var qSpellEl=$('qSpell'); if(qSpellEl) qSpellEl.style.display='none';
+  var it=cur.items[cur.i];
+  var p=extractPOS(VOCAB_MAP[it.word].def);
+  /* 角色台词 */
+  var charIdx=S.chapter%3;
+  var charData=CHARACTERS[charIdx]||CHARACTERS[0];
+  var charBox=$('quizChar');
+  if(charBox){
+    charBox.style.display='flex';
+    var ci=$('quizCharImg');
+    if(ci){ ci.src=charData.img; ci.alt=charData.name; }
+    var lines=QUIZ_LINES[charIdx]||QUIZ_LINES[0];
+    $('quizCharLine').textContent='\u201c'+lines[rand(lines.length)]+'\u201d';
+  }
+  var dots='';
+  for(var i=0;i<cur.items.length;i++){
+    dots+='<div class="pdot'+(i<cur.i?' done':(i===cur.i?' cur':''))+'"></div>';
+  }
+  $(ui.quizProgress).innerHTML=dots;
+  if(it.type==='spell'){
+    /* 飞花令（原拼写题）：显示中文释义，限时输入英文 */
+    $(ui.qOpts).style.display='none';
+    $('qSpell').style.display='block';
+    $(ui.qWord).textContent='';
+    $(ui.qPho).textContent='';
+    $(ui.qPos).textContent='\u98de\u82b1\u4ee4 \u00b7 \u770b\u4e49\u5199\u8bcd \u00b7 \u5bf9\u52a0 20 \u5723\u5ba0';
+    var st=$('spellTag'); if(st) st.textContent='\u98de\u82b1\u4ee4 \u00b7 \u9650\u65f6 20 \u79d2\u5199\u8bcd\uff0c\u8d85\u65f6\u7b97\u8f93';
+    $('spellHint').textContent=p.mean;
+    var input=$('spellInput');
+    input.value=''; input.className='spell-input'; input.disabled=false;
+    $('spellSubmit').disabled=false;
+    $('spellTip').textContent='\u9996\u5b57\u6bcd\uff1a'+it.word.charAt(0).toUpperCase()+'  \u00b7  \u5171 '+it.word.length+' \u4e2a\u5b57\u6bcd';
+    setTimeout(function(){try{input.focus();}catch(e){}},120);
+  }else{
+    /* 选择题 */
+    $('qSpell').style.display='none';
+    $(ui.qOpts).style.display='block';
+    if(it.mode==='zh2en'){
+      $(ui.qWord).textContent=p.mean;
+      $(ui.qPho).textContent='';
+      $(ui.qPos).textContent=p.pos+' \u00b7 \u770b\u4e49\u9009\u8bcd';
+    }else{
+      $(ui.qWord).textContent=it.word;
+      $(ui.qPho).textContent=VOCAB_MAP[it.word].phonetic||'';
+      $(ui.qPos).textContent=p.pos+' \u00b7 \u9009\u8bcd\u4e49';
+    }
+    $(ui.qOpts).innerHTML=buildOptsHTML(it.options,function(){});
+    var opts=$(ui.qOpts).querySelectorAll('.qopt');
+    for(var j=0;j<opts.length;j++){
+      opts[j].onclick=function(){ answerQuiz(this.getAttribute('data-i')); };
+    }
+  }
+  $(ui.quizHint).textContent=cur.i===0&&cur.gate?cur.gate:'';
+  /* 复习模式标题（覆盖题型小字，强化温习感） */
+  if(cur.chapterCfg && cur.chapterCfg.review){
+    var qp=$(ui.qPos);
+    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':'收藏温习 · 学而时习之');
+  }
+  /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
+  startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
+    if(!cur||cur.stage!=='quiz') return;
+    if(cur.items[cur.i].type==='spell') answerSpell(true);
+    else answerQuiz(-1);
+  });
+}
+function answerQuiz(idx){
+  if(!cur||cur.stage!=='quiz') return;
+  clearTimer();
+  var it=cur.items[cur.i];
+  var isRight=false;
+  if(idx>=0){
+    var o=it.options[parseInt(idx,10)];
+    isRight=!!o.is;
+  }
+  var qopt=idx>=0?($(ui.qOpts).querySelectorAll('.qopt')[parseInt(idx,10)]):null;
+  if(qopt){
+    qopt.classList.add(isRight?'right':'wrong');
+    if(!isRight){
+      for(var k=0;k<it.options.length;k++) if(it.options[k].is){
+        $(ui.qOpts).querySelectorAll('.qopt')[k].classList.add('right');
+        break;
+      }
+    }
+  }
+  if(isRight){
+    S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
+    var gain=10*(S.streak>1?2:1);
+    S.points+=gain;
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    taskInc('correct');
+    toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
+    spawnCoin(qopt||$(ui.qWord),'✨');
+    showAnswerFeedback(true,S.streak>=3?'妙语连珠':'答对了',it.word,'圣宠 +'+gain+(S.streak>1?' · 连续答对 '+S.streak+' 题':''));
+  }else{
+    S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    S.energy=Math.max(0,S.energy-3);
+    cur.wrongCount++;
+    if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
+    markWrong(it.word);
+    toast('答错了 -5 圣宠 -3 心力');
+    spawnCoin(qopt||$(ui.qWord),'💔');
+    var wd=VOCAB_MAP[it.word]?extractPOS(VOCAB_MAP[it.word].def).mean:'';
+    showAnswerFeedback(false,'已收入错词本',it.word,wd+' · 稍后再复习一次');
+  }
+  save();
+  var opts=$(ui.qOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  setTimeout(function(){
+    if(!cur||cur.stage!=='quiz') return;
+    cur.i++;
+    if(cur.i>=cur.items.length){
+      finishQuiz();
+    }else{
+      renderQuiz();
+    }
+  },isRight?900:1450);
+}
+function answerSpell(timedOut){
+  if(!cur||cur.stage!=='quiz') return;
+  clearTimer();
+  var it=cur.items[cur.i];
+  if(it.type!=='spell') return;
+  var input=$('spellInput');
+  var val=(input.value||'').trim().toLowerCase();
+  var correct=it.word.toLowerCase();
+  var isRight=!timedOut && (val===correct);
+  input.disabled=true;
+  $('spellSubmit').disabled=true;
+  if(isRight){
+    input.className='spell-input right';
+    S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak;
+    var gain=20*(S.streak>1?2:1);
+    S.points+=gain;
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    taskInc('correct');
+    toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
+    spawnCoin(input,'\u2728');
+    showAnswerFeedback(true,S.streak>=3?'飞花成章':'飞花令对中',it.word,'完整拼写正确 · 圣宠 +'+gain);
+  }else{
+    input.className='spell-input wrong';
+    input.value=correct;
+    S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    S.energy=Math.max(0,S.energy-3);
+    cur.wrongCount++;
+    if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
+    markWrong(it.word);
+    toast(timedOut?'\u8d85\u65f6\u672a\u5199\u51fa -5 \u5723\u5ba0 -3 \u5fc3\u529b':'飞花令落空 -5 圣宠 -3 心力');
+    spawnCoin(input,'\ud83d\udc94');
+    var sd=VOCAB_MAP[it.word]?extractPOS(VOCAB_MAP[it.word].def).mean:'';
+    showAnswerFeedback(false,timedOut?'落笔已迟':'正确拼写已补全',it.word,sd+' · 已收入错词本');
+  }
+  save();
+  setTimeout(function(){
+    if(!cur||cur.stage!=='quiz') return;
+    cur.i++;
+    if(cur.i>=cur.items.length){
+      finishQuiz();
+    }else{
+      renderQuiz();
+    }
+  },1500);
+}
+function finishQuiz(){
+  clearTimer();
+  var total=cur.items.length;
+  var correctCount=total-cur.wrongCount;
+  var passLine=Math.ceil(total*0.6); /* 60%通过线 */
+  var passed=correctCount>=passLine;
+  var wrongWords=cur.wrongWords||[];
+  var cfg=cur.chapterCfg;
+  /* 情缘线考校：结果由 loveFinish 处理 */
+  if(cfg && cfg.love){ loveFinish(passed,correctCount,total,passLine,wrongWords,cfg); return; }
+  /* 复习模式：答对销账，结果面板回词库 */
+  if(cfg && cfg.review){
+    finishReviewCleanup();
+    var charBoxR=$('quizChar'); if(charBoxR) charBoxR.style.display='none';
+    var qPanelR=$('qOpts'); if(qPanelR) qPanelR.style.display='none';
+    var qSpellR=$('qSpell'); if(qSpellR) qSpellR.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBoxR=$('quizResult');
+    resBoxR.style.display='block';
+    var left=wrongWords().length;
+    resBoxR.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp '+(passed?'pass':'fail')+'">'+(passed?'温故知新':'尚未记牢')+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(left>0?' · 错词本还剩 <b>'+left+'</b> 词':' · 错词本已清空 ✨')+'</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">仍未记住（点单词听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">返回词库</button>'+
+    '</div>';
+    var btnR=$('quizReviewBack');
+    if(btnR) btnR.onclick=function(){ resBoxR.style.display='none'; resBoxR.innerHTML=''; cur=null; goTab('library'); };
+    return;
+  }
+
+  if(passed){
+    /* 隐藏角色台词和考校内容，显示通过结果 */
+    var charBox=$('quizChar'); if(charBox) charBox.style.display='none';
+    var qPanel=$('qOpts'); if(qPanel) qPanel.style.display='none';
+    var qSpell=$('qSpell'); if(qSpell) qSpell.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBox=$('quizResult');
+    resBox.style.display='block';
+    var perfect=(wrongWords.length===0);
+    if(perfect){ S.points+=30; save(); }
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp '+(perfect?'perfect':'pass')+'">'+(perfect?'考校全通':'考校通过')+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(perfect?' · 全对 +30 圣宠':' · 错'+wrongWords.length+'词需复习')+'</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">错词复习（点单词可听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="quizContinueBtn" style="margin-top:6px">继续剧情</button>'+
+    '</div>';
+    var btn=$('quizContinueBtn');
+    if(btn) btn.onclick=function(){
+      resBox.style.display='none';
+      resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      cur=null;
+      afterGate(true);
+    };
+  }else{
+    /* 失败：不重置剧情，显示错词复习+重试 */
+    var charBox2=$('quizChar'); if(charBox2) charBox2.style.display='none';
+    var qPanel2=$('qOpts'); if(qPanel2) qPanel2.style.display='none';
+    var qSpell2=$('qSpell'); if(qSpell2) qSpell2.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBox2=$('quizResult');
+    resBox2.style.display='block';
+    resBox2.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp fail">考校未过</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题 · 需 '+passLine+' 题通过</div>'+
+      '<div class="result-wrong-title">错词复习（点单词可听发音），记住后重新考校</div>'+
+      '<div class="result-wrong-list">'+wrongWords.map(function(w){
+        var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+        return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+      }).join('')+'</div>'+
+      '<button class="btn ghost" id="quizRevBtn" style="margin-top:6px">📖 先去错词本复习</button>'+
+      '<button class="btn gold" id="quizRetryBtn" style="margin-top:6px">重新考校</button>'+
+    '</div>';
+    var btn2=$('quizRetryBtn');
+    if(btn2) btn2.onclick=function(){
+      resBox2.style.display='none';
+      resBox2.innerHTML='';
+      if(charBox2) charBox2.style.display='flex';
+      if(qPanel2) qPanel2.style.display='block';
+      cur=null;
+      if(cfg) startQuiz(cfg);
+    };
+    var btnRev=$('quizRevBtn');
+    if(btnRev) btnRev.onclick=function(){
+      resBox2.style.display='none';
+      resBox2.innerHTML='';
+      cur=null;
+      goTab('library');
+      libTab('wrong');
+    };
+  }
+}
+
+/* ---------- V6.0 斗法：回合制博弈（敌方出招 → 限时拆招 → 连击绝杀） ---------- */
+var ENEMY_MOVES=['指鹿为马','笑里藏刀','暗渡陈仓','借刀杀人','无中生有','隔岸观火','欲擒故纵','声东击西','抛砖引玉','金蝉脱壳','美人计','反客为主','连环计','苦肉计'];
+var ENEMY_TAUNTS=['就这点本事？也配在宫里立足？','本宫当你是个人物，原来是草包。','连这都答不上来，回去种地吧。','呵，本宫高看你了。','你怕了？晚了。','这深宫，不是你这种脑子待的地方。'];
+var COMBO_NAMES=['','','巧言令色','妙语连珠','凤鸣九天'];
+function comboName(c){ return c>=4?COMBO_NAMES[4]:(c>=3?COMBO_NAMES[3]:(c>=2?COMBO_NAMES[2]:'')); }
+function startBattle(cfg){
+  if(!costEnergy(10,'斗法')) return;
+  cur={stage:'battle',enemy:cfg.enemy,hp:100,myhp:100,count:cfg.count||6,i:0,log:'',combo:0,turn:0};
+  nextBattleQ();
+}
+function nextBattleQ(){
+  if(!cur) return;
+  var keys=Object.keys(VOCAB_MAP);
+  var w=keys[rand(keys.length)];
+  cur.q={word:w,mode:'en2zh',options:makeOptions(w,3,'en2zh')};
+  renderBattle();
+}
+function renderBattle(){
+  showPage('page-battle');
+  cur.turn++;
+  if(cur.turn>cur.count){ winBattle(); return; }
+  /* 敌方先出招 */
+  cur.enemyMove=pick(ENEMY_MOVES);
+  cur.enemyTaunt=pick(ENEMY_TAUNTS);
+  $(ui.battleTitle).textContent='斗法 · 对阵 '+cur.enemy;
+  $(ui.battleSub).textContent='第 '+cur.turn+' / '+cur.count+' 回合 · 敌方出招，限时 12 秒拆招';
+  $('enemyMove').textContent='「'+cur.enemy+'」使出一招『'+cur.enemyMove+'』—— 速速出招！';
+  var cn=comboName(cur.combo);
+  $('battleCombo').textContent=cur.combo>=2?('连击 ×'+cur.combo+' · 招式「'+cn+'」'):'';
+  var c=findCharByName(cur.enemy);
+  var ec=$('enemyChar');
+  if(c && ec){
+    ec.style.display='flex';
+    $('enemyCharImg').src=c.img;
+    $('enemyCharImg').alt=c.name;
+    $('enemyCharName').textContent=c.name;
+    $('enemyCharQuote').textContent='"'+c.quote+'"';
+  }else if(ec){ ec.style.display='none'; }
+  $(ui.enemyName).textContent=cur.enemy;
+  $(ui.enemyHp).style.width=Math.max(0,cur.hp)+'%';
+  $(ui.enemyHpText).textContent=Math.max(0,cur.hp)+'/100';
+  $(ui.myHp).style.width=Math.max(0,cur.myhp)+'%';
+  $(ui.myHpText).textContent=Math.max(0,cur.myhp)+'/100';
+  var p=extractPOS(VOCAB_MAP[cur.q.word].def);
+  $(ui.bWord).textContent=cur.q.word;
+  $(ui.bPho).textContent=VOCAB_MAP[cur.q.word].phonetic||'';
+  $(ui.bPos).textContent=p.pos;
+  $(ui.bOpts).innerHTML=buildOptsHTML(cur.q.options,function(){});
+  var opts=$(ui.bOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerBattle(this.getAttribute('data-i')); };
+  $(ui.battleLog).textContent=cur.log;
+  startCountdown(12,'btFill','btNum',function(){
+    if(!cur||cur.stage!=='battle') return;
+    answerBattle(-1);
+  });
+}
+function answerBattle(idx){
+  if(!cur||cur.stage!=='battle') return;
+  clearTimer();
+  var isRight=false;
+  if(idx>=0){
+    var o=cur.q.options[parseInt(idx,10)];
+    isRight=!!o.is;
+    var qopt=$(ui.bOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+    if(qopt){
+      qopt.classList.add(isRight?'right':'wrong');
+      if(!isRight){
+        for(var k=0;k<cur.q.options.length;k++) if(cur.q.options[k].is){
+          $(ui.bOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+        }
+      }
+    }
+  }
+  var opts=$(ui.bOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  if(isRight){
+    cur.combo++;
+    var tier=Math.min(cur.combo,4);
+    var dmg=[20,28,38,50][tier-1];
+    cur.hp-=dmg;
+    S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
+    S.points+=12;
+    var cn=comboName(cur.combo);
+    cur.log+='第'+cur.turn+'回合：你「'+(cn||'见招拆招')+'」命中，'+cur.enemy+' -'+dmg+(cur.combo>=2?'（连击×'+cur.combo+'）':'')+'\n';
+    dmgFloat($('enemyHp'),'-'+dmg,'hit');
+    flashHp('enemyHp');
+    shakeApp();
+    taskInc('correct');
+    toast(cur.combo>=2?('连击×'+cur.combo+'！「'+cn+'」'):'出招命中！');
+    showBattleSkill(cn||'见招拆招');
+  }else{
+    cur.combo=0;
+    cur.myhp-=25;
+    S.wrong++; S.streak=0;
+    S.points=Math.max(0,S.points-8);
+    S.energy=Math.max(0,S.energy-3);
+    cur.log+='第'+cur.turn+'回合：'+cur.enemy+'反将一军——'+cur.enemyTaunt+'（你 -25）\n';
+    markWrong(cur.q.word);
+    dmgFloat($('myHp'),'-25','miss');
+    flashHp('myHp');
+    shakeApp();
+    toast('中计了！-8 圣宠 -3 心力');
+    showAnswerFeedback(false,'一时中计',cur.q.word,'正确词义已标出 · 已收入错词本');
+  }
+  save();
+  setTimeout(function(){
+    if(!cur||cur.stage!=='battle') return;
+    if(cur.hp<=0){ winBattle(); }
+    else if(cur.myhp<=0){ loseBattle(); }
+    else { cur.i++; nextBattleQ(); }
+  },1100);
+}
+function winBattle(){
+  if(!cur||cur.stage!=='battle') return;
+  var bonus=40+(cur.combo>=4?30:0);
+  S.points+=bonus;
+  var enemy=cur.enemy;
+  clearTimer();
+  save();
+  var ec=$('enemyChar'); if(ec) ec.style.display='none';
+  $('battleCombo').textContent='';
+  $('enemyMove').textContent='';
+  $(ui.battleLog).textContent='斗法得胜！'+enemy+'退避三舍，再不敢小觑你。\n你赢得 +'+bonus+' 圣宠'+(cur.combo>=4?'（凤鸣九天·绝杀加成）':'')+'。';
+  cur=null;
+  toast('斗法得胜 +'+bonus+' 圣宠');
+  setTimeout(function(){ afterGate(true); },1500);
+}
+function loseBattle(){
+  if(!cur||cur.stage!=='battle') return;
+  S.energy=Math.max(0,S.energy-15);
+  var enemy=cur.enemy;
+  clearTimer();
+  save();
+  var ec=$('enemyChar'); if(ec) ec.style.display='none';
+  $('battleCombo').textContent='';
+  $('enemyMove').textContent='';
+  $(ui.battleLog).textContent='你暂时落败……心力折损。重整旗鼓，再来斗法！';
+  cur=null;
+  setTimeout(function(){
+    var btn=document.createElement('button');
+    btn.className='btn gold'; btn.textContent='重整旗鼓（-10 心力）';
+    btn.onclick=function(){
+      btn.remove();
+      var ch=STORY[S.chapter];
+      if(ch&&ch.battle) startBattle(ch.battle);
+    };
+    var log=$('battleLog').parentNode;
+    log.appendChild(btn);
+  },1000);
+}
+
+/* ---------- 抉择（考词） ---------- */
+function showChoice(cfg){
+  cur={stage:'choice',cfg:cfg,answered:false};
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=STORY[S.chapter].title;
+  $(ui.choiceText).innerHTML=linkWords(cfg.q,STORY[S.chapter].scenes.reduce(function(a,s){return a.concat(s.w);},[]));
+  bindWordClicks($(ui.choiceText));
+  var h='';
+  cfg.opts.forEach(function(o,idx){
+    var it=VOCAB_MAP[o.k]; var pos='';
+    if(it){ var p=extractPOS(it.def); pos=p.pos||''; }
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.k===cfg.good?' data-ok="1"':'')+'><span class="pos">'+(pos?pos+' ':'')+'</span>'+o.t+'</button>';
+  });
+  $(ui.choiceOpts).innerHTML=h;
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerChoice(this.getAttribute('data-i')); };
+  $(ui.choiceHint).textContent='抉择的关键词已在文中标红，点开即看释义。';
+}
+function answerChoice(idx){
+  if(cur.answered) return;
+  cur.answered=true;
+  var cfg=cur.cfg;
+  var o=cfg.opts[parseInt(idx,10)];
+  var isGood=(o.k===cfg.good);
+  var qopt=$(ui.choiceOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  qopt.classList.add(isGood?'right':'wrong');
+  if(!isGood){
+    for(var k=0;k<cfg.opts.length;k++) if(cfg.opts[k].k===cfg.good){
+      $(ui.choiceOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+    }
+  }
+  S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
+  if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('抉择正确 +20 圣宠'); }
+  else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
+  save();
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  setTimeout(function(){
+    $(ui.choiceText).innerHTML='<p class="p-text" style="text-indent:0">'+(isGood?cfg.goodText:cfg.badText)+'</p>';
+    $(ui.choiceOpts).style.display='none';
+    $(ui.choiceHint).textContent='';
+    var b=document.createElement('button');
+    b.className='btn gold'; b.textContent='继续';
+    b.onclick=function(){ b.remove(); afterGate(isGood); };
+    $(ui.choiceHint).parentNode.appendChild(b);
+  },900);
+}
+
+/* ---------- 查案（阅读理解） ---------- */
+function showCase(cfg){
+  cur={stage:'case',cfg:cfg,answered:false};
+  showPage('page-case');
+  $(ui.caseTitle).textContent=STORY[S.chapter].title;
+  $(ui.caseIntro).innerHTML=linkWords('凤驾将至，你必须读懂这封信。信中的词均可点开查看释义。',['evidence','understand']);
+  var letterWords=['innocent','betray','hurt','help'];
+  $(ui.caseLetter).innerHTML=linkWords(cfg.letter,letterWords,'');
+  bindWordClicks($(ui.caseLetter));
+  $(ui.caseQ).textContent=cfg.q;
+  var h='';
+  cfg.opts.forEach(function(o,idx){
+    h+='<button class="qopt" data-i="'+idx+'"'+(o.good?' data-ok="1"':'')+'>'+o.t+'</button>';
+  });
+  $(ui.caseOpts).innerHTML=h;
+  var opts=$(ui.caseOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerCase(this.getAttribute('data-i')); };
+  $(ui.caseHint).textContent='点密信里的词可看释义，再作答。';
+}
+function answerCase(idx){
+  if(cur.answered) return;
+  cur.answered=true;
+  var cfg=cur.cfg;
+  var o=cfg.opts[parseInt(idx,10)];
+  var isGood=!!o.good;
+  var qopt=$(ui.caseOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  qopt.classList.add(isGood?'right':'wrong');
+  if(!isGood){
+    for(var k=0;k<cfg.opts.length;k++) if(cfg.opts[k].good){
+      $(ui.caseOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+    }
+  }
+  if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('查明真相 +25 圣宠'); }
+  else{ S.points=Math.max(0,S.points-12); S.wrong++; S.streak=0; toast('误判了 -12 圣宠'); }
+  save();
+  var opts=$(ui.caseOpts).querySelectorAll('.qopt');
+  for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
+  setTimeout(function(){
+    $(ui.caseIntro).innerHTML='<p class="p-text" style="text-indent:0">'+(isGood?cfg.goodText:cfg.badText)+'</p>';
+    $(ui.caseLetter).style.display='none';
+    $(ui.caseQ).style.display='none';
+    $(ui.caseOpts).style.display='none';
+    $(ui.caseHint).textContent='';
+    var b=document.createElement('button');
+    b.className='btn gold'; b.textContent='继续';
+    b.onclick=function(){ b.remove(); afterGate(isGood); };
+    $(ui.caseHint).parentNode.appendChild(b);
+  },900);
+}
+
+/* ---------- 章节流程 ---------- */
+function startGame(){
+  renderRankBar();
+  loveActive=false;
+  /* 有进度则继续，无进度才从头开始 */
+  if(!S.rank && S.chapter===0 && S.storyIdx===0 && !S.right && !S.wrong){
+    S.chapter=0; S.step=0; S.storyIdx=0;
+  }
+  save();
+  openStory();
+  maybeShowOnboarding();
+}
+var ONBOARD_KEY='gd_onboard_v1';
+function maybeShowOnboarding(){
+  try{if(localStorage.getItem(ONBOARD_KEY)==='1')return;}catch(e){}
+  if(document.getElementById('onboardMask'))return;
+  renderOnboarding(0);
+}
+function renderOnboarding(step){
+  var data=[
+    {icon:'词',title:'点词就能查',text:'剧情中带红色虚线的英文词都可以点击，不需要离开故事。',demo:'例如：<span class="demo-word">careful</span>　点击后查看释义、发音与收藏'},
+    {icon:'答',title:'答对才能进阶',text:'选择词义或完成飞花令。答错的词会自动收入错词本，之后可以集中复习。',demo:'考校通过线为 60%　·　连续答对会触发宫斗招式'},
+    {icon:'印',title:'集凤印，升九重',text:'完成剧情、考校与斗法即可晋升。从秀女一路走到皇后。',demo:'秀女 → 答应 → 常在 → 贵人 → 嫔 → 妃 → 贵妃 → 皇贵妃 → 皇后'}
+  ];
+  var d=data[Math.max(0,Math.min(step,data.length-1))];
+  var mask=document.getElementById('onboardMask');
+  if(!mask){mask=document.createElement('div');mask.id='onboardMask';mask.className='onboard-mask';document.body.appendChild(mask);}
+  var dots='';for(var i=0;i<data.length;i++)dots+='<i class="'+(i===step?'active':'')+'"></i>';
+  mask.innerHTML='<div class="onboard-card"><div class="onboard-dots">'+dots+'</div><div class="onboard-step">新手引导 · '+(step+1)+' / '+data.length+'</div><div class="onboard-icon">'+d.icon+'</div><div class="onboard-title">'+d.title+'</div><div class="onboard-text">'+d.text+'</div><div class="onboard-demo">'+d.demo+'</div><div class="onboard-actions"><button class="btn skip" id="onboardSkip">跳过</button><button class="btn next" id="onboardNext">'+(step===data.length-1?'开始闯关':'下一步')+'</button></div></div>';
+  $('onboardSkip').onclick=closeOnboarding;
+  $('onboardNext').onclick=function(){if(step<data.length-1)renderOnboarding(step+1);else closeOnboarding();};
+}
+function closeOnboarding(){
+  try{localStorage.setItem(ONBOARD_KEY,'1');}catch(e){}
+  var mask=document.getElementById('onboardMask');if(mask)mask.remove();
+  toast('记住：点红色英文词，可随时查看释义');
+}
+function openStory(){
+  if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
+  var ch=STORY[S.chapter];
+  showPage('page-story');
+  // 角色头像
+  var c=CHARACTERS[S.chapter];
+  var cb=$('charBox');
+  if(c && cb){
+    cb.style.display='flex';
+    var ci=$('charImg');
+    if(ci){ ci.src=c.img; ci.alt=c.name; }
+    $('charName').textContent=c.name;
+    $('charQuote').textContent='"'+c.quote+'"';
+  }else if(cb){ cb.style.display='none'; }
+  $(ui.storyTitle).textContent=ch.title;
+  $(ui.storySub).textContent=ch.sub;
+  $(ui.btnStoryNext).style.display='block';
+  $(ui.storyHint).textContent='';
+  var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
+  $(ui.storyText).innerHTML=linkWords(s.t,s.w);
+  bindWordClicks();
+  if(S.storyIdx>=ch.scenes.length){
+    $(ui.storyText).innerHTML='<p class="p-text">'+(ch.gateText||'')+'</p>';
+    $(ui.btnStoryNext).textContent=ch.quiz>0?'开始考校':'进入宫闱事件';
+  }else{
+    $(ui.btnStoryNext).textContent='继续';
+  }
+  setTab('story');
+}
+function storyNext(){
+  if(loveActive){ loveNext(); return; }
+  if(S.chapter>=STORY.length) return;
+  var ch=STORY[S.chapter];
+  if(S.storyIdx<ch.scenes.length-1){
+    S.storyIdx++; save(); openStory();
+    return;
+  }
+  // 场景走完 → 按章内顺序推进未完成事件
+  var done=ch._done||{};
+  if(ch.quiz>0 && !done.quiz){ startQuiz(ch); return; }
+  if(ch.battle && !done.battle){ startBattle(ch.battle); return; }
+  if(ch.choice && !done.choice){ showChoice(ch.choice); return; }
+  if(ch.case && !done.case){ showCase(ch.case); return; }
+  afterGate(true);
+}
+function afterGate(ok){
+  if(S.chapter>=STORY.length){ openStory(); return; }
+  var ch=STORY[S.chapter];
+  // 按章内顺序推进：quiz → battle → choice → case → reward
+  var done=ch._done||{};
+  if(ch.quiz>0 && !done.quiz){ done.quiz=true; ch._done=done; if(ok){ openStory(); return; } }
+  if(ch.battle && !done.battle){ done.battle=true; ch._done=done; openStory(); return; }
+  if(ch.choice && !done.choice){ done.choice=true; ch._done=done; openStory(); return; }
+  if(ch.case && !done.case){ done.case=true; ch._done=done; openStory(); return; }
+  // 全部完成 → 晋升
+  if(S.rank<ch.reward) promote(ch.reward);
+  else { S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
+}
+function promote(rank){
+  S.rank=rank;
+  taskInc('promote');
+  var ch=STORY[S.chapter];
+  if(ch._done) delete ch._done;
+  showPage('page-reward');
+  $(ui.rewardFrom).textContent='获赐第 '+rank+' 枚凤印 · 晋位大典';
+  $(ui.rewardRank).textContent=RANKS[rank].n;
+  $(ui.rewardRank).className='rn seal-stamp';
+  setTimeout(function(){$(ui.rewardRank).className='rn';},600);
+  $(ui.rewardSlogan).textContent=RANKS[rank].s;
+  $(ui.rewardText).textContent=rank===RANKS.length-1
+    ?'九枚凤印尽收，百官朝贺。你终于站到了这深宫之巅——可你心里清楚，这不过是另一场修行开始。'
+    :'内侍捧着鎏金凤印走到你面前，宫人纷纷跪下请安。你想起母亲那句"深宫险恶"——你活下来了，而且还要活得更好。';
+  var ru=$('rewardUnlocks');
+  if(ru) ru.innerHTML='<div class="reward-unlock"><b>凤印 +1</b><span>晋升凭证</span></div>'+
+    '<div class="reward-unlock"><b>圣宠进阶</b><span>解锁新考校</span></div>'+
+    '<div class="reward-unlock"><b>'+(rank>=3?'情缘开启':'新章开启')+'</b><span>'+(rank>=3?'宫墙外缘分':'新的宫廷剧情')+'</span></div>';
+  var seal=$('rewardSeal'); if(seal){seal.style.animation='none';void seal.offsetWidth;seal.style.animation='royalStamp .55s .55s cubic-bezier(.2,1.4,.4,1) forwards';}
+  $(ui.btnRewardNext).textContent='进入第'+(S.chapter+2)+'章';
+  renderRankBar();
+  renderLoveEntry();
+}
+function rewardNext(){
+  S.chapter++; S.storyIdx=0; S.step=0; save();
+  if(S.chapter>=STORY.length){
+    openStory();
+  }else{
+    openStory();
+  }
+}
+
+/* ---------- 词库 ---------- */
+function renderLibCounts(){
+  var fN=$('libFavN'), wN=$('libWrongN');
+  if(fN) fN.textContent='('+(favWords().length)+')';
+  if(wN) wN.textContent='('+(wrongWords().length)+')';
+}
+function renderReviewBar(){
+  var bar=$('reviewBar'); if(!bar) return;
+  var rev=(curLibTab==='wrong')?'wrong':'fav';
+  var words=(rev==='wrong')?wrongWords():favWords();
+  if(words.length<2){ bar.style.display='none'; bar.innerHTML=''; return; }
+  bar.style.display='flex';
+  bar.className='review-bar';
+  bar.innerHTML='<div class="rev-info">'+(rev==='wrong'?
+    '错词本 <b>'+words.length+'</b> 词：答对的会自动销账，清空即掌握' :
+    '已收藏 <b>'+words.length+'</b> 词，随时温习巩固')+'</div>'+
+    '<button class="btn gold" onclick="startReview(\''+rev+'\')">'+(rev==='wrong'?'📖 复习错词':'📖 复习收藏')+'</button>';
+}
+function renderLibrary(q){
+  var kw=(q||'').trim().toLowerCase();
+  var list=$(ui.libList);
+  renderLibCounts();
+  renderReviewBar();
+  var keys=[];
+  if(!kw){
+    if(curLibTab==='fav'){ keys=favWords(); }
+    else if(curLibTab==='wrong'){ keys=wrongWords(); }
+    else{ keys=Object.keys(VOCAB_MAP).slice(0,60); }
+  }else{
+    var all=Object.keys(VOCAB_MAP);
+    for(var i=0;i<all.length;i++){
+      if(all[i].indexOf(kw)>-1){ keys.push(all[i]); if(keys.length>=40) break; }
+    }
+  }
+  if(keys.length===0){
+    list.innerHTML='<div class="lib-empty">'+
+      (curLibTab==='fav'?'还没有收藏的词。点开任意词条，按「☆ 收藏」即可加入复习名单。':
+       curLibTab==='wrong'?'错词本空空的，太棒了！答题答错的词会自动收进来，方便集中复习。':
+       kw?'没有找到这个词，换个拼写试试':'')+'</div>';
+  }else{
+    list.innerHTML=keys.map(function(k){return libItem(k);}).join('');
+  }
+  bindLibClicks(list);
+  $(ui.libTotal).textContent=Object.keys(VOCAB_MAP).length;
+  $(ui.libKnow).textContent=Object.keys(S.seen||{}).length;
+}
+function libItem(k){
+  var it=VOCAB_MAP[k]; var p=extractPOS(it.def);
+  var star=(isFav(k)?'<span class="star">★</span>':'');
+  return '<div class="lib-item" data-w="'+k+'">'+star+'<span class="w">'+it.word+'</span><span class="d"><span class="pos">'+p.pos+'</span>'+p.mean+'</span></div>';
+}
+function bindLibClicks(list){
+  var items=list.querySelectorAll('.lib-item');
+  for(var i=0;i<items.length;i++){
+    items[i].onclick=function(){ openSheet(this.getAttribute('data-w')); };
+  }
+}
+
+/* ---------- 藏录 & 宫册 ---------- */
+function renderRecord(){
+  var list=$(ui.recList);
+  if(!S.verdict.length){
+    list.innerHTML='<div class="lib-empty">尚未做出抉择。走到剧情岔路口时，你的选择会记在这里。</div>';
+    return;
+  }
+  var h='';
+  S.verdict.slice().reverse().forEach(function(v){
+    h+='<div class="rec-item"><div class="q">'+v.c+'</div><div class="a'+(v.good?'':' bad')+'">'+(v.good?'✓ 你选了：「'+v.t+'」':'✗ 你选了：「'+v.t+'」')+'</div></div>';
+  });
+  list.innerHTML=h;
+}
+function renderStats(){
+  $(ui.stRight).textContent=S.right;
+  $(ui.stWrong).textContent=S.wrong;
+  $(ui.stStreak).textContent=S.bestStreak;
+}
+function resetGame(){
+  if(!confirm('确定重入轮回？当前进度将被清空。')) return;
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  location.reload();
+}
+
+/* ---------- V6.2 存档迁移（导出/导入） ---------- */
+var SAVE_PREFIX='GDSAVE1.';
+function encodeSave(){
+  var json=JSON.stringify(S);
+  try{ return SAVE_PREFIX+btoa(unescape(encodeURIComponent(json))); }catch(e){ return ''; }
+}
+function decodeSave(code){
+  code=(code||'').trim();
+  if(code.indexOf(SAVE_PREFIX)!==0) return {ok:false,msg:'密文格式不对，应以上传存档前缀开头'};
+  try{
+    var json=decodeURIComponent(escape(atob(code.slice(SAVE_PREFIX.length))));
+    var o=JSON.parse(json);
+    if(!o||o.v!==1) return {ok:false,msg:'存档版本不符（请用同一版本导出）'};
+    /* 兼容旧字段缺失 */
+    if(!o.wrongs) o.wrongs={};
+    if(!o.favs) o.favs={};
+    if(!o.tasks) o.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
+    if(!o.love) o.love={char:null,stage:0,points:0,endings:{}};
+    if(typeof o.energy!=='number') o.energy=100;
+    return {ok:true,data:o};
+  }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
+}
+function openExport(){
+  var code=encodeSave();
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  if(!m) return;
+  t.textContent='🔐 导出存档';
+  s.textContent='将密文发给新设备（微信/文件传输），导入即可恢复进度';
+  ta.value=code;
+  ta.readOnly=true;
+  cp.style.display='';
+  cp.textContent='复制密文';
+  cp.onclick=function(){ copyCode(ta); };
+  dn.style.display='';
+  dn.onclick=downloadSave;
+  tip.innerHTML='密文包含全部进度：位份·圣宠·心力·剧情·错词本·收藏·抉择。<br>不会包含任何账号信息，可放心分享。';
+  $('saveMask').style.display='block';
+  m.style.display='block';
+}
+function openImport(){
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  if(!m) return;
+  t.textContent='📥 导入存档';
+  s.textContent='粘贴导出的存档密文，将覆盖当前进度';
+  ta.value='';
+  ta.readOnly=false;
+  cp.style.display='';
+  cp.textContent='确认导入';
+  cp.onclick=doImport;
+  dn.style.display='none';
+  tip.innerHTML='导入会<b>覆盖</b>本机当前存档。建议先「导出存档」备份一份。';
+  $('saveMask').style.display='block';
+  m.style.display='block';
+}
+function closeSaveModal(){
+  var m=$('saveModal'), mk=$('saveMask');
+  if(m) m.style.display='none';
+  if(mk) mk.style.display='none';
+}
+function copyCode(ta){
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){ toast('已复制，去新设备粘贴导入吧'); },
+        function(){ fallbackCopy(ta); });
+    }else{ fallbackCopy(ta); }
+  }catch(e){ fallbackCopy(ta); }
+}
+function fallbackCopy(ta){
+  try{
+    ta.focus(); ta.select();
+    var ok=document.execCommand('copy');
+    toast(ok?'已复制（可直接粘贴）':'请长按选择全文后复制');
+  }catch(e){ toast('请长按选择全文后复制'); }
+}
+function doImport(){
+  var ta=$('saveCode'); if(!ta) return;
+  var r=decodeSave(ta.value);
+  if(!r.ok){ toast(r.msg); return; }
+  var hasProgress=(S.chapter>0||S.rank>0||S.storyIdx>0||Object.keys(S.seen||{}).length>0);
+  if(hasProgress&&!confirm('导入将覆盖本机当前进度，确定继续？')){
+    ta.value=''; return;
+  }
+  S=r.data;
+  try{ window.S=S; }catch(e){}
+  save();
+  toast('导入成功！');
+  setTimeout(function(){ closeSaveModal(); location.reload(); },600);
+}
+function downloadSave(){
+  var code=encodeSave(); if(!code){ toast('导出失败'); return; }
+  try{
+    var blob=new Blob([code],{type:'text/plain;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='凤印九重_存档_'+new Date().toISOString().slice(0,10)+'.txt';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },400);
+  }catch(e){ toast('下载失败，请用复制密文'); }
+}
+
+/* ---------- V6.3 云同步（GitHub 私有仓库） ---------- */
+var CLOUD_KEY='gd12_cloud';
+var cloudCfgMem={code:'',owner:'',repo:'',token:'',savedAt:0,lastSync:0,lastErr:''};
+var _autoSyncT=null, _syncing=false;
+function cloudCfg(){
+  try{
+    var raw=localStorage.getItem(CLOUD_KEY);
+    if(raw){ var o=JSON.parse(raw); if(o&&o.code) cloudCfgMem=o; }
+  }catch(e){}
+  if(!cloudCfgMem.code) cloudCfgMem.code=genCode();
+  return cloudCfgMem;
+}
+function genCode(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var c='';
+  for(var i=0;i<8;i++) c+=chars.charAt(rand(chars.length));
+  return c;
+}
+function cloudReady(){ var c=cloudCfg(); return !!(c.code&&c.owner&&c.repo&&c.token); }
+function cloudPath(){ return 'saves/'+cloudCfg().code+'.json'; }
+function cloudApi(method,url,body){
+  var c=cloudCfg();
+  var opt={
+    method:method,
+    headers:{
+      'Authorization':'Bearer '+c.token,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      'Content-Type':'application/json'
+    },
+    keepalive:true /* 页面关闭时尽量完成上传 */
+  };
+  if(body) opt.body=JSON.stringify(body);
+  return fetch('https://api.github.com'+url,opt);
+}
+/* 关闭页面时兜底同步一次 */
+try{ window.addEventListener('pagehide',function(){ if(cloudReady()&&!_syncing){ _doUpload(); } }); }catch(e){}
+function cloudUpload(){
+  if(typeof fetch!=='function') return Promise.resolve(false);
+  if(!cloudReady()||_syncing) return Promise.resolve(false);
+  return _doUpload();
+}
+function _doUpload(){
+  var c=cloudCfg();
+  var path=cloudPath();
+  var payload={savedAt:Date.now(),data:S};
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+path)
+    .then(function(res){
+      return res.json().then(function(j){
+        var body={message:'sync '+new Date().toISOString(),content:content};
+        if(j&&j.sha) body.sha=j.sha; /* 已存在 → 带 sha 覆盖 */
+        return cloudApi('PUT','/repos/'+c.owner+'/'+c.repo+'/contents/'+path,body);
+      });
+    })
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      c.savedAt=payload.savedAt; c.lastSync=Date.now(); c.lastErr='';
+      saveCloudCfg();
+      return true;
+    })
+    .catch(function(e){
+      c.lastErr=String(e&&e.message||e);
+      saveCloudCfg();
+      return false;
+    });
+}
+function cloudPull(){
+  if(typeof fetch!=='function') return Promise.resolve(false);
+  if(!cloudReady()||_syncing) return Promise.resolve(false);
+  _syncing=true;
+  var c=cloudCfg();
+  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+cloudPath())
+    .then(function(res){
+      if(res.status===404) return null; /* 云端还没有 → 首次上传由 autoSync 完成 */
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
+    })
+    .then(function(j){
+      if(!j||!j.content) return false;
+      var payload=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+      var cloudT=payload&&payload.savedAt||0;
+      var localT=S.savedAt||0;
+      if(cloudT>localT){
+        /* 云端新 → 接管 */
+        S=payload.data||S;
+        try{ window.S=S; }catch(e){}
+        c.savedAt=cloudT; c.lastSync=Date.now(); c.lastErr='';
+        saveCloudCfg();
+        return true;
+      }else if(localT>cloudT){
+        /* 本地新 → 推上去 */
+        return _doUpload();
+      }
+      return false;
+    })
+    .catch(function(e){
+      c.lastErr=String(e&&e.message||e);
+      saveCloudCfg();
+      return false;
+    })
+    .finally(function(){ _syncing=false; });
+}
+function scheduleAutoSync(){
+  try{
+    if(!cloudReady()) return;
+    if(_autoSyncT) clearTimeout(_autoSyncT);
+    _autoSyncT=setTimeout(function(){ _autoSyncT=null; cloudUpload(); },2500);
+  }catch(e){}
+}
+function renderCloudStatus(){
+  var el=$('cloudStatus'); if(!el) return;
+  var c=cloudCfg();
+  if(!cloudReady()){
+    el.innerHTML='☁️ 云同步未开启<br><span class="off">配置后自动同步 · 换设备无缝续玩</span>';
+  }else{
+    var t=c.lastSync?fmtTime(c.lastSync):'从未同步';
+    var err=c.lastErr?'<br><span style="color:var(--danger)">上次失败：'+escapeHtml(c.lastErr)+'</span>':'';
+    el.innerHTML='☁️ 已开启 · <b>'+c.code+'</b><br><span class="ok">上次同步：'+t+'</span>'+err;
+  }
+}
+function fmtTime(ts){
+  var d=new Date(ts);
+  function p(n){return (n<10?'0':'')+n;}
+  return (d.getMonth()+1)+'月'+d.getDate()+'日 '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function openCloudCfg(){
+  var c=cloudCfg();
+  var m=$('cloudModal'); if(!m) return;
+  $('cloudCode').value=c.code;
+  $('cfgOwner').value=c.owner||'';
+  $('cfgRepo').value=c.repo||'';
+  $('cfgToken').value=c.token||'';
+  var tip=$('cloudTip');
+  var guide=$('cloudGuide');
+  if(tip){
+    if(cloudReady()){
+      tip.innerHTML='已配置。保存后每次存档自动上传，打开游戏自动拉取。';
+    }else{
+      tip.innerHTML='还没配好？照着下方三步走，或参考弹层内引导链接。';
+    }
+  }
+  if(guide){
+    guide.style.display=cloudReady()?'none':'block';
+  }
+  $('cloudMask').style.display='block';
+  m.style.display='block';
+}
+function closeCloudCfg(){
+  var m=$('cloudModal'), mk=$('cloudMask');
+  if(m) m.style.display='none';
+  if(mk) mk.style.display='none';
+}
+function saveCloudCfgForm(){
+  var c=cloudCfg();
+  var codeEl=$('cloudCode');
+  var code=(codeEl&&codeEl.value||'').trim().toUpperCase().replace(/[^A-Z2-9]/g,'');
+  if(code) c.code=code; /* 允许输入旧存档码接管 */
+  c.owner=($('cfgOwner').value||'').trim();
+  c.repo=($('cfgRepo').value||'').trim();
+  c.token=($('cfgToken').value||'').trim();
+  if(!c.owner||!c.repo||!c.token){ toast('请填全三项再保存'); return; }
+  saveCloudCfg();
+  toast('配置已保存');
+  closeCloudCfg();
+  renderCloudStatus();
+  /* 配置完成后立即做一次双向校验：先拉再传 */
+  cloudPull().then(function(pulled){
+    if(pulled){ toast('已从云端恢复最新进度'); location.reload(); }
+    else{ cloudUpload().then(function(ok){ toast(ok?'已上传到云端':'云端不可达，稍后自动重试'); }); }
+  });
+}
+function saveCloudCfg(){
+  try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(cloudCfgMem)); }catch(e){}
+}
+function cloudNow(dir){
+  if(!cloudReady()){ toast('请先完成云端配置'); return; }
+  toast(dir==='up'?'正在上传…':'正在拉取…');
+  var p=(dir==='up')?cloudUpload():cloudPull();
+  p.then(function(ok){
+    if(dir==='up'){ toast(ok?'已上传到云端':'上传失败，检查配置/网络'); }
+    else{ if(ok){ toast('已从云端恢复，即将刷新'); setTimeout(function(){ location.reload(); },600); } else { toast('云端没有可恢复的数据或失败'); } }
+    renderCloudStatus();
+  });
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  ui={
+    toast:'toast',rankBar:'rankBar',rankName:'rankName',favText:'favText',energyText:'energyText',
+    storyTitle:'storyTitle',storySub:'storySub',storyText:'storyText',
+    btnStoryNext:'btnStoryNext',storyHint:'storyHint',
+    quizProgress:'quizProgress',qWord:'qWord',qPho:'qPho',qPos:'qPos',qOpts:'qOpts',quizHint:'quizHint',
+    battleTitle:'battleTitle',battleSub:'battleSub',enemyName:'enemyName',enemyHp:'enemyHp',enemyHpText:'enemyHpText',
+    myHp:'myHp',myHpText:'myHpText',bWord:'bWord',bPho:'bPho',bPos:'bPos',bOpts:'bOpts',battleLog:'battleLog',
+    choiceTitle:'choiceTitle',choiceText:'choiceText',choiceOpts:'choiceOpts',choiceHint:'choiceHint',
+    caseTitle:'caseTitle',caseIntro:'caseIntro',caseLetter:'caseLetter',caseQ:'caseQ',caseOpts:'caseOpts',caseHint:'caseHint',
+    rewardFrom:'rewardFrom',rewardRank:'rewardRank',rewardSlogan:'rewardSlogan',rewardText:'rewardText',btnRewardNext:'btnRewardNext',
+    libSearch:'libSearch',libList:'libList',libTotal:'libTotal',libKnow:'libKnow',
+    recList:'recList',stRight:'stRight',stWrong:'stWrong',stStreak:'stStreak',
+    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef',sheet:'sheet',
+    loveList:'loveList',loveIntro:'loveIntro'
+  };
+  /* 弹层按钮直接事件绑定（不依赖 onclick 全局查找，手机端更稳） */
+  var sEl=$(ui.sheet), mEl=$(ui.sheetMask);
+  if(sEl){
+    var spk=document.getElementById('sSpeakBtn');
+    if(spk) spk.addEventListener('click',speakSheet);
+    var cls=document.getElementById('sCloseBtn');
+    if(cls) cls.addEventListener('click',closeSheet);
+  }
+  if(mEl) mEl.addEventListener('click',closeSheet);
+  var has=load();
+  initEnergy();
+  renderTasks();
+  renderRankBar();
+  renderLoveEntry();
+  renderHeroBadge();
+  renderCloudStatus();
+  /* V6.3 云同步：打开自动拉取（云端新则接管刷新） */
+  cloudPull().then(function(pulled){
+    if(!pulled) return;
+    renderTasks();
+    renderRankBar();
+    renderLoveEntry();
+    renderHeroBadge();
+    renderLibrary('');
+    toast('已从云端恢复最新进度');
+  });
+  if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
+    /* 有进度 → 首页按钮改为"继续" */
+    var bs=$('btnStart'); if(bs) bs.textContent='继续深宫闯关';
+    var hh=document.querySelector('.hero-hint'); if(hh) hh.textContent='继续闯关';
+  }
+  renderLibrary('');
+  showPage('page-start');
+  registerOffline();
+}
+function registerOffline(){
+  try{
+    if('serviceWorker' in navigator && location.protocol!=='file:'){
+      var hadController=!!navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('./sw.js?v=82').then(function(reg){
+        try{reg.update();}catch(e){}
+        reg.addEventListener('updatefound',function(){
+          var worker=reg.installing;if(!worker)return;
+          worker.addEventListener('statechange',function(){
+            if(worker.state==='installed' && navigator.serviceWorker.controller) showUpdateStatus('发现新版本，正在更新…');
+          });
+        });
+      }).catch(function(){});
+      navigator.serviceWorker.addEventListener('controllerchange',function(){
+        if(!hadController)return;
+        try{
+          if(sessionStorage.getItem('gd_sw_reloaded_v82')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v82','1');
+        }catch(e){}
+        showUpdateStatus('更新完成，正在载入新功能…');
+        setTimeout(function(){location.reload();},350);
+      });
+    }
+  }catch(e){}
+}
+function showUpdateStatus(text){
+  var old=document.getElementById('updatePill');if(old)old.remove();
+  var el=document.createElement('div');el.id='updatePill';el.className='update-pill';el.textContent=text;
+  document.body.appendChild(el);
+}
+window.startGame=startGame;
+window.storyNext=storyNext;
+window.rewardNext=rewardNext;
+window.goTab=goTab;
+window.openSheet=openSheet;
+window.closeSheet=closeSheet;
+window.speakSheet=speakSheet;
+window.renderLibrary=renderLibrary;
+window.resetGame=resetGame;
+window.answerSpell=answerSpell;
+window.speakWord=speakWord;
+window.speakSpell=speakSpell;
+window.openLove=openLove;
+window.loveSelect=loveSelect;
+window.renderHeroBadge=renderHeroBadge;
+window.encodeSave=encodeSave;
+window.decodeSave=decodeSave;
+window.cloudCfg=cloudCfg;
+window.cloudReady=cloudReady;
+window.cloudUpload=cloudUpload;
+window.cloudPull=cloudPull;
+window.genCode=genCode;
+window.saveCloudCfg=saveCloudCfg;
+window.renderCloudStatus=renderCloudStatus;
+window.openExport=openExport;
+window.openImport=openImport;
+window.closeSaveModal=closeSaveModal;
+window.startQuiz=startQuiz;
+window.answerQuiz=answerQuiz;
+window.startBattle=startBattle;
+window.answerBattle=answerBattle;
+window.clearTimer=clearTimer;
+window.initEnergy=initEnergy;
+window.comboName=comboName;
+window.ENEMY_MOVES=ENEMY_MOVES;
+window.save=save;
+window.init=init;
+window.renderRankBar=renderRankBar;
+window.libTab=libTab;
+window.startReview=startReview;
+window.toggleFav=toggleFav;
+window.markWrong=markWrong;
+window.markRight=markRight;
+window.wrongWords=wrongWords;
+window.favWords=favWords;
+window.S=S;
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+}else{
+  init();
+}
+})();
+</script>
+</body>
+</html>
