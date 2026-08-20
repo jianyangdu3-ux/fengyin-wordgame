@@ -108,13 +108,13 @@ main{flex:1;padding:14px 14px 20px;overflow-y:auto;overflow-x:hidden}
 .stat span{font-size:11px;color:var(--ink2)}
 nav.tabbar{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:60;
-  background:rgba(255,253,248,.97);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(255,253,248,.97);border-top:1px solid var(--line);display:flex;padding-bottom:calc(7px + env(safe-area-inset-bottom));
   box-shadow:0 -8px 24px rgba(70,41,24,.08);backdrop-filter:blur(12px);
 }
-.tab{flex:1;padding:8px 0 7px;text-align:center;font-size:10px;color:var(--ink2);cursor:pointer;background:none;border:none;position:relative}
-.tab .ti{display:block;font-size:16px;line-height:1.3}
+.tab{flex:1;padding:9px 0 7px;text-align:center;font-size:12px;line-height:1.15;color:var(--ink2);cursor:pointer;background:none;border:none;position:relative}
+.tab .ti{display:block;font-size:22px;line-height:1.15;margin-bottom:3px}
 .tab.active{color:var(--red)}
-.tab.active .ti{transform:translateY(-1px)}
+.tab.active .ti{transform:translateY(-2px)}
 .tab.active:after{content:'';position:absolute;left:31%;right:31%;top:0;height:2px;border-radius:2px;background:var(--red)}
 .library-top{position:sticky;top:120px;z-index:30;background:var(--bg);padding:4px 0 10px}
 .lib-search{
