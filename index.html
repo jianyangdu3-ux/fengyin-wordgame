@@ -226,9 +226,7 @@ nav.tabbar{
 .hero-frame{
   position:relative;width:130px;height:172px;margin:0 auto 10px;
   border-radius:3px;border:2.5px solid var(--gold);
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 172'%3E%3Crect width='130' height='172' fill='%23F5EDD0'/%3E%3Cg fill='none' stroke='%23C9A227' stroke-width='1' opacity='.25'%3E%3Cpath d='M0 30 Q65 8 130 30'/%3E%3Cpath d='M10 30 L10 172 M30 30 L30 172 M50 30 L50 172 M80 30 L80 172 M100 30 L100 172 M120 30 L120 172'/%3E%3Crect x='35' y='55' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='73' y='55' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='35' y='100' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='73' y='100' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat,
-    linear-gradient(145deg,#FFFDF8,#F5EDD0);
+  background:linear-gradient(145deg,#FFFDF8,#F5EDD0);
   box-shadow:0 6px 20px rgba(122,21,12,.18),inset 0 0 14px rgba(201,162,39,.1);
   padding:4px;transition:transform .12s ease;
 }
@@ -250,6 +248,7 @@ nav.tabbar{
 .hero-avatar{
   width:100%;height:100%;object-fit:cover;object-position:top center;
   border-radius:1px;display:block;
+  background:#E8DCC8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 172'%3E%3Crect width='130' height='172' fill='%23E8DCC8'/%3E%3Cg fill='none' stroke='%23B8A67A' stroke-width='.8' opacity='.35'%3E%3Cpath d='M0 35 Q65 10 130 35'/%3E%3Cpath d='M10 35 L10 172 M25 35 L25 172 M40 35 L40 172 M55 35 L55 172 M75 35 L75 172 M90 35 L90 172 M105 35 L105 172 M120 35 L120 172'/%3E%3Crect x='35' y='55' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='75' y='55' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='35' y='100' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3Crect x='75' y='100' width='20' height='26' rx='1' fill='%23B8A67A' opacity='.15'/%3E%3C/g%3E%3C/svg%3E") center/cover;
 }
 /* 位份名 */
 .hero-rank{
@@ -411,7 +410,7 @@ nav.tabbar{
 .corner-flower.br{bottom:4px;right:4px}
 /* 封面宫殿剪影 */
 .palace-silhouette{
-  width:100%;height:80px;opacity:.08;pointer-events:none;margin-bottom:-8px;
+  width:100%;height:80px;opacity:.18;pointer-events:none;margin-bottom:-8px;
 }
 /* 情缘·私奔支线 */
 .love-entry{background:var(--bg-card);color:var(--red);border:1px solid var(--gold);margin-top:10px}
@@ -476,21 +475,34 @@ nav.tabbar{
       <div class="cover">
         <div class="palace-silhouette">
           <svg viewBox="0 0 430 100" preserveAspectRatio="xMidYMax slice" width="100%" height="100%">
-            <!-- 左侧配殿 -->
-            <path d="M0 100 L0 78 L30 58 L45 50 L60 58 L90 78 L90 100Z" fill="#7A1F1F"/>
+            <!-- 左配殿 -->
+            <path d="M20 100 L20 72 Q25 68 30 72 L30 55 Q35 48 45 48 Q55 48 60 55 L60 72 Q65 68 70 72 L70 100Z" fill="#7A1F1F"/>
+            <rect x="38" y="62" width="14" height="18" rx="1" fill="#7A1F1F" opacity=".7"/>
+            <!-- 左配殿飞檐翘角 -->
+            <path d="M30 55 Q37 50 45 48 Q53 50 60 55" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
+            <!-- 右配殿 -->
+            <path d="M360 100 L360 72 Q365 68 370 72 L370 55 Q375 48 385 48 Q395 48 400 55 L400 72 Q405 68 410 72 L410 100Z" fill="#7A1F1F"/>
+            <rect x="378" y="62" width="14" height="18" rx="1" fill="#7A1F1F" opacity=".7"/>
+            <!-- 右配殿飞檐翘角 -->
+            <path d="M370 55 Q377 50 385 48 Q393 50 400 55" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
             <!-- 中间主殿（大殿） -->
-            <path d="M120 100 L120 60 L140 45 L155 35 L170 45 L190 60 L190 100Z" fill="#7A1F1F"/>
-            <!-- 中间主殿（小顶） -->
-            <path d="M150 60 L150 38 L165 25 L180 38 L180 60Z" fill="#7A1F1F"/>
-            <!-- 右侧配殿 -->
-            <path d="M340 100 L340 78 L370 58 L385 50 L400 58 L430 78 L430 100Z" fill="#7A1F1F"/>
-            <!-- 殿宇立柱线（细线暗示结构） -->
-            <line x1="35" y1="65" x2="35" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
-            <line x1="55" y1="65" x2="55" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
-            <line x1="145" y1="50" x2="145" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
-            <line x1="165" y1="50" x2="165" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
-            <line x1="375" y1="65" x2="375" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
-            <line x1="395" y1="65" x2="395" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <path d="M100 100 L100 70 L120 55 L130 48 L140 55 L160 70 L160 100Z" fill="#7A1F1F"/>
+            <!-- 中间主殿（小顶/阁楼） -->
+            <path d="M125 48 L125 30 L135 22 L145 30 L145 48Z" fill="#7A1F1F"/>
+            <!-- 主殿飞檐 -->
+            <path d="M120 55 Q130 48 140 55" fill="none" stroke="#7A1F1F" stroke-width="2"/>
+            <path d="M125 30 Q135 24 145 30" fill="none" stroke="#7A1F1F" stroke-width="1.5"/>
+            <!-- 主殿殿门 -->
+            <rect x="125" y="75" width="10" height="18" rx="5" fill="#7A1F1F" opacity=".5"/>
+            <!-- 城墙基座（贯穿） -->
+            <rect x="0" y="90" width="430" height="10" fill="#7A1F1F" opacity=".4"/>
+            <!-- 立柱线 -->
+            <line x1="42" y1="60" x2="42" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
+            <line x1="55" y1="60" x2="55" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
+            <line x1="128" y1="55" x2="128" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
+            <line x1="142" y1="55" x2="142" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
+            <line x1="382" y1="60" x2="382" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
+            <line x1="395" y1="60" x2="395" y2="90" stroke="#7A1F1F" stroke-width="1" opacity=".5"/>
           </svg>
         </div>
         <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="点击入宫">
