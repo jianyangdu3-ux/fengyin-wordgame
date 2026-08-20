@@ -124,6 +124,7 @@ nav.tabbar{
   background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
   box-shadow:0 -6px 24px rgba(0,0,0,.15);
   max-height:80vh;overflow-y:auto;
+  display:none; /* 默认隐藏，openSheet 时显示，closeSheet 时隐藏 */
 }
 .sheet .sw{font-size:24px;color:var(--red);font-weight:500}
 .sheet .sp{font-size:13px;color:var(--ink2);margin:4px 0 10px}
@@ -821,6 +822,7 @@ function openSheet(key){
   $(ui.sPho).textContent=it.phonetic||'';
   $(ui.sDef).textContent=(p.pos?p.pos+' ':'')+p.mean;
   $(ui.sheetMask).style.display='block';
+  $(ui.sheet).style.display='block';
   try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
 }
 function speakSheet(){
@@ -828,6 +830,7 @@ function speakSheet(){
 }
 function closeSheet(){
   $(ui.sheetMask).style.display='none';
+  $(ui.sheet).style.display='none';
 }
 
 /* ---------- 测验（词关） ---------- */
@@ -1450,7 +1453,7 @@ function init(){
     rewardFrom:'rewardFrom',rewardRank:'rewardRank',rewardSlogan:'rewardSlogan',rewardText:'rewardText',btnRewardNext:'btnRewardNext',
     libSearch:'libSearch',libList:'libList',libTotal:'libTotal',libKnow:'libKnow',
     recList:'recList',stRight:'stRight',stWrong:'stWrong',stStreak:'stStreak',
-    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef'
+    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef',sheet:'sheet'
   };
   var has=load();
   renderTasks();
