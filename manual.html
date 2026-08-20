@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>凤印九重 · 游戏说明</title>
+<style>
+:root{
+  --bg:#FAF6EF; --bg-card:#FFFDF8; --ink:#3A2A2A; --ink2:#7A6A5F;
+  --red:#8E2B2B; --red2:#B54A3A; --gold:#C9A227; --gold2:#E4C87A;
+  --line:#E5D5B8; --line2:#D9C3A0; --danger:#B33A3A; --ok:#3E7A4E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:#2E2222; font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink); display:flex; justify-content:center;
+}
+#app{width:100%;max-width:430px;background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden}
+header.topbar{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
+  color:#F5E9C9;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.topbar h1{font-size:19px;letter-spacing:2px;font-weight:600}
+.topbar .sub{font-size:13px;color:#E4C87A;margin-top:3px}
+main{padding:16px 16px 40px}
+.sec{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.sec h2{font-size:16px;color:var(--red);font-weight:600;margin-bottom:10px;letter-spacing:1px;display:flex;align-items:center;gap:6px}
+.sec h2 .num{width:26px;height:26px;background:var(--red);color:#F5E9C9;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.sec h3{font-size:14px;color:var(--red2);font-weight:500;margin:12px 0 6px}
+.sec p{font-size:14px;line-height:2;color:var(--ink)}
+.sec ul{list-style:none;padding:0}
+.sec li{font-size:14px;line-height:1.9;color:var(--ink);padding:3px 0 3px 18px;position:relative}
+.sec li::before{content:'◆';position:absolute;left:0;color:var(--gold);font-size:10px;top:6px}
+.sec li b{color:var(--red)}
+.sec .tip{background:#FBEEE8;border:1px solid var(--line2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red2);line-height:1.8;margin-top:8px}
+.sec .tip b{color:var(--red)}
+.rank-table{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#FBEEE8;border:1px solid var(--line);border-radius:8px;font-size:13px}
+.rank-row .rn{width:22px;height:22px;border-radius:50%;background:var(--red);color:#F5E9C9;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.rank-row.cur-rank{background:var(--red);color:#F5E9C9;border-color:var(--red)}
+.rank-row.cur-rank .rn{background:#F5E9C9;color:var(--red)}
+.rank-row .rname{font-weight:600;min-width:56px}
+.rank-row .rdesc{color:var(--ink2);font-size:12px}
+.rank-row.cur-rank .rdesc{color:#E4C87A}
+.flow-box{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.flow-step{background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--ink)}
+.flow-step b{color:var(--red)}
+.flow-arrow{display:flex;align-items:center;color:var(--gold);font-size:16px}
+.energy-box{display:flex;gap:8px;margin:10px 0}
+.energy-item{flex:1;background:#FBEEE8;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:12px}
+.energy-item b{display:block;font-size:18px;color:var(--red);font-weight:600}
+.combo-box{margin:8px 0}
+.combo-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.combo-item:last-child{border-bottom:none}
+.combo-badge{background:var(--gold);color:#3A2A2A;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;flex-shrink:0}
+.combo-dmg{color:var(--red);font-weight:600;margin-left:auto}
+.btn-back{display:block;width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;letter-spacing:2px;background:var(--red);color:#F5E9C9;cursor:pointer;margin-top:16px;text-decoration:none;text-align:center}
+.btn-back:active{transform:scale(.98)}
+.char-grid{display:flex;gap:8px;margin:8px 0}
+.char-card{flex:1;background:#FBEEE8;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;font-size:12px}
+.char-card .emoji{font-size:24px;display:block;margin-bottom:4px}
+.char-card .cname{color:var(--red);font-weight:600}
+.char-card .cdesc{color:var(--ink2);font-size:11px;margin-top:2px}
+.footer{text-align:center;padding:20px 0 10px;font-size:12px;color:var(--ink2);line-height:1.8}
+.footer b{color:var(--red)}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <h1>凤印九重</h1>
+  <div class="sub">游戏说明书 · 宫斗背词</div>
+</header>
+<main>
+
+<!-- 1. 游戏简介 -->
+<div class="sec">
+  <h2><span class="num">1</span>游戏简介</h2>
+  <p>《凤印九重》是一款<b>宫斗背词游戏</b>。你扮演一名寒门秀女，从选秀入宫到母仪天下，历经九重位份晋升。</p>
+  <p>5491 个考研核心词汇藏在每一幕剧情、每一场考校、每一次斗法之中。<b>记不住词，就活不过这一章。</b></p>
+  <div class="tip"><b>核心设计</b>：所有玩法（剧情、考校、斗法、抉择、查案、情缘）<b>全部绑定考词</b>——不是看小说，也不是刷题软件，而是用单词当武器在深宫博弈。</div>
+</div>
+
+<!-- 2. 位份体系 -->
+<div class="sec">
+  <h2><span class="num">2</span>位份体系 · 九重晋升</h2>
+  <p>从秀女到皇后共九级，每晋一级<b>获赐一枚凤印</b>，首页角色立绘随位份自动切换：</p>
+  <div class="rank-table">
+    <div class="rank-row"><span class="rn">1</span><span class="rname">秀女</span><span class="rdesc">初入宫闱，谨言慎行</span></div>
+    <div class="rank-row"><span class="rn">2</span><span class="rname">答应</span><span class="rdesc">得见天颜，一步之遥</span></div>
+    <div class="rank-row"><span class="rn">3</span><span class="rname">常在</span><span class="rdesc">常在御前，如履薄冰</span></div>
+    <div class="rank-row"><span class="rn">4</span><span class="rname">贵人</span><span class="rdesc">解锁情缘支线</span></div>
+    <div class="rank-row"><span class="rn">5</span><span class="rname">嫔</span><span class="rdesc">一宫主位，初掌宫务</span></div>
+    <div class="rank-row"><span class="rn">6</span><span class="rname">妃</span><span class="rdesc">妃位之上，众人侧目</span></div>
+    <div class="rank-row"><span class="rn">7</span><span class="rname">贵妃</span><span class="rdesc">位同副后，权倾六宫</span></div>
+    <div class="rank-row"><span class="rn">8</span><span class="rname">皇贵妃</span><span class="rdesc">统摄六宫，凤印在望</span></div>
+    <div class="rank-row"><span class="rn">9</span><span class="rname">皇后</span><span class="rdesc">母仪天下，凤临深宫</span></div>
+  </div>
+  <div class="tip">首页画框中立绘随位份变化：秀女~常在显示<b>掌事姑姑</b>，贵人~妃显示<b>华妃</b>，贵妃~皇后显示<b>皇后</b>。点击画框即可入宫。</div>
+</div>
+
+<!-- 3. 章节流程 -->
+<div class="sec">
+  <h2><span class="num">3</span>章节流程</h2>
+  <p>每章按以下顺序推进，不同章节激活不同环节：</p>
+  <div class="flow-box">
+    <div class="flow-step"><b>读剧情</b><br>带词高亮</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><b>考校</b><br>限时答题</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><b>斗法</b><br>回合出招</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><b>抉择</b><br>影响剧情</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><b>查案</b><br>读懂密信</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><b>晋升</b><br>获凤印</div>
+  </div>
+  <ul>
+    <li><b>剧情</b>：每章 3 幕，正文中嵌入考研词（红色虚线下划线），点击可查释义</li>
+    <li><b>考校</b>：5 题限时选择 + 拼写，答对 60% 方可通过</li>
+    <li><b>斗法</b>：回合制对战，答对出招、连击加伤，击败对手获圣宠</li>
+    <li><b>抉择</b>：关键剧情二选一，选对加圣宠、选错有后果</li>
+    <li><b>查案</b>：第三章专属，读懂英文密信，判断真相</li>
+    <li><b>晋升</b>：通关后位份 +1，获赐凤印，新章开启</li>
+  </ul>
+</div>
+
+<!-- 4. 考校系统 -->
+<div class="sec">
+  <h2><span class="num">4</span>考校系统 · 限时答题</h2>
+  <h3>选择题（英→中）</h3>
+  <ul>
+    <li>给出英文单词，选中文释义（4 选 1）</li>
+    <li><b>15 秒倒计时</b>，超时判错，最后 3 秒计时条变红</li>
+    <li>答对 +15 圣宠，连击 2 次以上 <b>×2 倍率</b></li>
+    <li>答错 -5 圣宠 -3 心力，自动收入错词本</li>
+    <li>答题前角色会出一句台词（姑姑/华妃/皇后风格各异）</li>
+  </ul>
+  <h3>飞花令（拼写题）</h3>
+  <ul>
+    <li>给出中文释义 + 首字母 + 字母数，你需要<b>拼写出完整英文单词</b></li>
+    <li><b>20 秒限时</b>，答对 +20 圣宠</li>
+    <li>答错显示正确答案，自动收入错词本</li>
+  </ul>
+  <div class="tip"><b>全对通关 +30 圣宠</b>，金色「考校全通」印章。通过后进入下一环节（斗法/抉择/晋升）。</div>
+  <div class="tip">考校入场消耗 <b>5 心力</b>，心力不足会被拦下，提示去词库温书恢复。</div>
+</div>
+
+<!-- 5. 斗法系统 -->
+<div class="sec">
+  <h2><span class="num">5</span>斗法系统 · 回合制博弈</h2>
+  <p>斗法是<b>战斗化测验</b>——把每道题包装成一回合出招，答对=攻击，答错=被反击。</p>
+  <h3>回合流程</h3>
+  <ul>
+    <li>敌方先出招：随机「三十六计」招式名（指鹿为马、笑里藏刀、暗渡陈仓…）</li>
+    <li>你<b>12 秒限时拆招</b>：看英文选中文，倒计时条最后 3 秒变红</li>
+    <li>答对：对方血条闪红 + 飘伤害数字 + 屏幕震动</li>
+    <li>答错/超时：被反击 -25 血，对方嘲讽</li>
+    <li>一方血量归零即结束</li>
+  </ul>
+  <h3>连击技名系统</h3>
+  <p>连续答对触发技名升级，伤害递增：</p>
+  <div class="combo-box">
+    <div class="combo-item"><span class="combo-badge">2 连</span><b>巧言令色</b><span class="combo-dmg">伤害 28</span></div>
+    <div class="combo-item"><span class="combo-badge">3 连</span><b>妙语连珠</b><span class="combo-dmg">伤害 38</span></div>
+    <div class="combo-item"><span class="combo-badge">4 连+</span><b>凤鸣九天</b><span class="combo-dmg">伤害 50</span></div>
+  </div>
+  <div class="tip"><b>胜利奖励</b>：+40 圣宠，若以「凤鸣九天」绝杀额外 +30 圣宠。<b>失败</b>：-15 心力，可重新斗法。斗法入场消耗 <b>10 心力</b>。</div>
+</div>
+
+<!-- 6. 心力系统 -->
+<div class="sec">
+  <h2><span class="num">6</span>心力系统 · 体力与风险</h2>
+  <p>心力是你在这深宫的精力值，上限 100，<b>每天跨天自动回满</b>。顶栏右侧实时显示。</p>
+  <div class="energy-box">
+    <div class="energy-item"><b>-5</b>考校入场</div>
+    <div class="energy-item"><b>-10</b>斗法入场</div>
+    <div class="energy-item"><b>-3</b>答错一题</div>
+    <div class="energy-item"><b>-15</b>斗法败北</div>
+  </div>
+  <ul>
+    <li>心力不足时<b>无法入场</b>，提示「先去温书恢复」</li>
+    <li>点击提示跳转词库，浏览/复习词条 <b>+30 心力</b></li>
+    <li>心力 =0 时所有考校/斗法入口锁定</li>
+  </ul>
+  <div class="tip">心力让答错有真实代价——不能无限重试，每次失误都在消耗你的精力，逼迫你认真对待每一题。</div>
+</div>
+
+<!-- 7. 复习系统 -->
+<div class="sec">
+  <h2><span class="num">7</span>复习系统 · 错词本与收藏</h2>
+  <h3>词库三 Tab</h3>
+  <ul>
+    <li><b>全部词</b>：5491 词库，搜索浏览，点开看释义+听发音</li>
+    <li><b>⭐ 收藏</b>：手动星标的词，随时温习</li>
+    <li><b>❌ 错词</b>：答题/斗法/情缘暗号答错的词<b>自动收录</b>，带错次统计</li>
+  </ul>
+  <h3>收藏方式</h3>
+  <ul>
+    <li>剧情中点击红色高亮词 → 弹出释义面板 → 底部「⭐ 收藏」</li>
+    <li>词库列表点击任意词 → 释义面板 → 「⭐ 收藏」</li>
+    <li>收藏过的词在列表中显示金色 ★ 标记</li>
+  </ul>
+  <h3>一键复习</h3>
+  <ul>
+    <li>在收藏/错词 Tab 点「📖 复习」→ 进入复习考校（限时出招那套）</li>
+    <li>复习入场消耗 <b>5 心力</b></li>
+    <li>答对的词<b>自动从错词本销账</b>（错次清零移除）</li>
+    <li>错词本全清空显示「错词本已清空 ✨」</li>
+  </ul>
+  <div class="tip">考校/斗法失败后，结果面板有「📖 先去错词本复习」按钮，直接跳过去温习再回来重考。</div>
+</div>
+
+<!-- 8. 情缘支线 -->
+<div class="sec">
+  <h2><span class="num">8</span>情缘支线 · 私奔</h2>
+  <p>位份晋至<b>贵人（第 4 级）</b>解锁。剧情底部 Tab 「🌸」进入。</p>
+  <p>三位可攻略角色，各四段情缘 + 最终暗号抉择：</p>
+  <div class="char-grid">
+    <div class="char-card"><span class="emoji">🌿</span><div class="cname">温既明</div><div class="cdesc">太医院医正<br>药石仁心</div></div>
+    <div class="char-card"><span class="emoji">⚔️</span><div class="cname">沈破军</div><div class="cdesc">镇北大将军<br>沙场点兵</div></div>
+    <div class="char-card"><span class="emoji">🖋️</span><div class="cname">顾青衿</div><div class="cdesc">御前教习<br>诗书风流</div></div>
+  </div>
+  <ul>
+    <li>每段情缘融入该角色专属词库（医/军/文），剧情中可查释义</li>
+    <li>前三段为剧情阅读 + 词汇学习</li>
+    <li>第四段为<b>最终暗号</b>：给你一个词，答对意思即私奔成功</li>
+    <li>答错 = 私奔失败，各线结局独立，可全部攻略</li>
+    <li>情缘考校同样消耗心力，答对 60% 即过</li>
+  </ul>
+</div>
+
+<!-- 9. 每日任务 -->
+<div class="sec">
+  <h2><span class="num">9</span>每日任务</h2>
+  <p>首页任务面板，每天 0 点刷新，三项任务：</p>
+  <ul>
+    <li><b>背词 20 个</b>：见到 20 个新词（剧情/词库点击查看都算）</li>
+    <li><b>答对 10 题</b>：考校/斗法/复习中答对 10 题</li>
+    <li><b>晋升 1 级</b>：当天晋升一次位份</li>
+  </ul>
+  <div class="tip">三项全完成可领取 <b>+30 圣宠</b> 赏赐。</div>
+</div>
+
+<!-- 10. 词汇面板 -->
+<div class="sec">
+  <h2><span class="num">10</span>词汇面板</h2>
+  <p>点击任意单词（剧情高亮词 / 词库列表项）弹出释义面板：</p>
+  <ul>
+    <li><b>单词</b>：英文原词</li>
+    <li><b>音标</b>：国际音标</li>
+    <li><b>释义</b>：词性 + 中文释义</li>
+    <li><b>🔊 听发音</b>：浏览器语音朗读（TTS）</li>
+    <li><b>⭐ 收藏</b>：加入收藏列表</li>
+  </ul>
+  <div class="tip">file:// 协议下语音可能不可用，http:// 或 https:// 下正常。</div>
+</div>
+
+<!-- 11. 存档管理 -->
+<div class="sec">
+  <h2><span class="num">11</span>存档管理</h2>
+  <h3>本地存档</h3>
+  <p>进度自动保存在浏览器 localStorage，无需注册。包含位份、圣宠、心力、剧情进度、错词本、收藏、抉择记录、情缘结局。</p>
+  <div class="tip">⚠ 换设备 / 换浏览器 / 清缓存 <b>进度会丢失</b>，请用导出/导入或云同步迁移。</div>
+  <h3>导出 / 导入存档</h3>
+  <ul>
+    <li>藏录页 → 宫册面板 → 「🔐 导出存档」→ 生成密文（GDSAVE1 开头）</li>
+    <li>可「复制密文」或「下载文件」存成 txt</li>
+    <li>新设备打开游戏 → 「📥 导入存档」→ 粘贴密文 → 确认导入</li>
+    <li>密文含全部进度，无账号信息，可放心分享</li>
+  </ul>
+  <h3>云端同步（推荐）</h3>
+  <ul>
+    <li>用 GitHub 私有仓库当云端，免密 8 位存档码多设备接管</li>
+    <li><b>全自动</b>：每次存档后 2.5 秒自动上传，打开游戏自动拉取</li>
+    <li>按时间戳仲裁：云端新→接管恢复，本地新→推上去</li>
+    <li>关页面瞬间 keepalive 兜底再传一次</li>
+    <li>藏录页 → 「☁️ 云端配置」→ 填用户名/仓库名/Token → 保存</li>
+    <li>配置后自动生成 8 位存档码，新设备填此码即接管同一存档</li>
+  </ul>
+  <div class="tip"><b>云同步开通步骤</b>：① GitHub 建私有仓库 → ② 创建 Fine-grained Token（仅该仓库 Contents 读写）→ ③ 游戏内填三项配置 → 完成。详见配置弹层内提示。</div>
+</div>
+
+<!-- 12. 角色与台词 -->
+<div class="sec">
+  <h2><span class="num">12</span>角色</h2>
+  <div class="char-grid">
+    <div class="char-card"><span class="emoji">👵</span><div class="cname">掌事姑姑</div><div class="cdesc">第一章考官<br>严厉但不害人</div></div>
+    <div class="char-card"><span class="emoji">👸</span><div class="cname">华妃</div><div class="cdesc">第二章对手<br>恃宠而骄</div></div>
+    <div class="char-card"><span class="emoji">👑</span><div class="cname">皇后</div><div class="cdesc">第三章BOSS<br>深不可测</div></div>
+  </div>
+  <p>每位角色在考校/斗法中有专属台词风格，对手位份越高压迫感越强。</p>
+</div>
+
+<!-- 13. 小贴士 -->
+<div class="sec">
+  <h2><span class="num">13</span>实用小贴士</h2>
+  <ul>
+    <li><b>连击是核心</b>：连续答对伤害翻倍，尽量别断连</li>
+    <li><b>错词本要清</b>：答错的词会积累，定期去复习考校清空</li>
+    <li><b>心力别浪费</b>：心力不足就温书，别硬撑答错浪费</li>
+    <li><b>每日任务必做</b>：+30 圣宠是稳定收入</li>
+    <li><b>语音功能</b>：点单词旁的 🔊 可听发音，加深记忆</li>
+    <li><b>剧情词可查</b>：红色虚线下划线的词都能点开看释义</li>
+    <li><b>存档要备份</b>：定期导出或开云同步，防丢档</li>
+  </ul>
+</div>
+
+<div class="footer">
+  凤印九重 · 宫斗背词<br>
+  <b>5491 词 · 九重位份 · 三章剧情 · 三线情缘</b><br>
+  本地自动存档 · 云端同步 · 纯 HTML/CSS/JS
+</div>
+
+<a href="index.html" class="btn-back">返 回 游 戏</a>
+
+</main>
+</div>
+</body>
+</html>
