@@ -2518,9 +2518,9 @@ function startGame(){
   }
   save();
   openStory();
-  maybeShowOnboarding();
 }
-var ONBOARD_KEY='gd_onboard_v1';
+/* V8.4：首次进入首页即说明玩法；版本升级后所有用户重新看一次 */
+var ONBOARD_KEY='gd_onboard_v2';
 function maybeShowOnboarding(){
   try{if(localStorage.getItem(ONBOARD_KEY)==='1')return;}catch(e){}
   if(document.getElementById('onboardMask'))return;
@@ -2528,22 +2528,23 @@ function maybeShowOnboarding(){
 }
 function renderOnboarding(step){
   var data=[
-    {icon:'词',title:'点词就能查',text:'剧情中带红色虚线的英文词都可以点击，不需要离开故事。',demo:'例如：<span class="demo-word">careful</span>　点击后查看释义、发音与收藏'},
-    {icon:'答',title:'答对才能进阶',text:'选择词义或完成飞花令。答错的词会自动收入错词本，之后可以集中复习。',demo:'考校通过线为 60%　·　连续答对会触发宫斗招式'},
-    {icon:'印',title:'集凤印，升九重',text:'完成剧情、考校与斗法即可晋升。从秀女一路走到皇后。',demo:'秀女 → 答应 → 常在 → 贵人 → 嫔 → 妃 → 贵妃 → 皇贵妃 → 皇后'}
+    {icon:'启',title:'先从首页开始',text:'点击首页中央的红色“开始／继续深宫闯关”，跟着剧情往下走即可，不用自己寻找关卡。',demo:'主线顺序：读剧情 → 遇单词 → 参加考校 → 获得凤印'},
+    {icon:'词',title:'剧情里的词可以点',text:'故事中带红色虚线的英文词都能点击，随时查看释义、发音和例句。',demo:'例如：<span class="demo-word">careful</span>　点一下就能查，不会打断剧情'},
+    {icon:'斗',title:'宫斗玩法会自动出现',text:'斗法、抉择、查案和飞花令都由章节剧情触发，不需要另找功能键。看到“继续”就跟着往下走。',demo:'这些玩法不是独立入口，推进剧情后会在该出现的时候出现'},
+    {icon:'册',title:'忘了随时回来查',text:'底部“复习”查看今日待复习和错词；“宫册”里有完整玩法说明、存档备份和可选的云端同步。',demo:'首页右上角“？”可重看说明　·　进度会自动保存在本机'}
   ];
   var d=data[Math.max(0,Math.min(step,data.length-1))];
   var mask=document.getElementById('onboardMask');
   if(!mask){mask=document.createElement('div');mask.id='onboardMask';mask.className='onboard-mask';document.body.appendChild(mask);}
   var dots='';for(var i=0;i<data.length;i++)dots+='<i class="'+(i===step?'active':'')+'"></i>';
-  mask.innerHTML='<div class="onboard-card"><div class="onboard-dots">'+dots+'</div><div class="onboard-step">新手引导 · '+(step+1)+' / '+data.length+'</div><div class="onboard-icon">'+d.icon+'</div><div class="onboard-title">'+d.title+'</div><div class="onboard-text">'+d.text+'</div><div class="onboard-demo">'+d.demo+'</div><div class="onboard-actions"><button class="btn skip" id="onboardSkip">跳过</button><button class="btn next" id="onboardNext">'+(step===data.length-1?'开始闯关':'下一步')+'</button></div></div>';
+  mask.innerHTML='<div class="onboard-card"><div class="onboard-dots">'+dots+'</div><div class="onboard-step">第一次怎么玩 · '+(step+1)+' / '+data.length+'</div><div class="onboard-icon">'+d.icon+'</div><div class="onboard-title">'+d.title+'</div><div class="onboard-text">'+d.text+'</div><div class="onboard-demo">'+d.demo+'</div><div class="onboard-actions"><button class="btn skip" id="onboardSkip">稍后再看</button><button class="btn next" id="onboardNext">'+(step===data.length-1?'我知道了':'下一步')+'</button></div></div>';
   $('onboardSkip').onclick=closeOnboarding;
   $('onboardNext').onclick=function(){if(step<data.length-1)renderOnboarding(step+1);else closeOnboarding();};
 }
 function closeOnboarding(){
   try{localStorage.setItem(ONBOARD_KEY,'1');}catch(e){}
   var mask=document.getElementById('onboardMask');if(mask)mask.remove();
-  toast('记住：点红色英文词，可随时查看释义');
+  toast('从首页红色按钮开始，玩法会随剧情自动出现');
 }
 function openStory(){
   if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
@@ -3082,6 +3083,8 @@ function init(){
   }
   renderLibrary('');
   showPage('page-start');
+  /* 新手机扫码首次打开：先讲清楚怎么玩，再让用户开始 */
+  setTimeout(maybeShowOnboarding,260);
   var vh=$('vocabHint'); if(vh) vh.textContent=Object.keys(VOCAB_MAP).length+' 个考研核心词 · 本地自动存档';
   registerOffline();
 }
