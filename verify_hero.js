@@ -132,6 +132,26 @@ setTimeout(() => {
   check('复习考校激活 quiz 页', doc.getElementById('page-quiz').classList.contains('active'));
   window.clearTimer();
 
+  // ---------- 7. V6.2 存档迁移 ----------
+  window.S.rank = 6; window.S.points = 1234; window.S.energy = 88;
+  window.S.wrongs = { abandon: 1, abrupt: 2 };
+  window.S.favs = { virtue: 1 };
+  const code = window.encodeSave();
+  check('导出密文带前缀 GDSAVE1.', typeof code === 'string' && code.indexOf('GDSAVE1.') === 0, String(code).slice(0, 20));
+  const dec = window.decodeSave(code);
+  check('导入解码成功', dec.ok === true, dec.msg || 'fail');
+  check('导入还原 rank', dec.ok && dec.data.rank === 6, dec.ok ? dec.data.rank : '-');
+  check('导入还原 points', dec.ok && dec.data.points === 1234, dec.ok ? dec.data.points : '-');
+  check('导入还原错词本', dec.ok && dec.data.wrongs && dec.data.wrongs.abrupt === 2, dec.ok ? JSON.stringify(dec.data.wrongs) : '-');
+  check('导入还原收藏', dec.ok && dec.data.favs && dec.data.favs.virtue === 1, dec.ok ? JSON.stringify(dec.data.favs) : '-');
+  check('空/坏密文被拒绝', window.decodeSave('garbage').ok === false && window.decodeSave('').ok === false);
+  // 模拟换设备：新 S 导入旧 code
+  const oldState = window.S;
+  window.S = { v: 1, rank: 0, points: 0, chapter: 0, step: 0, storyIdx: 0, right: 0, wrong: 0, streak: 0, bestStreak: 0, seen: {}, verdict: [] };
+  const dec2 = window.decodeSave(code);
+  check('换设备导入缺字段自动补齐', dec2.ok && dec2.data.rank === 6 && dec2.data.wrongs && dec2.data.tasks && dec2.data.love, dec2.ok ? 'ok' : 'fail');
+  window.S = oldState;
+
   console.log('\n=== 结果:', pass, '通过,', fail, '失败 ===');
   process.exit(fail > 0 ? 1 : 0);
 }, 300);

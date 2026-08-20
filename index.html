@@ -136,6 +136,25 @@ nav.tabbar{
 .sheet .sd{font-size:15px;line-height:1.9;color:var(--ink)}
 .sheet .btn{margin-top:16px}
 .sheet .btn:last-child{margin-bottom:12px}
+/* V6.2 存档迁移 */
+.save-modal{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% - 48px);max-width:380px;z-index:91;
+  background:var(--bg-card);border:1px solid var(--gold);border-radius:16px;padding:18px 16px 16px;
+  box-shadow:0 10px 40px rgba(0,0,0,.3);display:none;
+}
+.save-modal .sv-title{font-size:17px;color:var(--red);font-weight:500;text-align:center;margin-bottom:4px;letter-spacing:2px}
+.save-modal .sv-sub{font-size:12px;color:var(--ink2);text-align:center;margin-bottom:12px;line-height:1.6}
+.save-modal textarea{
+  width:100%;box-sizing:border-box;min-height:120px;max-height:220px;resize:vertical;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--ink);
+  font-size:12px;line-height:1.6;padding:10px;margin-bottom:10px;
+}
+.save-modal .sv-actions{display:flex;gap:8px;flex-wrap:wrap}
+.save-modal .sv-actions .btn{flex:1;min-width:100px;margin:0}
+.save-modal .sv-tip{font-size:11.5px;color:var(--ink2);line-height:1.7;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.save-modal .sv-tip b{color:var(--gold)}
+.save-btn-row{display:flex;gap:8px;margin-bottom:12px}
+.save-btn-row .btn{flex:1;margin:0}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
   background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
@@ -580,6 +599,10 @@ nav.tabbar{
           <div class="stat"><b id="stWrong">0</b><span>答错</span></div>
           <div class="stat"><b id="stStreak">0</b><span>最高连击</span></div>
         </div>
+        <div class="save-btn-row">
+          <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
+          <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
+        </div>
         <button class="btn ghost" onclick="resetGame()">重入轮回（清空进度）</button>
       </div>
     </div>
@@ -606,6 +629,20 @@ nav.tabbar{
     <button class="btn ghost" id="sSpeakBtn">🔊 听发音</button>
     <button class="btn gold" id="sFavBtn" onclick="toggleFav()">⭐ 收藏</button>
     <button class="btn" id="sCloseBtn">收起</button>
+  </div>
+
+  <!-- V6.2 存档迁移弹层 -->
+  <div class="sheet-mask" id="saveMask" onclick="closeSaveModal()"></div>
+  <div class="save-modal" id="saveModal">
+    <div class="sv-title" id="saveTitle">导出存档</div>
+    <div class="sv-sub" id="saveSub"></div>
+    <textarea id="saveCode" placeholder="此处显示/粘贴存档密文"></textarea>
+    <div class="sv-actions">
+      <button class="btn gold" id="saveCopyBtn">复制密文</button>
+      <button class="btn ghost" id="saveDownBtn" style="display:none">下载文件</button>
+      <button class="btn ghost" onclick="closeSaveModal()">关闭</button>
+    </div>
+    <div class="sv-tip" id="saveTip"></div>
   </div>
   <div class="toast" id="toast"></div>
 </div>
@@ -2145,6 +2182,107 @@ function resetGame(){
   location.reload();
 }
 
+/* ---------- V6.2 存档迁移（导出/导入） ---------- */
+var SAVE_PREFIX='GDSAVE1.';
+function encodeSave(){
+  var json=JSON.stringify(S);
+  try{ return SAVE_PREFIX+btoa(unescape(encodeURIComponent(json))); }catch(e){ return ''; }
+}
+function decodeSave(code){
+  code=(code||'').trim();
+  if(code.indexOf(SAVE_PREFIX)!==0) return {ok:false,msg:'密文格式不对，应以上传存档前缀开头'};
+  try{
+    var json=decodeURIComponent(escape(atob(code.slice(SAVE_PREFIX.length))));
+    var o=JSON.parse(json);
+    if(!o||o.v!==1) return {ok:false,msg:'存档版本不符（请用同一版本导出）'};
+    /* 兼容旧字段缺失 */
+    if(!o.wrongs) o.wrongs={};
+    if(!o.favs) o.favs={};
+    if(!o.tasks) o.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
+    if(!o.love) o.love={char:null,stage:0,points:0,endings:{}};
+    if(typeof o.energy!=='number') o.energy=100;
+    return {ok:true,data:o};
+  }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
+}
+function openExport(){
+  var code=encodeSave();
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  if(!m) return;
+  t.textContent='🔐 导出存档';
+  s.textContent='将密文发给新设备（微信/文件传输），导入即可恢复进度';
+  ta.value=code;
+  ta.readOnly=true;
+  cp.style.display='';
+  cp.textContent='复制密文';
+  cp.onclick=function(){ copyCode(ta); };
+  dn.style.display='';
+  dn.onclick=downloadSave;
+  tip.innerHTML='密文包含全部进度：位份·圣宠·心力·剧情·错词本·收藏·抉择。<br>不会包含任何账号信息，可放心分享。';
+  $('saveMask').style.display='block';
+  m.style.display='block';
+}
+function openImport(){
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  if(!m) return;
+  t.textContent='📥 导入存档';
+  s.textContent='粘贴导出的存档密文，将覆盖当前进度';
+  ta.value='';
+  ta.readOnly=false;
+  cp.style.display='';
+  cp.textContent='确认导入';
+  cp.onclick=doImport;
+  dn.style.display='none';
+  tip.innerHTML='导入会<b>覆盖</b>本机当前存档。建议先「导出存档」备份一份。';
+  $('saveMask').style.display='block';
+  m.style.display='block';
+}
+function closeSaveModal(){
+  var m=$('saveModal'), mk=$('saveMask');
+  if(m) m.style.display='none';
+  if(mk) mk.style.display='none';
+}
+function copyCode(ta){
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){ toast('已复制，去新设备粘贴导入吧'); },
+        function(){ fallbackCopy(ta); });
+    }else{ fallbackCopy(ta); }
+  }catch(e){ fallbackCopy(ta); }
+}
+function fallbackCopy(ta){
+  try{
+    ta.focus(); ta.select();
+    var ok=document.execCommand('copy');
+    toast(ok?'已复制（可直接粘贴）':'请长按选择全文后复制');
+  }catch(e){ toast('请长按选择全文后复制'); }
+}
+function doImport(){
+  var ta=$('saveCode'); if(!ta) return;
+  var r=decodeSave(ta.value);
+  if(!r.ok){ toast(r.msg); return; }
+  var hasProgress=(S.chapter>0||S.rank>0||S.storyIdx>0||Object.keys(S.seen||{}).length>0);
+  if(hasProgress&&!confirm('导入将覆盖本机当前进度，确定继续？')){
+    ta.value=''; return;
+  }
+  S=r.data;
+  try{ window.S=S; }catch(e){}
+  save();
+  toast('导入成功！');
+  setTimeout(function(){ closeSaveModal(); location.reload(); },600);
+}
+function downloadSave(){
+  var code=encodeSave(); if(!code){ toast('导出失败'); return; }
+  try{
+    var blob=new Blob([code],{type:'text/plain;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='凤印九重_存档_'+new Date().toISOString().slice(0,10)+'.txt';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },400);
+  }catch(e){ toast('下载失败，请用复制密文'); }
+}
+
 /* ---------- 初始化 ---------- */
 function init(){
   ui={
@@ -2200,6 +2338,11 @@ window.speakSpell=speakSpell;
 window.openLove=openLove;
 window.loveSelect=loveSelect;
 window.renderHeroBadge=renderHeroBadge;
+window.encodeSave=encodeSave;
+window.decodeSave=decodeSave;
+window.openExport=openExport;
+window.openImport=openImport;
+window.closeSaveModal=closeSaveModal;
 window.startQuiz=startQuiz;
 window.answerQuiz=answerQuiz;
 window.startBattle=startBattle;
