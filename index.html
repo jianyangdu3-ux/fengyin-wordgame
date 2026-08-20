@@ -364,60 +364,49 @@ nav.tabbar{
                 <stop offset="0" stop-color="#FFFDF8"/><stop offset=".7" stop-color="#F5EDD0"/><stop offset="1" stop-color="#EBDFC4"/>
               </radialGradient>
             </defs>
-            <!-- 外圆环 -->
-            <circle cx="100" cy="100" r="97" fill="none" stroke="url(#sg)" stroke-width="2.5"/>
-            <circle cx="100" cy="100" r="91" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".65"/>
+            <!-- 外圆环：粗金边 + 细内线 -->
+            <circle cx="100" cy="100" r="97" fill="none" stroke="url(#sg)" stroke-width="3.5"/>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="url(#sg)" stroke-width="1.2" opacity=".55"/>
             <!-- 底圆 -->
-            <circle cx="100" cy="100" r="88" fill="url(#sbg)"/>
-            <!-- 外圈祥云纹 -->
-            <g fill="none" stroke="url(#sg)" stroke-width="1.2" stroke-linecap="round" opacity=".5">
-              <path d="M96 8 Q100 4 104 8 Q108 4 112 8"/>
-              <path d="M170 62 Q174 58 178 62 Q182 58 186 62"/>
-              <path d="M170 138 Q174 134 178 138 Q182 134 186 138"/>
-              <path d="M96 192 Q100 188 104 192 Q108 188 112 192"/>
-              <path d="M22 138 Q26 134 30 138 Q34 134 38 138"/>
-              <path d="M22 62 Q26 58 30 62 Q34 58 38 62"/>
+            <circle cx="100" cy="100" r="87" fill="url(#sbg)"/>
+            <!-- 内圈装饰：六瓣小花纹 -->
+            <g fill="url(#sg)" opacity=".35">
+              <circle cx="100" cy="17" r="2.2"/><circle cx="158" cy="42" r="2.2"/><circle cx="183" cy="100" r="2.2"/>
+              <circle cx="158" cy="158" r="2.2"/><circle cx="100" cy="183" r="2.2"/><circle cx="42" cy="158" r="2.2"/>
+              <circle cx="17" cy="100" r="2.2"/><circle cx="42" cy="42" r="2.2"/>
             </g>
-            <!-- 内圈祥云 -->
-            <g fill="none" stroke="url(#sg)" stroke-width="1.2" stroke-linecap="round" opacity=".4">
-              <path d="M64 50 Q70 44 78 48 Q84 44 90 50"/>
-              <path d="M110 48 Q116 42 124 46 Q130 42 136 48"/>
-              <path d="M54 144 Q60 138 68 142 Q74 138 80 144"/>
-              <path d="M120 144 Q126 138 134 142 Q140 138 146 144"/>
-            </g>
-            <!-- 凤凰 -->
-            <g>
-              <!-- 尾羽（三根长飘带） -->
-              <path d="M86 116 Q78 146 68 168 Q76 156 84 136 Q88 126 90 116" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M100 120 Q98 152 94 174 Q100 162 102 140 Q103 128 102 120" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M114 116 Q122 146 132 168 Q124 156 116 136 Q112 126 110 116" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
-              <!-- 尾羽羽脉 -->
-              <path d="M74 154 Q70 160 66 158 M76 146 Q72 152 68 150" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
-              <path d="M96 156 Q94 162 90 160 M98 148 Q96 154 92 152" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
-              <path d="M126 154 Q130 160 134 158 M124 146 Q128 152 132 150" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
-              <!-- 左翼 -->
-              <path d="M84 90 Q62 74 46 58 Q58 68 70 80 Q78 85 84 88" fill="none" stroke="url(#sg)" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M84 90 Q56 80 38 70 Q52 78 66 86 Q74 88 82 90" fill="none" stroke="url(#sg)" stroke-width="1.7" stroke-linejoin="round"/>
-              <path d="M84 90 Q60 92 42 94 Q56 94 68 92 Q76 91 82 90" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linejoin="round"/>
-              <!-- 右翼 -->
-              <path d="M116 90 Q138 74 154 58 Q142 68 130 80 Q122 85 116 88" fill="none" stroke="url(#sg)" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M116 90 Q144 80 162 70 Q148 78 134 86 Q126 88 118 90" fill="none" stroke="url(#sg)" stroke-width="1.7" stroke-linejoin="round"/>
-              <path d="M116 90 Q140 92 158 94 Q144 94 132 92 Q124 91 118 90" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linejoin="round"/>
+            <!-- 凤凰：简笔团凤，朱砂红填充 + 金色描边 -->
+            <g stroke="url(#sg)" stroke-linecap="round" stroke-linejoin="round">
+              <!-- 尾羽（三根长翎，优雅卷曲） -->
+              <path d="M96 78 C90 94 82 112 72 130 C68 136 72 140 78 138 C84 135 90 126 96 112 C102 98 104 86 100 78" fill="url(#sr)" stroke-width="1.3"/>
+              <path d="M102 76 C110 92 118 110 128 126 C132 132 128 136 122 134 C116 130 110 120 104 106 C98 92 98 80 100 76" fill="url(#sr)" stroke-width="1.3"/>
+              <path d="M106 74 C114 86 120 98 126 110 C130 114 126 118 122 116 C116 112 112 104 108 94 C104 84 104 76 106 74" fill="url(#sr)" stroke-width="1.1"/>
+              <!-- 尾翎纹理 -->
+              <path d="M80 124 C76 128 72 130 68 128" fill="none" stroke-width="1" opacity=".45"/>
+              <path d="M116 118 C120 122 124 124 128 122" fill="none" stroke-width="1" opacity=".45"/>
+              <!-- 左翼（右侧大展） -->
+              <path d="M104 64 C120 56 140 56 154 64 C160 68 158 74 152 76 C142 78 126 74 112 70 C106 68 104 66 104 64" fill="url(#sr)" stroke-width="1.3"/>
+              <!-- 右翼（左侧收拢） -->
+              <path d="M88 70 C76 64 62 62 50 68 C46 71 48 76 54 78 C62 80 76 76 88 74 C92 73 92 71 88 70" fill="url(#sr)" stroke-width="1.3"/>
+              <!-- 翅纹 -->
+              <path d="M120 60 C128 58 136 58 144 62" fill="none" stroke-width="1" opacity=".4"/>
+              <path d="M116 66 C126 64 136 64 146 68" fill="none" stroke-width="1" opacity=".4"/>
               <!-- 身体 -->
-              <ellipse cx="100" cy="96" rx="19" ry="24" fill="url(#sr)" stroke="url(#sg)" stroke-width="1.8"/>
-              <!-- 颈 -->
-              <path d="M91 78 Q87 68 82 62" fill="none" stroke="url(#sg)" stroke-width="2" stroke-linecap="round"/>
-              <!-- 头 -->
-              <ellipse cx="80" cy="58" rx="7.5" ry="6" fill="url(#sr)" stroke="url(#sg)" stroke-width="1.7" transform="rotate(-22 80 58)"/>
-              <!-- 冠羽 -->
-              <path d="M82 54 Q80 44 76 38" fill="none" stroke="url(#sg)" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M84 52 Q86 44 84 36" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linecap="round"/>
-              <!-- 眼 -->
-              <circle cx="78" cy="57" r="1.3" fill="url(#sg)"/>
-              <!-- 喙 -->
-              <path d="M74 59 L68 61 L74 63 Z" fill="url(#sg)"/>
+              <path d="M92 58 C88 52 90 46 96 44 C102 42 108 46 110 52 C112 58 110 64 106 68 C102 72 96 70 92 66 C90 62 90 60 92 58" fill="url(#sr)" stroke-width="1.3"/>
               <!-- 身羽纹 -->
-              <path d="M94 90 Q98 94 102 90 M96 98 Q100 102 104 98 M94 106 Q98 110 102 106" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+              <path d="M96 52 C100 56 104 56 108 52" fill="none" stroke-width="1" opacity=".4"/>
+              <path d="M94 60 C98 64 102 64 106 60" fill="none" stroke-width="1" opacity=".4"/>
+              <!-- 颈部 -->
+              <path d="M96 46 C92 38 86 32 80 30 C76 28 72 30 72 34 C72 38 76 40 80 40 C84 40 88 42 92 46" fill="url(#sr)" stroke-width="1.3"/>
+              <!-- 头部 -->
+              <path d="M80 30 C76 26 70 26 68 30 C66 34 68 38 72 40 C76 42 80 40 82 36 C84 32 82 30 80 30" fill="url(#sr)" stroke-width="1.3"/>
+              <!-- 冠羽（金色） -->
+              <path d="M78 28 C76 20 72 14 68 10" fill="none" stroke-width="1.6"/>
+              <path d="M80 27 C82 20 80 14 76 10" fill="none" stroke-width="1.2"/>
+              <!-- 凤眼 -->
+              <circle cx="74" cy="32" r="1.1" fill="url(#sg)" stroke="none"/>
+              <!-- 喙 -->
+              <path d="M70 34 L64 36 L70 38 Z" fill="url(#sg)" stroke="none"/>
             </g>
             <!-- 印文 -->
             <text x="100" y="186" text-anchor="middle" font-size="13" fill="url(#sg)" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600" letter-spacing="6">凤 印</text>
