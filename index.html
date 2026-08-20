@@ -465,6 +465,12 @@ nav.tabbar{
 .review-bar{display:flex;align-items:center;gap:10px;margin:10px 0 12px}
 .review-bar .rev-info{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
 .review-bar .btn{flex:0 0 auto;padding:8px 14px}
+.review-bar .rev-info b{color:var(--red);font-size:14px}
+@media(max-width:430px){
+  .review-bar{align-items:stretch;flex-direction:column;gap:8px;padding:11px 12px;background:rgba(255,253,248,.72);border:1px solid var(--line);border-radius:14px}
+  .review-bar .rev-info{width:100%;font-size:13px;line-height:1.65}
+  .review-bar .btn{width:100%;padding:10px 14px}
+}
 .lib-empty{color:var(--ink2);text-align:center;padding:26px 0;font-size:13px;line-height:1.7}
 /* ===== V7 首页重设计：凤印宫笺 ===== */
 body{background:#241816}
@@ -659,7 +665,7 @@ body{background:#241816}
             <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
           </div>
         </div>
-        <div class="hint">5491 个考研核心词 · 本地自动存档</div>
+        <div class="hint" id="vocabHint">考研核心词库 · 本地自动存档</div>
       </div>
     </div>
 
@@ -1003,9 +1009,9 @@ var STORY=[
 {
   title:'第一章 · 选秀入宫', sub:'宫门一入深似海',
   scenes:[
-    {t:'大周王朝，三年一选秀。你出身寒门，母亲临终前只留一句："深宫险恶，务必小心。"', w:['careful','dangerous','ancient']},
-    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨已下，抗旨便是死罪。', w:['obey','command','escape']},
-    {t:'宫门前，掌事姑姑上下打量你："深宫不养闲人，先过宫门考校。答得出，才进得了这扇门。"', w:['examine','admit','test']}
+    {t:'大周王朝，三年一选秀。你出身寒门，母亲临终前只留一句：“深宫 dangerous，务必 careful。”', w:['careful','dangerous','ancient']},
+    {t:'本无心争宠，只想平安度日。可名单之上，你的名字赫然在列——圣旨已下，必须 obey；若想 escape，便是抗旨。', w:['obey','command','escape']},
+    {t:'宫门前，掌事姑姑上下打量你：“先过宫门 test。本宫要 examine 你的才学，答得出，才 admit 你入宫。”', w:['examine','admit','test']}
   ],
   quiz:5, battle:null, choice:null, case:null, reward:1,
   gateText:'你深吸一口气，走向宫门考校的案台。'
@@ -1110,7 +1116,7 @@ var S={
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
-  wrongs:{}, favs:{}
+  wrongs:{}, favs:{}, learning:{}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -1119,9 +1125,10 @@ var ui={};
 /* ---------- 工具 ---------- */
 function $(id){return document.getElementById(id);}
 function extractPOS(def){
-  var m=/^([a-zA-Z.]+)\s*(.*)$/.exec(def||'');
-  if(m) return {pos:m[1], mean:m[2]};
-  return {pos:'',mean:def||''};
+  var raw=String(def||'').replace(/^\/+/, '').trim();
+  var m=/^([a-zA-Z.]+)\s*(.*)$/.exec(raw);
+  if(m) return {pos:m[1].replace(/^\/+|\/+$/g,''), mean:m[2].replace(/^[/；;\s]+/,'')};
+  return {pos:'',mean:raw};
 }
 function save(){
   S.savedAt=Date.now();
@@ -1131,7 +1138,7 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -1142,6 +1149,7 @@ function markWrong(w){
   try{
     S.wrongs[w]=(S.wrongs[w]||0)+1;
   }catch(e){ S.wrongs={}; S.wrongs[w]=1; }
+  recordLearning(w,false);
   save();
 }
 function markRight(w){
@@ -1153,6 +1161,21 @@ function markRight(w){
   save();
 }
 function isFav(w){ return S.favs&&S.favs[w]; }
+function recordLearning(w,correct){
+  if(!w) return;
+  if(!S.learning) S.learning={};
+  var p=S.learning[w]||(S.learning[w]={right:0,wrong:0,days:{},last:0});
+  if(correct){ p.right++; p.days[todayStr()]=1; }
+  else p.wrong++;
+  p.last=Date.now();
+}
+function isMastered(w){
+  var p=S.learning&&S.learning[w];
+  return !!(p && p.right>=3 && Object.keys(p.days||{}).length>=2 && p.right>=p.wrong+2);
+}
+function masteredWords(){
+  return Object.keys(S.learning||{}).filter(isMastered);
+}
 function toggleFav(){
   var w=$(ui.sWord).textContent; if(!w) return;
   try{
@@ -1187,22 +1210,34 @@ function favWords(){
 }
 function startReview(type){
   var words=(type==='wrong')?wrongWords():favWords();
-  if(words.length<2){
+  if(words.length<1){
     toast(type==='wrong'?'暂无错词，答题后再来复习':'先点开词条 ⭐ 收藏几个词吧');
     return;
   }
-  if(!costEnergy(5,'复习')) return;
-  // 组题：优先选择题，1 道拼写收尾
+  // 复习是学习的核心行为，永久免费，不消耗心力。
+  // 单个错词也可复习，会连续练两遍，避免被门槛卡住。
   var items=[];
-  var n=Math.min(words.length,8);
+  var n=Math.min(Math.max(words.length,2),8);
   var pick=words.slice();
   for(var i=0;i<n;i++){
     var w=pick[i%pick.length];
-    var isSpell=(i===n-1 && n>=3);
+    var isSpell=(i===n-1);
     items.push(isSpell?{word:w,mode:'spell',type:'spell',options:null}:
       {word:w,mode:(i%2===0)?'en2zh':'zh2en',type:'choice',options:makeOptions(w,4,(i%2===0)?'en2zh':'zh2en')});
   }
   cur={stage:'quiz',items:items,i:0,gate:'',wrongCount:0,wrongWords:[],chapterCfg:{review:type}};
+  renderQuiz();
+}
+function startCorrection(words,cfg){
+  var unique=[];
+  (words||[]).forEach(function(w){if(VOCAB_MAP[w]&&unique.indexOf(w)===-1)unique.push(w);});
+  if(!unique.length){ afterGate(true); return; }
+  var items=[];
+  unique.slice(0,4).forEach(function(w){
+    items.push({word:w,mode:'en2zh',type:'choice',options:makeOptions(w,4,'en2zh')});
+    items.push({word:w,mode:'spell',type:'spell',options:null});
+  });
+  cur={stage:'quiz',items:items,i:0,gate:'',wrongCount:0,wrongWords:[],chapterCfg:{review:'correction',correctionWords:unique,returnCfg:cfg}};
   renderQuiz();
 }
 function finishReviewCleanup(){
@@ -1471,7 +1506,7 @@ function renderHomeDashboard(){
   var he=$('homeEnergy'); if(he) he.textContent=S.energy;
   var hp=$('homeFavor'); if(hp) hp.textContent=S.points;
   var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.done&&S.tasks.done[0])||0;
-  var mastered=$('homeMastered'); if(mastered) mastered.textContent=Object.keys(S.seen||{}).length;
+  var mastered=$('homeMastered'); if(mastered) mastered.textContent=masteredWords().length;
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
   var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
@@ -1888,7 +1923,7 @@ function renderQuiz(){
   /* 复习模式标题（覆盖题型小字，强化温习感） */
   if(cur.chapterCfg && cur.chapterCfg.review){
     var qp=$(ui.qPos);
-    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':'收藏温习 · 学而时习之');
+    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':(cur.chapterCfg.review==='correction'?'即时订正 · 全对后继续':'收藏温习 · 学而时习之'));
   }
   /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
   startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
@@ -1921,6 +1956,7 @@ function answerQuiz(idx){
     var gain=10*(S.streak>1?2:1);
     S.points+=gain;
     try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    recordLearning(it.word,true);
     taskInc('correct');
     toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
     spawnCoin(qopt||$(ui.qWord),'✨');
@@ -1966,6 +2002,7 @@ function answerSpell(timedOut){
     var gain=20*(S.streak>1?2:1);
     S.points+=gain;
     try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    recordLearning(it.word,true);
     taskInc('correct');
     toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
     spawnCoin(input,'\u2728');
@@ -2006,6 +2043,7 @@ function finishQuiz(){
   if(cfg && cfg.love){ loveFinish(passed,correctCount,total,passLine,wrongWords,cfg); return; }
   /* 复习模式：答对销账，结果面板回词库 */
   if(cfg && cfg.review){
+    if(cfg.review==='correction') passed=correctCount===total;
     finishReviewCleanup();
     var charBoxR=$('quizChar'); if(charBoxR) charBoxR.style.display='none';
     var qPanelR=$('qOpts'); if(qPanelR) qPanelR.style.display='none';
@@ -2023,10 +2061,16 @@ function finishQuiz(){
           var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
           return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
         }).join('')+'</div>':'')+
-      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">返回词库</button>'+
+      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">'+(cfg.review==='correction'?(passed?'订正完成，继续剧情':'再订正一次'):'返回词库')+'</button>'+ 
     '</div>';
     var btnR=$('quizReviewBack');
-    if(btnR) btnR.onclick=function(){ resBoxR.style.display='none'; resBoxR.innerHTML=''; cur=null; goTab('library'); };
+    if(btnR) btnR.onclick=function(){
+      resBoxR.style.display='none'; resBoxR.innerHTML='';
+      if(cfg.review==='correction'){
+        var ws=cfg.correctionWords||[]; var returnCfg=cfg.returnCfg; cur=null;
+        if(passed) afterGate(true); else startCorrection(ws,returnCfg);
+      }else{ cur=null; goTab('library'); }
+    };
     return;
   }
 
@@ -2049,7 +2093,7 @@ function finishQuiz(){
           var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
           return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
         }).join('')+'</div>':'')+
-      '<button class="btn gold" id="quizContinueBtn" style="margin-top:6px">继续剧情</button>'+
+      '<button class="btn gold" id="quizContinueBtn" style="margin-top:6px">'+(wrongWords.length?'先订正错词，再继续':'继续剧情')+'</button>'+ 
     '</div>';
     var btn=$('quizContinueBtn');
     if(btn) btn.onclick=function(){
@@ -2058,7 +2102,7 @@ function finishQuiz(){
       if(charBox) charBox.style.display='flex';
       if(qPanel) qPanel.style.display='block';
       cur=null;
-      afterGate(true);
+      if(wrongWords.length) startCorrection(wrongWords,cfg); else afterGate(true);
     };
   }else{
     /* 失败：不重置剧情，显示错词复习+重试 */
@@ -2485,11 +2529,11 @@ function renderReviewBar(){
   var bar=$('reviewBar'); if(!bar) return;
   var rev=(curLibTab==='wrong')?'wrong':'fav';
   var words=(rev==='wrong')?wrongWords():favWords();
-  if(words.length<2){ bar.style.display='none'; bar.innerHTML=''; return; }
+  if(words.length<1){ bar.style.display='none'; bar.innerHTML=''; return; }
   bar.style.display='flex';
   bar.className='review-bar';
   bar.innerHTML='<div class="rev-info">'+(rev==='wrong'?
-    '错词本 <b>'+words.length+'</b> 词：答对的会自动销账，清空即掌握' :
+    '错词本 <b>'+words.length+'</b> 词：复习不耗心力，答对后自动销账' :
     '已收藏 <b>'+words.length+'</b> 词，随时温习巩固')+'</div>'+
     '<button class="btn gold" onclick="startReview(\''+rev+'\')">'+(rev==='wrong'?'📖 复习错词':'📖 复习收藏')+'</button>';
 }
@@ -2519,7 +2563,7 @@ function renderLibrary(q){
   }
   bindLibClicks(list);
   $(ui.libTotal).textContent=Object.keys(VOCAB_MAP).length;
-  $(ui.libKnow).textContent=Object.keys(S.seen||{}).length;
+  $(ui.libKnow).textContent=masteredWords().length;
 }
 function libItem(k){
   var it=VOCAB_MAP[k]; var p=extractPOS(it.def);
@@ -2897,13 +2941,14 @@ function init(){
   }
   renderLibrary('');
   showPage('page-start');
+  var vh=$('vocabHint'); if(vh) vh.textContent=Object.keys(VOCAB_MAP).length+' 个考研核心词 · 本地自动存档';
   registerOffline();
 }
 function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=82').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=90').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -2915,8 +2960,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v82')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v82','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v90')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v90','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
