@@ -357,6 +357,30 @@ nav.tabbar{
 .love-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:4px;transition:width .4s}
 .love-pts{font-size:11px;color:var(--ink2);margin-bottom:6px}
 .love-end{font-size:12px;color:var(--red);margin-bottom:8px}
+/* ===== V6.0 博弈化：倒计时 / 连击 / 斗法特效 ===== */
+.timer-bar{height:6px;background:#F0E4D0;border-radius:3px;overflow:hidden;position:relative;margin-bottom:10px}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:3px;transition:width 1s linear}
+.timer-fill.low{background:linear-gradient(90deg,#E8A0A0,var(--danger))}
+.timer-num{position:absolute;right:0;top:-15px;font-size:11px;color:var(--ink2)}
+.enemy-move{
+  text-align:center;font-size:14px;color:var(--red);font-weight:500;margin:0 0 10px;
+  background:#FBEEE8;border:1px dashed var(--red2);border-radius:10px;padding:8px 10px;
+  animation:fadeIn .3s ease;line-height:1.6;
+}
+.combo-badge{
+  text-align:center;font-size:13px;color:var(--gold);font-weight:500;margin-bottom:8px;letter-spacing:1px;
+  animation:pop .35s ease;
+}
+.dmg-float{position:fixed;pointer-events:none;font-size:24px;font-weight:600;z-index:210;animation:floatUp 1s ease forwards}
+.dmg-float.hit{color:var(--red)}
+.dmg-float.miss{color:var(--danger)}
+@keyframes hpFlash{0%{filter:brightness(1.9)}100%{filter:brightness(1)}}
+.hp-flash{animation:hpFlash .5s ease}
+#app.shake{animation:shake .35s ease}
+.battle-log{min-height:44px;white-space:pre-line}
+.spell-mode-tag{text-align:center;font-size:12px;color:var(--gold);letter-spacing:3px;margin-bottom:6px;font-weight:500}
+.result-stamp.perfect{background:var(--gold);color:#3A2A2A}
+.energy-low{color:var(--danger)!important}
 </style>
 </head>
 <body>
@@ -364,7 +388,7 @@ nav.tabbar{
   <div class="header-wrap">
     <header class="topbar">
       <h1>凤印九重</h1>
-      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span class="fav" id="favText">圣宠 0</span></div>
+      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
     </header>
     <div class="rank-bar" id="rankBar"></div>
   </div>
@@ -401,7 +425,7 @@ nav.tabbar{
         </div>
         <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
         <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
-        <div class="hint">剧情·斗法·抉择·查案 全部绑定考词<br>本地自动存档，进度不丢</div>
+        <div class="hint">限时斗法 · 连击绝杀 · 飞花令 · 心力博弈<br>答对出招，答错受伤——词背得好，才活得久<br>本地自动存档，进度不丢</div>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
           <div class="task-title">📜 今日宫务</div>
@@ -430,6 +454,7 @@ nav.tabbar{
 
     <div class="page" id="page-quiz">
       <div class="progress" id="quizProgress"></div>
+      <div class="timer-bar" id="quizTimer"><div class="timer-fill" id="qtFill"></div><span class="timer-num" id="qtNum"></span></div>
       <div class="quiz-char" id="quizChar" style="display:none">
         <img class="quiz-char-img" id="quizCharImg" src="" alt="">
         <div class="quiz-char-line-wrap">
@@ -450,6 +475,7 @@ nav.tabbar{
         </div>
         <div id="qOpts"></div>
         <div id="qSpell" style="display:none">
+          <div class="spell-mode-tag" id="spellTag">飞 花 令 · 限时 20 秒写词</div>
           <div class="spell-hint" id="spellHint"></div>
           <div style="text-align:center;margin:6px 0">
             <button class="btn ghost" onclick="speakSpell()" style="font-size:13px;padding:8px 16px;display:inline-block;width:auto">🔊 听发音</button>
@@ -466,6 +492,9 @@ nav.tabbar{
     <div class="page" id="page-battle">
       <div class="battle-title" id="battleTitle"></div>
       <div class="battle-sub" id="battleSub"></div>
+      <div class="timer-bar" id="battleTimer"><div class="timer-fill" id="btFill"></div><span class="timer-num" id="btNum"></span></div>
+      <div class="enemy-move" id="enemyMove"></div>
+      <div class="combo-badge" id="battleCombo"></div>
       <div class="enemy-char" id="enemyChar" style="display:none">
         <img class="enemy-char-img" id="enemyCharImg" src="" alt="">
         <div class="enemy-char-info">
@@ -734,6 +763,8 @@ var LOVES=[
 var S={
   v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
   right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[],
+  // V6.0 心力（体力）：考校/斗法入场与答错消耗，每日回满
+  energy:100, energyDate:'',
   // 每日任务
   tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
   // 情缘·私奔支线（rank>=3 贵人解锁）
@@ -756,9 +787,86 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initTasks(); return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); return true;}}
   }catch(e){}
   return false;
+}
+
+/* ---------- V6.0 心力系统（体力/风险代价） ---------- */
+function initEnergy(){
+  if(typeof S.energy!=='number') S.energy=100;
+  if(S.energy>100) S.energy=100;
+  if(S.energy<0) S.energy=0;
+  var t=todayStr();
+  if(S.energyDate!==t){
+    S.energy=100; S.energyDate=t; save();
+  }
+}
+function costEnergy(n,tag){
+  initEnergy();
+  if(S.energy<n){
+    toast('⚡ 心力不足（'+S.energy+'/'+100+'）：'+tag+'，先去温书恢复');
+    showRestoreHint();
+    return false;
+  }
+  S.energy-=n; save(); renderRankBar();
+  return true;
+}
+function showRestoreHint(){
+  var pg=document.querySelector('.page.active'); if(!pg) return;
+  var old=document.getElementById('restoreBtn'); if(old) old.remove();
+  var b=document.createElement('button');
+  b.id='restoreBtn'; b.className='btn ghost';
+  b.textContent='📖 温书恢复心力（+30）';
+  b.onclick=function(){
+    S.energy=Math.min(100,(S.energy||0)+30); S.energyDate=todayStr(); save(); renderRankBar();
+    b.remove();
+    toast('温故知新，心力 +30');
+    goTab('library');
+  };
+  pg.appendChild(b);
+}
+function restoreEnergy(n){
+  S.energy=Math.min(100,(S.energy||0)+(n||30)); S.energyDate=todayStr(); save(); renderRankBar();
+}
+/* ---------- V6.0 倒计时（统一管理，切页即清） ---------- */
+var _timer=null;
+function clearTimer(){ if(_timer){clearInterval(_timer);_timer=null;} }
+function startCountdown(sec,fillId,numId,onTimeout){
+  clearTimer();
+  var left=sec;
+  var fill=$(fillId),num=$(numId);
+  if(fill){ fill.classList.remove('low'); fill.style.transition='none'; fill.style.width='100%'; }
+  if(num) num.textContent=left;
+  _timer=setInterval(function(){
+    left--;
+    if(fill){ fill.style.transition='width 1s linear'; fill.style.width=Math.max(0,(left/sec)*100)+'%'; if(left<=3) fill.classList.add('low'); }
+    if(num) num.textContent=Math.max(0,left);
+    if(left<=0){
+      clearTimer();
+      if(onTimeout) onTimeout();
+    }
+  },1000);
+}
+/* ---------- V6.0 斗法特效 ---------- */
+function dmgFloat(el,text,cls){
+  if(!el) return;
+  var r=el.getBoundingClientRect();
+  var s=document.createElement('span');
+  s.className='dmg-float '+(cls||'hit');
+  s.textContent=text;
+  s.style.left=(r.left+r.width/2-12)+'px';
+  s.style.top=(r.top)+'px';
+  document.body.appendChild(s);
+  setTimeout(function(){s.remove();},1000);
+}
+function flashHp(id){
+  var el=$(id); if(!el) return;
+  el.classList.remove('hp-flash'); void el.offsetWidth; el.classList.add('hp-flash');
+}
+function shakeApp(){
+  var a=document.getElementById('app'); if(!a) return;
+  a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
 }
 
 /* ---------- 每日任务 ---------- */
@@ -900,6 +1008,12 @@ function renderRankBar(){
   if(sealEl) sealEl.textContent=S.rank>0?('凤印×'+S.rank):'';
   bar.innerHTML=h;
   $(ui.favText).textContent='圣宠 '+S.points;
+  var et=$('energyText');
+  if(et){
+    initEnergy();
+    et.textContent='⚡ '+S.energy;
+    et.classList.toggle('energy-low',S.energy<=15);
+  }
   renderHeroBadge();
 }
 /* 首页主视觉渲染：金钗 + 位份圆环 + 九印进度 */
@@ -915,6 +1029,7 @@ function renderHeroBadge(){
   var st=$('sealText'); if(st) st.textContent=r>0?('凤印×'+r):'';
 }
 function showPage(id){
+  clearTimer();
   var pages=document.querySelectorAll('.page');
   for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
   $(id).classList.add('active');
@@ -1204,6 +1319,7 @@ function buildOptsHTML(opts, clickFn){
 }
 
 function startQuiz(cfg){
+  if(!costEnergy(5,'考校')) return;
   var words=[];
   (cfg.scenes||[]).forEach(function(s){ (s.w||[]).forEach(function(x){ if(words.indexOf(x)===-1 && VOCAB_MAP[x]) words.push(x); }); });
   var count=cfg.quiz||5;
@@ -1255,12 +1371,13 @@ function renderQuiz(){
   }
   $(ui.quizProgress).innerHTML=dots;
   if(it.type==='spell'){
-    /* 拼写题：显示中文释义，输入英文 */
+    /* 飞花令（原拼写题）：显示中文释义，限时输入英文 */
     $(ui.qOpts).style.display='none';
     $('qSpell').style.display='block';
     $(ui.qWord).textContent='';
     $(ui.qPho).textContent='';
-    $(ui.qPos).textContent='\u62fc\u5199 \u00b7 \u770b\u4e49\u5199\u8bcd';
+    $(ui.qPos).textContent='\u98de\u82b1\u4ee4 \u00b7 \u770b\u4e49\u5199\u8bcd \u00b7 \u5bf9\u52a0 20 \u5723\u5ba0';
+    var st=$('spellTag'); if(st) st.textContent='\u98de\u82b1\u4ee4 \u00b7 \u9650\u65f6 20 \u79d2\u5199\u8bcd\uff0c\u8d85\u65f6\u7b97\u8f93';
     $('spellHint').textContent=p.mean;
     var input=$('spellInput');
     input.value=''; input.className='spell-input'; input.disabled=false;
@@ -1287,13 +1404,23 @@ function renderQuiz(){
     }
   }
   $(ui.quizHint).textContent=cur.i===0&&cur.gate?cur.gate:'';
+  /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
+  startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
+    if(!cur||cur.stage!=='quiz') return;
+    if(cur.items[cur.i].type==='spell') answerSpell(true);
+    else answerQuiz(-1);
+  });
 }
 function answerQuiz(idx){
   if(!cur||cur.stage!=='quiz') return;
+  clearTimer();
   var it=cur.items[cur.i];
-  var o=it.options[parseInt(idx,10)];
-  var isRight=!!o.is;
-  var qopt=$(ui.qOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+  var isRight=false;
+  if(idx>=0){
+    var o=it.options[parseInt(idx,10)];
+    isRight=!!o.is;
+  }
+  var qopt=idx>=0?($(ui.qOpts).querySelectorAll('.qopt')[parseInt(idx,10)]):null;
   if(qopt){
     qopt.classList.add(isRight?'right':'wrong');
     if(!isRight){
@@ -1313,9 +1440,10 @@ function answerQuiz(idx){
     spawnCoin(qopt||$(ui.qWord),'✨');
   }else{
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    S.energy=Math.max(0,S.energy-3);
     cur.wrongCount++;
     if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
-    toast('答错了 -5 圣宠');
+    toast('答错了 -5 圣宠 -3 心力');
     spawnCoin(qopt||$(ui.qWord),'💔');
   }
   save();
@@ -1331,32 +1459,34 @@ function answerQuiz(idx){
     }
   },900);
 }
-function answerSpell(){
+function answerSpell(timedOut){
   if(!cur||cur.stage!=='quiz') return;
+  clearTimer();
   var it=cur.items[cur.i];
   if(it.type!=='spell') return;
   var input=$('spellInput');
   var val=(input.value||'').trim().toLowerCase();
   var correct=it.word.toLowerCase();
-  var isRight=(val===correct);
+  var isRight=!timedOut && (val===correct);
   input.disabled=true;
   $('spellSubmit').disabled=true;
   if(isRight){
     input.className='spell-input right';
     S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak;
-    var gain=15*(S.streak>1?2:1);
+    var gain=20*(S.streak>1?2:1);
     S.points+=gain;
     try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
     taskInc('correct');
-    toast('\u62fc\u5199\u6b63\u786e +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
+    toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
     spawnCoin(input,'\u2728');
   }else{
     input.className='spell-input wrong';
     input.value=correct;
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
+    S.energy=Math.max(0,S.energy-3);
     cur.wrongCount++;
     if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
-    toast('\u62fc\u5199\u9519\u8bef -5 \u5723\u5ba0');
+    toast(timedOut?'\u8d85\u65f6\u672a\u5199\u51fa -5 \u5723\u5ba0 -3 \u5fc3\u529b':'飞花令落空 -5 圣宠 -3 心力');
     spawnCoin(input,'\ud83d\udc94');
   }
   save();
@@ -1371,6 +1501,7 @@ function answerSpell(){
   },1500);
 }
 function finishQuiz(){
+  clearTimer();
   var total=cur.items.length;
   var correctCount=total-cur.wrongCount;
   var passLine=Math.ceil(total*0.6); /* 60%通过线 */
@@ -1388,9 +1519,11 @@ function finishQuiz(){
     $(ui.quizHint).textContent='';
     var resBox=$('quizResult');
     resBox.style.display='block';
+    var perfect=(wrongWords.length===0);
+    if(perfect){ S.points+=30; save(); }
     resBox.innerHTML='<div class="quiz-result">'+
-      '<div class="result-stamp pass">'+(wrongWords.length===0?'考校全通':'考校通过')+'</div>'+
-      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(wrongWords.length>0?' · 错'+wrongWords.length+'词需复习':'')+'</div>'+
+      '<div class="result-stamp '+(perfect?'perfect':'pass')+'">'+(perfect?'考校全通':'考校通过')+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(perfect?' · 全对 +30 圣宠':' · 错'+wrongWords.length+'词需复习')+'</div>'+
       (wrongWords.length>0?
         '<div class="result-wrong-title">错词复习（点单词可听发音）</div>'+
         '<div class="result-wrong-list">'+wrongWords.map(function(w){
@@ -1438,12 +1571,18 @@ function finishQuiz(){
   }
 }
 
-/* ---------- 斗法（战斗化测验） ---------- */
+/* ---------- V6.0 斗法：回合制博弈（敌方出招 → 限时拆招 → 连击绝杀） ---------- */
+var ENEMY_MOVES=['指鹿为马','笑里藏刀','暗渡陈仓','借刀杀人','无中生有','隔岸观火','欲擒故纵','声东击西','抛砖引玉','金蝉脱壳','美人计','反客为主','连环计','苦肉计'];
+var ENEMY_TAUNTS=['就这点本事？也配在宫里立足？','本宫当你是个人物，原来是草包。','连这都答不上来，回去种地吧。','呵，本宫高看你了。','你怕了？晚了。','这深宫，不是你这种脑子待的地方。'];
+var COMBO_NAMES=['','','巧言令色','妙语连珠','凤鸣九天'];
+function comboName(c){ return c>=4?COMBO_NAMES[4]:(c>=3?COMBO_NAMES[3]:(c>=2?COMBO_NAMES[2]:'')); }
 function startBattle(cfg){
-  cur={stage:'battle',enemy:cfg.enemy,hp:100,myhp:100,count:6,i:0,log:''};
+  if(!costEnergy(10,'斗法')) return;
+  cur={stage:'battle',enemy:cfg.enemy,hp:100,myhp:100,count:cfg.count||6,i:0,log:'',combo:0,turn:0};
   nextBattleQ();
 }
 function nextBattleQ(){
+  if(!cur) return;
   var keys=Object.keys(VOCAB_MAP);
   var w=keys[rand(keys.length)];
   cur.q={word:w,mode:'en2zh',options:makeOptions(w,3,'en2zh')};
@@ -1451,8 +1590,16 @@ function nextBattleQ(){
 }
 function renderBattle(){
   showPage('page-battle');
-  $(ui.battleTitle).textContent='斗法 · 对阵'+cur.enemy;
-  $(ui.battleSub).textContent='答对出招，连击翻倍；答错受挫，圣宠受损';
+  cur.turn++;
+  if(cur.turn>cur.count){ winBattle(); return; }
+  /* 敌方先出招 */
+  cur.enemyMove=pick(ENEMY_MOVES);
+  cur.enemyTaunt=pick(ENEMY_TAUNTS);
+  $(ui.battleTitle).textContent='斗法 · 对阵 '+cur.enemy;
+  $(ui.battleSub).textContent='第 '+cur.turn+' / '+cur.count+' 回合 · 敌方出招，限时 12 秒拆招';
+  $('enemyMove').textContent='「'+cur.enemy+'」使出一招『'+cur.enemyMove+'』—— 速速出招！';
+  var cn=comboName(cur.combo);
+  $('battleCombo').textContent=cur.combo>=2?('连击 ×'+cur.combo+' · 招式「'+cn+'」'):'';
   var c=findCharByName(cur.enemy);
   var ec=$('enemyChar');
   if(c && ec){
@@ -1475,32 +1622,55 @@ function renderBattle(){
   var opts=$(ui.bOpts).querySelectorAll('.qopt');
   for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerBattle(this.getAttribute('data-i')); };
   $(ui.battleLog).textContent=cur.log;
+  startCountdown(12,'btFill','btNum',function(){
+    if(!cur||cur.stage!=='battle') return;
+    answerBattle(-1);
+  });
 }
 function answerBattle(idx){
   if(!cur||cur.stage!=='battle') return;
-  var o=cur.q.options[parseInt(idx,10)];
-  var isRight=!!o.is;
-  var qopt=$(ui.bOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
-  qopt.classList.add(isRight?'right':'wrong');
-  if(!isRight){
-    for(var k=0;k<cur.q.options.length;k++) if(cur.q.options[k].is){
-      $(ui.bOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+  clearTimer();
+  var isRight=false;
+  if(idx>=0){
+    var o=cur.q.options[parseInt(idx,10)];
+    isRight=!!o.is;
+    var qopt=$(ui.bOpts).querySelectorAll('.qopt')[parseInt(idx,10)];
+    if(qopt){
+      qopt.classList.add(isRight?'right':'wrong');
+      if(!isRight){
+        for(var k=0;k<cur.q.options.length;k++) if(cur.q.options[k].is){
+          $(ui.bOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
+        }
+      }
     }
   }
   var opts=$(ui.bOpts).querySelectorAll('.qopt');
   for(var i=0;i<opts.length;i++) opts[i].style.pointerEvents='none';
   if(isRight){
+    cur.combo++;
+    var tier=Math.min(cur.combo,4);
+    var dmg=[20,28,38,50][tier-1];
+    cur.hp-=dmg;
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
-    var dmg=20+(S.streak>2?15:0);
-    cur.hp-=dmg; S.points+=12;
-    cur.log='你一道见招拆招，'+cur.enemy+'气血震荡 -'+dmg;
+    S.points+=12;
+    var cn=comboName(cur.combo);
+    cur.log+='第'+cur.turn+'回合：你「'+(cn||'见招拆招')+'」命中，'+cur.enemy+' -'+dmg+(cur.combo>=2?'（连击×'+cur.combo+'）':'')+'\n';
+    dmgFloat($('enemyHp'),'-'+dmg,'hit');
+    flashHp('enemyHp');
+    shakeApp();
     taskInc('correct');
-    toast('施计成功！连击'+S.streak);
+    toast(cur.combo>=2?('连击×'+cur.combo+'！「'+cn+'」'):'出招命中！');
   }else{
+    cur.combo=0;
+    cur.myhp-=25;
     S.wrong++; S.streak=0;
-    cur.myhp-=25; S.points=Math.max(0,S.points-8);
-    cur.log=cur.enemy+'反将一军："就这点本事？" 你-25';
-    toast('计谋被识破 -8 圣宠');
+    S.points=Math.max(0,S.points-8);
+    S.energy=Math.max(0,S.energy-3);
+    cur.log+='第'+cur.turn+'回合：'+cur.enemy+'反将一军——'+cur.enemyTaunt+'（你 -25）\n';
+    dmgFloat($('myHp'),'-25','miss');
+    flashHp('myHp');
+    shakeApp();
+    toast('中计了！-8 圣宠 -3 心力');
   }
   save();
   setTimeout(function(){
@@ -1508,23 +1678,37 @@ function answerBattle(idx){
     if(cur.hp<=0){ winBattle(); }
     else if(cur.myhp<=0){ loseBattle(); }
     else { cur.i++; nextBattleQ(); }
-  },900);
+  },1100);
 }
 function winBattle(){
   if(!cur||cur.stage!=='battle') return;
-  cur=null;
+  var bonus=40+(cur.combo>=4?30:0);
+  S.points+=bonus;
+  var enemy=cur.enemy;
+  clearTimer();
+  save();
   var ec=$('enemyChar'); if(ec) ec.style.display='none';
-  toast('你赢了！');
-  $(ui.battleLog).textContent='你在六宫面前立住了脚跟。';
-  setTimeout(function(){ afterGate(true); },800);
+  $('battleCombo').textContent='';
+  $('enemyMove').textContent='';
+  $(ui.battleLog).textContent='斗法得胜！'+enemy+'退避三舍，再不敢小觑你。\n你赢得 +'+bonus+' 圣宠'+(cur.combo>=4?'（凤鸣九天·绝杀加成）':'')+'。';
+  cur=null;
+  toast('斗法得胜 +'+bonus+' 圣宠');
+  setTimeout(function(){ afterGate(true); },1500);
 }
 function loseBattle(){
+  if(!cur||cur.stage!=='battle') return;
+  S.energy=Math.max(0,S.energy-15);
+  var enemy=cur.enemy;
+  clearTimer();
+  save();
   var ec=$('enemyChar'); if(ec) ec.style.display='none';
-  $(ui.battleLog).textContent='你暂时落败……重整旗鼓再来一次。';
+  $('battleCombo').textContent='';
+  $('enemyMove').textContent='';
+  $(ui.battleLog).textContent='你暂时落败……心力折损。重整旗鼓，再来斗法！';
+  cur=null;
   setTimeout(function(){
-    cur=null;
     var btn=document.createElement('button');
-    btn.className='btn gold'; btn.textContent='重新斗法';
+    btn.className='btn gold'; btn.textContent='重整旗鼓（-10 心力）';
     btn.onclick=function(){
       btn.remove();
       var ch=STORY[S.chapter];
@@ -1637,7 +1821,11 @@ function answerCase(idx){
 function startGame(){
   renderRankBar();
   loveActive=false;
-  S.chapter=0; S.step=0; S.storyIdx=0; save();
+  /* 有进度则继续，无进度才从头开始 */
+  if(!S.rank && S.chapter===0 && S.storyIdx===0 && !S.right && !S.wrong){
+    S.chapter=0; S.step=0; S.storyIdx=0;
+  }
+  save();
   openStory();
 }
 function openStory(){
@@ -1782,7 +1970,7 @@ function resetGame(){
 /* ---------- 初始化 ---------- */
 function init(){
   ui={
-    toast:'toast',rankBar:'rankBar',rankName:'rankName',favText:'favText',
+    toast:'toast',rankBar:'rankBar',rankName:'rankName',favText:'favText',energyText:'energyText',
     storyTitle:'storyTitle',storySub:'storySub',storyText:'storyText',
     btnStoryNext:'btnStoryNext',storyHint:'storyHint',
     quizProgress:'quizProgress',qWord:'qWord',qPho:'qPho',qPos:'qPos',qOpts:'qOpts',quizHint:'quizHint',
@@ -1806,12 +1994,15 @@ function init(){
   }
   if(mEl) mEl.addEventListener('click',closeSheet);
   var has=load();
+  initEnergy();
   renderTasks();
   renderRankBar();
   renderLoveEntry();
   renderHeroBadge();
-  if(has && S.chapter>0){
-    // 有进度 → 回到封面，用户点"继续"由 tab 剧情进入
+  if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
+    /* 有进度 → 首页按钮改为"继续" */
+    var bs=$('btnStart'); if(bs) bs.textContent='继 续 深 宫';
+    var hh=document.querySelector('.hero-hint'); if(hh) hh.textContent='继续闯关';
   }
   renderLibrary('');
   showPage('page-start');
@@ -1831,6 +2022,17 @@ window.speakSpell=speakSpell;
 window.openLove=openLove;
 window.loveSelect=loveSelect;
 window.renderHeroBadge=renderHeroBadge;
+window.startQuiz=startQuiz;
+window.answerQuiz=answerQuiz;
+window.startBattle=startBattle;
+window.answerBattle=answerBattle;
+window.clearTimer=clearTimer;
+window.initEnergy=initEnergy;
+window.comboName=comboName;
+window.ENEMY_MOVES=ENEMY_MOVES;
+window.save=save;
+window.init=init;
+window.renderRankBar=renderRankBar;
 window.S=S;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
