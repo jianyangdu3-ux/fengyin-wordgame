@@ -2131,7 +2131,7 @@ function finishQuiz(){
     $(ui.quizHint).textContent='';
     var resBoxR=$('quizResult');
     resBoxR.style.display='block';
-    var left=wrongWords().length;
+    var left=Object.keys(S.wrongs||{}).filter(function(w){return !!VOCAB_MAP[w];}).length;
     resBoxR.innerHTML='<div class="quiz-result">'+
       '<div class="result-stamp '+(passed?'pass':'fail')+'">'+(passed?'温故知新':'尚未记牢')+'</div>'+
       '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(left>0?' · 错词本还剩 <b>'+left+'</b> 词':' · 错词本已清空 ✨')+'</div>'+
@@ -3057,7 +3057,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=110').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=111').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3069,8 +3069,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v110')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v110','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v111')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v111','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
