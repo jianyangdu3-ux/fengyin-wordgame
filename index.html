@@ -488,7 +488,8 @@ body{background:#241816}
 .home-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
 .home-location{margin:-8px 2px 13px;color:#987a68;font-size:11px;letter-spacing:1px}.home-location b{color:#8f3029;font-weight:600}
 .home-seal{width:38px;height:38px;border:2px solid #a33b2f;border-radius:7px;color:#a33b2f;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:18px;font-weight:700;transform:rotate(-2deg);box-shadow:inset 0 0 0 2px #fbf7f0, inset 0 0 0 3px rgba(163,59,47,.35)}
-.home-brand{font-family:"Songti SC","STSong",serif;font-size:23px;letter-spacing:4px;color:#38251f;font-weight:700;white-space:nowrap}
+.home-brand{font-family:"Songti SC","STSong",serif;font-size:23px;letter-spacing:4px;color:#38251f;font-weight:700;white-space:nowrap;cursor:pointer}
+.home-brand:after{content:' ›';font-family:serif;font-size:18px;color:#a33b2f;letter-spacing:0}
 .home-resources{margin-left:auto;display:flex;gap:6px}
 .resource-pill{height:32px;padding:0 10px;border:1px solid #d8c39a;border-radius:18px;background:rgba(255,253,248,.78);display:flex;align-items:center;gap:5px;color:#4a3730;font-size:12px;white-space:nowrap;box-shadow:0 3px 12px rgba(83,50,29,.04)}
 .resource-pill b{font-size:13px;font-weight:600}.resource-pill .bolt{color:#c89022}
@@ -641,7 +642,7 @@ body{background:#241816}
     <div class="page active" id="page-start">
       <div class="home-v7">
         <div class="home-head">
-          <div class="home-seal" onclick="goTab('home')" role="button" aria-label="返回首页">凤</div><div class="home-brand" onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</div>
+          <div class="home-seal" onclick="location.href='manual.html#fengyin'" role="button" aria-label="查看凤印与晋位说明">凤</div><div class="home-brand" onclick="location.href='manual.html#quickstart'" role="button" aria-label="查看凤印九重玩法说明">凤印九重</div>
           <div class="home-resources">
             <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
             <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
@@ -653,7 +654,7 @@ body{background:#241816}
           <section class="rank-hero">
             <div class="palace-wash"></div>
             <div class="rank-copy">
-              <div class="eyebrow">今日晋封</div>
+              <div class="eyebrow">当前位份</div>
               <div class="home-rank" id="heroRank">秀女</div>
               <div class="seal-progress-label" onclick="event.stopPropagation();location.href='manual.html#fengyin'" role="button" tabindex="0" aria-label="查看凤印与晋位说明"><span>凤印</span><span id="htNum">0 / 9</span></div>
               <div class="seal-progress"><i id="htFill" style="width:0%"></i></div>
