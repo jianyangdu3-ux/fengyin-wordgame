@@ -226,7 +226,9 @@ nav.tabbar{
 .hero-frame{
   position:relative;width:130px;height:172px;margin:0 auto 10px;
   border-radius:3px;border:2.5px solid var(--gold);
-  background:linear-gradient(145deg,#FFFDF8,#F5EDD0);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 172'%3E%3Crect width='130' height='172' fill='%23F5EDD0'/%3E%3Cg fill='none' stroke='%23C9A227' stroke-width='1' opacity='.25'%3E%3Cpath d='M0 30 Q65 8 130 30'/%3E%3Cpath d='M10 30 L10 172 M30 30 L30 172 M50 30 L50 172 M80 30 L80 172 M100 30 L100 172 M120 30 L120 172'/%3E%3Crect x='35' y='55' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='73' y='55' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='35' y='100' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3Crect x='73' y='100' width='22' height='28' rx='2' fill='%23C9A227' opacity='.12'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat,
+    linear-gradient(145deg,#FFFDF8,#F5EDD0);
   box-shadow:0 6px 20px rgba(122,21,12,.18),inset 0 0 14px rgba(201,162,39,.1);
   padding:4px;transition:transform .12s ease;
 }
@@ -474,7 +476,21 @@ nav.tabbar{
       <div class="cover">
         <div class="palace-silhouette">
           <svg viewBox="0 0 430 100" preserveAspectRatio="xMidYMax slice" width="100%" height="100%">
-            <path d="M0 100 L0 70 L50 50 L100 70 L150 45 L215 20 L280 45 L330 70 L380 50 L430 70 L430 100Z" fill="#7A1F1F"/>
+            <!-- 左侧配殿 -->
+            <path d="M0 100 L0 78 L30 58 L45 50 L60 58 L90 78 L90 100Z" fill="#7A1F1F"/>
+            <!-- 中间主殿（大殿） -->
+            <path d="M120 100 L120 60 L140 45 L155 35 L170 45 L190 60 L190 100Z" fill="#7A1F1F"/>
+            <!-- 中间主殿（小顶） -->
+            <path d="M150 60 L150 38 L165 25 L180 38 L180 60Z" fill="#7A1F1F"/>
+            <!-- 右侧配殿 -->
+            <path d="M340 100 L340 78 L370 58 L385 50 L400 58 L430 78 L430 100Z" fill="#7A1F1F"/>
+            <!-- 殿宇立柱线（细线暗示结构） -->
+            <line x1="35" y1="65" x2="35" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <line x1="55" y1="65" x2="55" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <line x1="145" y1="50" x2="145" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <line x1="165" y1="50" x2="165" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <line x1="375" y1="65" x2="375" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
+            <line x1="395" y1="65" x2="395" y2="100" stroke="#7A1F1F" stroke-width="1.5" opacity=".6"/>
           </svg>
         </div>
         <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="点击入宫">
@@ -1269,7 +1285,7 @@ function pick(arr){return arr[rand(arr.length)];}
 function renderRankBar(){
   var bar=$(ui.rankBar); var h='';
   for(var i=0;i<RANKS.length;i++){
-    h+='<span class="rank-chip'+(i<S.rank?' past':(i===S.rank?' cur':''))+'">'+(i<S.rank?'✦印 ':'')+RANKS[i].n+'</span>';
+    h+='<span class="rank-chip'+(i<S.rank?' past':(i===S.rank?' cur':''))+'" title="'+(i<S.rank?'已获得此位份凤印':'当前位份')+'">'+(i<S.rank?'✓ ':'')+RANKS[i].n+'</span>';
   }
   var sealEl=$('sealText');
   if(sealEl) sealEl.textContent=S.rank>0?('凤印×'+S.rank):'';
