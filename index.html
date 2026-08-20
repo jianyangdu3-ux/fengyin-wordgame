@@ -381,6 +381,16 @@ nav.tabbar{
 .spell-mode-tag{text-align:center;font-size:12px;color:var(--gold);letter-spacing:3px;margin-bottom:6px;font-weight:500}
 .result-stamp.perfect{background:var(--gold);color:#3A2A2A}
 .energy-low{color:var(--danger)!important}
+/* V6.1 复习系统 */
+.lib-tabs{display:flex;gap:8px;margin-bottom:10px}
+.lib-tab{flex:1;padding:7px 0;text-align:center;font-size:13px;color:var(--ink2);background:var(--bg-card);border:1px solid var(--line);border-radius:12px;cursor:pointer;font-weight:500}
+.lib-tab.active{background:var(--red);color:#F5E9C9;border-color:var(--red)}
+.lib-tab .n{font-size:11px;opacity:.75;margin-left:2px}
+.lib-item .star{color:var(--gold);margin-right:6px;font-size:12px}
+.review-bar{display:flex;align-items:center;gap:10px;margin:10px 0 12px}
+.review-bar .rev-info{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
+.review-bar .btn{flex:0 0 auto;padding:8px 14px}
+.lib-empty{color:var(--ink2);text-align:center;padding:26px 0;font-size:13px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -548,7 +558,13 @@ nav.tabbar{
     </div>
 
     <div class="page" id="page-library">
-      <div class="library-top"><input class="lib-search" id="libSearch" placeholder="搜单词，如 abandon" oninput="renderLibrary(this.value)"></div>
+      <div class="lib-tabs">
+        <button class="lib-tab active" id="libTabAll" onclick="libTab('all')">全部词</button>
+        <button class="lib-tab" id="libTabFav" onclick="libTab('fav')">⭐ 收藏<span class="n" id="libFavN">0</span></button>
+        <button class="lib-tab" id="libTabWrong" onclick="libTab('wrong')">❌ 错词<span class="n" id="libWrongN">0</span></button>
+      </div>
+      <div class="library-top"><input class="lib-search" id="libSearch" placeholder="搜单词，如 abandon" oninput="libTab('all');renderLibrary(this.value)"></div>
+      <div id="reviewBar" style="display:none"></div>
       <div class="lib-list" id="libList"></div>
       <div class="stats-row">
         <div class="stat"><b id="libTotal">0</b><span>词库总量</span></div>
@@ -588,6 +604,7 @@ nav.tabbar{
     <div class="sp" id="sPho"></div>
     <div class="sd" id="sDef"></div>
     <button class="btn ghost" id="sSpeakBtn">🔊 听发音</button>
+    <button class="btn gold" id="sFavBtn" onclick="toggleFav()">⭐ 收藏</button>
     <button class="btn" id="sCloseBtn">收起</button>
   </div>
   <div class="toast" id="toast"></div>
@@ -768,7 +785,9 @@ var S={
   // 每日任务
   tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
   // 情缘·私奔支线（rank>=3 贵人解锁）
-  love:{char:null,stage:0,points:0,endings:{}}
+  love:{char:null,stage:0,points:0,endings:{}},
+  // V6.1 复习系统：错词本（词→错次）与收藏
+  wrongs:{}, favs:{}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -787,9 +806,88 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
+}
+
+/* ---------- V6.1 复习系统（错词本/收藏/复习考校） ---------- */
+function markWrong(w){
+  if(!w) return;
+  try{
+    S.wrongs[w]=(S.wrongs[w]||0)+1;
+  }catch(e){ S.wrongs={}; S.wrongs[w]=1; }
+  save();
+}
+function markRight(w){
+  if(!w) return;
+  if(S.wrongs[w]){
+    S.wrongs[w]--;
+    if(S.wrongs[w]<=0) delete S.wrongs[w];
+  }
+  save();
+}
+function isFav(w){ return S.favs&&S.favs[w]; }
+function toggleFav(){
+  var w=$(ui.sWord).textContent; if(!w) return;
+  try{
+    if(S.favs[w]){ delete S.favs[w]; }
+    else{ S.favs[w]=1; }
+  }catch(e){ S.favs={}; S.favs[w]=1; }
+  save();
+  renderFavBtn(w);
+  toast(S.favs[w]?'已收藏，可在词库「⭐收藏」复习':'已取消收藏');
+  if(curLibTab==='fav') renderLibrary();
+}
+function renderFavBtn(w){
+  var b=$('sFavBtn');
+  if(b) b.textContent=S.favs&&S.favs[w]?'★ 已收藏':'☆ 收藏';
+}
+var curLibTab='all';
+function libTab(t){
+  curLibTab=t;
+  var map={all:'libTabAll',fav:'libTabFav',wrong:'libTabWrong'};
+  for(var k in map){ var el=$(map[k]); if(el) el.classList.toggle('active',k===t); }
+  renderLibrary();
+}
+function wrongWords(){
+  var arr=[];
+  for(var k in (S.wrongs||{})) if(VOCAB_MAP[k]) arr.push(k);
+  return arr;
+}
+function favWords(){
+  var arr=[];
+  for(var k in (S.favs||{})) if(VOCAB_MAP[k]) arr.push(k);
+  return arr;
+}
+function startReview(type){
+  var words=(type==='wrong')?wrongWords():favWords();
+  if(words.length<2){
+    toast(type==='wrong'?'暂无错词，答题后再来复习':'先点开词条 ⭐ 收藏几个词吧');
+    return;
+  }
+  if(!costEnergy(5,'复习')) return;
+  // 组题：优先选择题，1 道拼写收尾
+  var items=[];
+  var n=Math.min(words.length,8);
+  var pick=words.slice();
+  for(var i=0;i<n;i++){
+    var w=pick[i%pick.length];
+    var isSpell=(i===n-1 && n>=3);
+    items.push(isSpell?{word:w,mode:'spell',type:'spell',options:null}:
+      {word:w,mode:(i%2===0)?'en2zh':'zh2en',type:'choice',options:makeOptions(w,4,(i%2===0)?'en2zh':'zh2en')});
+  }
+  cur={stage:'quiz',items:items,i:0,gate:'',wrongCount:0,wrongWords:[],chapterCfg:{review:type}};
+  renderQuiz();
+}
+function finishReviewCleanup(){
+  // 复习结束：答对的词从错词本销账
+  if(!cur||!cur.chapterCfg||!cur.chapterCfg.review) return;
+  var done={};
+  cur.items.forEach(function(it){
+    if(done[it.word]) return; done[it.word]=1;
+    if(cur.wrongWords.indexOf(it.word)===-1) markRight(it.word);
+  });
 }
 
 /* ---------- V6.0 心力系统（体力/风险代价） ---------- */
@@ -1049,7 +1147,7 @@ function setTab(which){
 }
 function goTab(which){
   if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} if(loveActive){ loveStory(); return; } openStory(); }
-  else if(which==='library'){ showPage('page-library'); renderLibrary(''); setTab('library'); }
+  else if(which==='library'){ showPage('page-library'); renderLibCounts(); renderLibrary(''); setTab('library'); }
   else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
 }
 
@@ -1084,6 +1182,7 @@ function openSheet(key){
   $(ui.sDef).textContent=(p.pos?p.pos+' ':'')+p.mean;
   $(ui.sheetMask).style.display='block';
   $(ui.sheet).style.display='block';
+  renderFavBtn(key);
   try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
 }
 function speakSheet(){
@@ -1211,6 +1310,7 @@ function loveFinish(passed,correct,total,passLine,wrongWords,cfg){
         var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
         return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
       }).join('')+'</div>'+
+      '<button class="btn ghost" id="loveRevBtn" style="margin-top:6px">📖 先去错词本复习</button>'+
       '<button class="btn gold" id="loveRetryBtn" style="margin-top:6px">重新考校</button>'+
     '</div>';
     var b2=$('loveRetryBtn');
@@ -1220,6 +1320,13 @@ function loveFinish(passed,correct,total,passLine,wrongWords,cfg){
       if(qPanel) qPanel.style.display='block';
       cur=null;
       if(cfg) startQuiz(cfg);
+    };
+    var bRev=$('loveRevBtn');
+    if(bRev) bRev.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      cur=null;
+      goTab('library');
+      libTab('wrong');
     };
   }
 }
@@ -1231,6 +1338,7 @@ function loveFinalChoice(){
   $(ui.choiceText).innerHTML=linkWords(L.final.q,L.words);
   bindWordClicks($(ui.choiceText));
   var word=L.words[rand(L.words.length)];
+  cur.finalWord=word;
   var opts=makeOptions(word,4,'en2zh');
   var h='';
   for(var i=0;i<opts.length;i++){
@@ -1257,7 +1365,7 @@ function answerLoveFinal(idx){
   S.love.endings[L.id]=isRight?'he':'be';
   S.love.stage=5;
   if(isRight){ S.love.points=100; S.points+=50; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('你念对了暗号，随他远走高飞！+50 圣宠'); }
-  else{ S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; toast('暗号答错，功亏一篑 -15 圣宠'); }
+  else{ S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; markWrong(cur.finalWord); toast('暗号答错，功亏一篑 -15 圣宠'); }
   save();
   setTimeout(function(){ loveEnding(isRight); },900);
 }
@@ -1404,6 +1512,11 @@ function renderQuiz(){
     }
   }
   $(ui.quizHint).textContent=cur.i===0&&cur.gate?cur.gate:'';
+  /* 复习模式标题（覆盖题型小字，强化温习感） */
+  if(cur.chapterCfg && cur.chapterCfg.review){
+    var qp=$(ui.qPos);
+    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':'收藏温习 · 学而时习之');
+  }
   /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
   startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
     if(!cur||cur.stage!=='quiz') return;
@@ -1443,6 +1556,7 @@ function answerQuiz(idx){
     S.energy=Math.max(0,S.energy-3);
     cur.wrongCount++;
     if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
+    markWrong(it.word);
     toast('答错了 -5 圣宠 -3 心力');
     spawnCoin(qopt||$(ui.qWord),'💔');
   }
@@ -1486,6 +1600,7 @@ function answerSpell(timedOut){
     S.energy=Math.max(0,S.energy-3);
     cur.wrongCount++;
     if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
+    markWrong(it.word);
     toast(timedOut?'\u8d85\u65f6\u672a\u5199\u51fa -5 \u5723\u5ba0 -3 \u5fc3\u529b':'飞花令落空 -5 圣宠 -3 心力');
     spawnCoin(input,'\ud83d\udc94');
   }
@@ -1510,6 +1625,31 @@ function finishQuiz(){
   var cfg=cur.chapterCfg;
   /* 情缘线考校：结果由 loveFinish 处理 */
   if(cfg && cfg.love){ loveFinish(passed,correctCount,total,passLine,wrongWords,cfg); return; }
+  /* 复习模式：答对销账，结果面板回词库 */
+  if(cfg && cfg.review){
+    finishReviewCleanup();
+    var charBoxR=$('quizChar'); if(charBoxR) charBoxR.style.display='none';
+    var qPanelR=$('qOpts'); if(qPanelR) qPanelR.style.display='none';
+    var qSpellR=$('qSpell'); if(qSpellR) qSpellR.style.display='none';
+    $(ui.quizHint).textContent='';
+    var resBoxR=$('quizResult');
+    resBoxR.style.display='block';
+    var left=wrongWords().length;
+    resBoxR.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp '+(passed?'pass':'fail')+'">'+(passed?'温故知新':'尚未记牢')+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(left>0?' · 错词本还剩 <b>'+left+'</b> 词':' · 错词本已清空 ✨')+'</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">仍未记住（点单词听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">返回词库</button>'+
+    '</div>';
+    var btnR=$('quizReviewBack');
+    if(btnR) btnR.onclick=function(){ resBoxR.style.display='none'; resBoxR.innerHTML=''; cur=null; goTab('library'); };
+    return;
+  }
 
   if(passed){
     /* 隐藏角色台词和考校内容，显示通过结果 */
@@ -1557,6 +1697,7 @@ function finishQuiz(){
         var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
         return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
       }).join('')+'</div>'+
+      '<button class="btn ghost" id="quizRevBtn" style="margin-top:6px">📖 先去错词本复习</button>'+
       '<button class="btn gold" id="quizRetryBtn" style="margin-top:6px">重新考校</button>'+
     '</div>';
     var btn2=$('quizRetryBtn');
@@ -1567,6 +1708,14 @@ function finishQuiz(){
       if(qPanel2) qPanel2.style.display='block';
       cur=null;
       if(cfg) startQuiz(cfg);
+    };
+    var btnRev=$('quizRevBtn');
+    if(btnRev) btnRev.onclick=function(){
+      resBox2.style.display='none';
+      resBox2.innerHTML='';
+      cur=null;
+      goTab('library');
+      libTab('wrong');
     };
   }
 }
@@ -1667,6 +1816,7 @@ function answerBattle(idx){
     S.points=Math.max(0,S.points-8);
     S.energy=Math.max(0,S.energy-3);
     cur.log+='第'+cur.turn+'回合：'+cur.enemy+'反将一军——'+cur.enemyTaunt+'（你 -25）\n';
+    markWrong(cur.q.word);
     dmgFloat($('myHp'),'-25','miss');
     flashHp('myHp');
     shakeApp();
@@ -1914,19 +2064,46 @@ function rewardNext(){
 }
 
 /* ---------- 词库 ---------- */
+function renderLibCounts(){
+  var fN=$('libFavN'), wN=$('libWrongN');
+  if(fN) fN.textContent='('+(favWords().length)+')';
+  if(wN) wN.textContent='('+(wrongWords().length)+')';
+}
+function renderReviewBar(){
+  var bar=$('reviewBar'); if(!bar) return;
+  var rev=(curLibTab==='wrong')?'wrong':'fav';
+  var words=(rev==='wrong')?wrongWords():favWords();
+  if(words.length<2){ bar.style.display='none'; bar.innerHTML=''; return; }
+  bar.style.display='flex';
+  bar.className='review-bar';
+  bar.innerHTML='<div class="rev-info">'+(rev==='wrong'?
+    '错词本 <b>'+words.length+'</b> 词：答对的会自动销账，清空即掌握' :
+    '已收藏 <b>'+words.length+'</b> 词，随时温习巩固')+'</div>'+
+    '<button class="btn gold" onclick="startReview(\''+rev+'\')">'+(rev==='wrong'?'📖 复习错词':'📖 复习收藏')+'</button>';
+}
 function renderLibrary(q){
   var kw=(q||'').trim().toLowerCase();
   var list=$(ui.libList);
+  renderLibCounts();
+  renderReviewBar();
+  var keys=[];
   if(!kw){
-    var keys=Object.keys(VOCAB_MAP).slice(0,60);
-    list.innerHTML=keys.map(function(k){return libItem(k);}).join('');
+    if(curLibTab==='fav'){ keys=favWords(); }
+    else if(curLibTab==='wrong'){ keys=wrongWords(); }
+    else{ keys=Object.keys(VOCAB_MAP).slice(0,60); }
   }else{
-    var hits=[];
     var all=Object.keys(VOCAB_MAP);
     for(var i=0;i<all.length;i++){
-      if(all[i].indexOf(kw)>-1){ hits.push(all[i]); if(hits.length>=40) break; }
+      if(all[i].indexOf(kw)>-1){ keys.push(all[i]); if(keys.length>=40) break; }
     }
-    list.innerHTML=hits.length?hits.map(function(k){return libItem(k);}).join(''):'<div class="lib-empty">没有找到这个词，换个拼写试试</div>';
+  }
+  if(keys.length===0){
+    list.innerHTML='<div class="lib-empty">'+
+      (curLibTab==='fav'?'还没有收藏的词。点开任意词条，按「☆ 收藏」即可加入复习名单。':
+       curLibTab==='wrong'?'错词本空空的，太棒了！答题答错的词会自动收进来，方便集中复习。':
+       kw?'没有找到这个词，换个拼写试试':'')+'</div>';
+  }else{
+    list.innerHTML=keys.map(function(k){return libItem(k);}).join('');
   }
   bindLibClicks(list);
   $(ui.libTotal).textContent=Object.keys(VOCAB_MAP).length;
@@ -1934,7 +2111,8 @@ function renderLibrary(q){
 }
 function libItem(k){
   var it=VOCAB_MAP[k]; var p=extractPOS(it.def);
-  return '<div class="lib-item" data-w="'+k+'"><span class="w">'+it.word+'</span><span class="d"><span class="pos">'+p.pos+'</span>'+p.mean+'</span></div>';
+  var star=(isFav(k)?'<span class="star">★</span>':'');
+  return '<div class="lib-item" data-w="'+k+'">'+star+'<span class="w">'+it.word+'</span><span class="d"><span class="pos">'+p.pos+'</span>'+p.mean+'</span></div>';
 }
 function bindLibClicks(list){
   var items=list.querySelectorAll('.lib-item');
@@ -2033,6 +2211,13 @@ window.ENEMY_MOVES=ENEMY_MOVES;
 window.save=save;
 window.init=init;
 window.renderRankBar=renderRankBar;
+window.libTab=libTab;
+window.startReview=startReview;
+window.toggleFav=toggleFav;
+window.markWrong=markWrong;
+window.markRight=markRight;
+window.wrongWords=wrongWords;
+window.favWords=favWords;
 window.S=S;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);

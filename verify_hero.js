@@ -107,6 +107,31 @@ setTimeout(() => {
   const btnTxt = btn ? btn.textContent.replace(/\s/g, '') : '';
   check('有进度时按钮为「继续深宫」', btnTxt.includes('继续') && btnTxt.includes('深宫'), btn && btn.textContent);
 
+  // ---------- 6. V6.1 复习系统 ----------
+  window.S.wrongs = {}; window.S.favs = {};
+  check('词库 tab 按钮存在', !!doc.getElementById('libTabAll') && !!doc.getElementById('libTabFav') && !!doc.getElementById('libTabWrong'));
+  check('sheet 收藏按钮存在', !!doc.getElementById('sFavBtn'));
+  window.markWrong('abandon'); window.markWrong('abandon'); window.markWrong('abrupt');
+  check('答错 2 次记 2 次错账', window.S.wrongs['abandon'] === 2, 'wrongs=' + JSON.stringify(window.S.wrongs));
+  check('错词本有 2 个词', window.wrongWords().length === 2);
+  window.markRight('abandon');
+  check('答对销账 1 次（abandon 剩 1）', window.S.wrongs['abandon'] === 1);
+  window.markRight('abandon'); window.markRight('abrupt');
+  check('全部答对后错词本清空', window.wrongWords().length === 0);
+  window.toggleFav(); // 无 sheet 上下文，安全忽略
+  window.S.favs = { abandon: 1, abrupt: 1 };
+  check('收藏 2 词', window.favWords().length === 2);
+  window.libTab('fav');
+  check('收藏 tab 激活', doc.getElementById('libTabFav').classList.contains('active'));
+  // 复习考校：错词 2 个 → startReview 组题成功（不实际作答）
+  window.S.wrongs = { abandon: 1, abrupt: 1 };
+  window.S.energy = 100; window.S.energyDate = 'yesterday';
+  window.initEnergy && window.initEnergy();
+  window.startReview('wrong');
+  check('复习考校入场扣 5 心力', window.S.energy === 95, 'energy=' + window.S.energy);
+  check('复习考校激活 quiz 页', doc.getElementById('page-quiz').classList.contains('active'));
+  window.clearTimer();
+
   console.log('\n=== 结果:', pass, '通过,', fail, '失败 ===');
   process.exit(fail > 0 ? 1 : 0);
 }, 300);
