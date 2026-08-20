@@ -149,18 +149,18 @@ nav.tabbar{
 .cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
 .cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
 .cover .desc b{color:var(--red);font-weight:500}
-/* ===== 凤印·古代宝印（玉台+金凤钮+印绶，首页主视觉/点击入宫入口） ===== */
+/* ===== 凤印·圆形凤纹图腾（首页主视觉 / 点击入宫入口） ===== */
 .seal-wrap{
-  position:relative;display:inline-block;margin:6px auto 10px;cursor:pointer;
+  position:relative;display:inline-block;margin:4px auto 10px;cursor:pointer;
   transform:rotate(-4deg);
   -webkit-tap-highlight-color:transparent;user-select:none;
 }
 .seal-wrap.stamped{animation:stamp .55s cubic-bezier(.22,.9,.3,1) forwards}
-.seal-wrap:active .seal-svg{filter:drop-shadow(0 3px 8px rgba(122,21,12,.35)) brightness(.97)}
-/* 宝印本体（SVG） */
+.seal-wrap:active .seal-svg{filter:drop-shadow(0 3px 10px rgba(122,21,12,.4)) brightness(.96)}
+/* 凤纹图腾本体（SVG） */
 .seal-svg{
-  display:block;width:120px;height:auto;margin:0 auto;
-  filter:drop-shadow(0 6px 14px rgba(122,21,12,.22));
+  display:block;width:134px;height:auto;margin:0 auto;
+  filter:drop-shadow(0 6px 16px rgba(122,21,12,.25));
   animation:sealFloat 3.2s ease-in-out infinite;
   transition:filter .12s ease;
 }
@@ -352,50 +352,75 @@ nav.tabbar{
           </svg>
         </div>
         <div class="seal-wrap" id="sealWrap" onclick="startGame()" role="button" aria-label="点击凤印，盖章入宫">
-          <svg class="seal-svg" viewBox="0 0 120 144" aria-hidden="true">
+          <svg class="seal-svg" viewBox="0 0 200 200" aria-hidden="true">
             <defs>
-              <linearGradient id="jadeG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#FBF7EC"/>
-                <stop offset=".55" stop-color="#EDE4CC"/>
-                <stop offset="1" stop-color="#D7CBB0"/>
+              <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#F2D98F"/><stop offset=".5" stop-color="#D9B64C"/><stop offset="1" stop-color="#A67C0B"/>
               </linearGradient>
-              <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#F2D98F"/>
-                <stop offset=".5" stop-color="#D9B64C"/>
-                <stop offset="1" stop-color="#A67C0B"/>
+              <linearGradient id="sr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#D64541"/><stop offset="1" stop-color="#8E1E14"/>
               </linearGradient>
-              <linearGradient id="ribG" x1="0" y1="0" x2=".3" y2="1">
-                <stop offset="0" stop-color="#D64541"/>
-                <stop offset="1" stop-color="#8E1E14"/>
-              </linearGradient>
+              <radialGradient id="sbg" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#FFFDF8"/><stop offset=".7" stop-color="#F5EDD0"/><stop offset="1" stop-color="#EBDFC4"/>
+              </radialGradient>
             </defs>
-            <!-- 底座投影 -->
-            <ellipse cx="60" cy="130" rx="43" ry="6.5" fill="rgba(122,21,12,.16)"/>
-            <!-- 玉质印台 -->
-            <rect x="28" y="48" width="64" height="78" rx="7" fill="url(#jadeG)" stroke="#C9A227" stroke-width="1.6"/>
-            <!-- 台面冰裂纹理 -->
-            <path d="M40 62 L52 60 L46 72 L58 74" fill="none" stroke="#D9CDB0" stroke-width="1" opacity=".8"/>
-            <path d="M74 58 L82 66 L76 76" fill="none" stroke="#D9CDB0" stroke-width="1" opacity=".8"/>
-            <!-- 内金框 -->
-            <rect x="33.5" y="53.5" width="53" height="67" rx="4" fill="none" stroke="#B8860B" stroke-width="1.2" opacity=".6"/>
-            <!-- 印文：竖排「凤印」 -->
-            <text x="60" y="79" text-anchor="middle" font-size="24" fill="#8E1E14" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600">凤</text>
-            <text x="60" y="108" text-anchor="middle" font-size="24" fill="#8E1E14" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600">印</text>
-            <!-- 印绶：两条红绶带自印钮垂落 -->
-            <path d="M88 24 C96 34 100 48 95 64 C92 74 98 82 102 90 C103 94 100 98 96 98 C93 98 90 94 91 90 C95 80 88 72 91 62 C95 50 90 38 82 28 Z" fill="url(#ribG)" opacity=".9"/>
-            <path d="M32 24 C24 34 20 48 25 64 C28 74 22 82 18 90 C17 94 20 98 24 98 C27 98 30 94 29 90 C25 80 32 72 29 62 C25 50 30 38 38 28 Z" fill="url(#ribG)" opacity=".9"/>
-            <!-- 金凤钮：蹲踞回首，冠羽与长尾 -->
-            <g stroke="#8C6A12" stroke-width="1.5" stroke-linejoin="round">
-              <path d="M57 43 C49 41 44 34 46 27 C48 20 56 18 62 22 C69 27 67 38 61 43 C59.8 43.8 58.2 43.8 57 43 Z" fill="url(#goldG)"/>
-              <path d="M61 26 C64 20 69 16 75 16 C79 16 81 20 79 23 C76 25 72 24 69 27 C67 30 64 32 62 33" fill="url(#goldG)"/>
-              <path d="M79 20 C82 19 84 21 83 23" fill="none" stroke-width="1.7" stroke-linecap="round"/>
-              <path d="M73 16 C74 11 78 8 83 7" fill="none" stroke="#B8860B" stroke-width="1.4" stroke-linecap="round"/>
-              <path d="M75 16 C78 12 82 10 87 11" fill="none" stroke="#B8860B" stroke-width="1.3" stroke-linecap="round"/>
-              <path d="M57 31 C50 28 44 29 42 35 C47 38 53 38 57 35" fill="none" stroke="#B8860B" stroke-width="1.5"/>
-              <path d="M55 42 C48 46 41 47 35 45 C39 41 43 41 47 43" fill="none" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M56 43 C50 50 43 53 37 55 C42 52 46 48 49 47" fill="none" stroke="#D9B64C" stroke-width="1.4" stroke-linecap="round"/>
-              <path d="M58 43 C54 51 51 55 48 59 C52 56 55 52 57 48" fill="none" stroke="#B8860B" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- 外圆环 -->
+            <circle cx="100" cy="100" r="97" fill="none" stroke="url(#sg)" stroke-width="2.5"/>
+            <circle cx="100" cy="100" r="91" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".65"/>
+            <!-- 底圆 -->
+            <circle cx="100" cy="100" r="88" fill="url(#sbg)"/>
+            <!-- 外圈祥云纹 -->
+            <g fill="none" stroke="url(#sg)" stroke-width="1.2" stroke-linecap="round" opacity=".5">
+              <path d="M96 8 Q100 4 104 8 Q108 4 112 8"/>
+              <path d="M170 62 Q174 58 178 62 Q182 58 186 62"/>
+              <path d="M170 138 Q174 134 178 138 Q182 134 186 138"/>
+              <path d="M96 192 Q100 188 104 192 Q108 188 112 192"/>
+              <path d="M22 138 Q26 134 30 138 Q34 134 38 138"/>
+              <path d="M22 62 Q26 58 30 62 Q34 58 38 62"/>
             </g>
+            <!-- 内圈祥云 -->
+            <g fill="none" stroke="url(#sg)" stroke-width="1.2" stroke-linecap="round" opacity=".4">
+              <path d="M64 50 Q70 44 78 48 Q84 44 90 50"/>
+              <path d="M110 48 Q116 42 124 46 Q130 42 136 48"/>
+              <path d="M54 144 Q60 138 68 142 Q74 138 80 144"/>
+              <path d="M120 144 Q126 138 134 142 Q140 138 146 144"/>
+            </g>
+            <!-- 凤凰 -->
+            <g>
+              <!-- 尾羽（三根长飘带） -->
+              <path d="M86 116 Q78 146 68 168 Q76 156 84 136 Q88 126 90 116" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M100 120 Q98 152 94 174 Q100 162 102 140 Q103 128 102 120" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M114 116 Q122 146 132 168 Q124 156 116 136 Q112 126 110 116" fill="none" stroke="url(#sg)" stroke-width="2.2" stroke-linecap="round"/>
+              <!-- 尾羽羽脉 -->
+              <path d="M74 154 Q70 160 66 158 M76 146 Q72 152 68 150" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
+              <path d="M96 156 Q94 162 90 160 M98 148 Q96 154 92 152" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
+              <path d="M126 154 Q130 160 134 158 M124 146 Q128 152 132 150" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".55" stroke-linecap="round"/>
+              <!-- 左翼 -->
+              <path d="M84 90 Q62 74 46 58 Q58 68 70 80 Q78 85 84 88" fill="none" stroke="url(#sg)" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M84 90 Q56 80 38 70 Q52 78 66 86 Q74 88 82 90" fill="none" stroke="url(#sg)" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M84 90 Q60 92 42 94 Q56 94 68 92 Q76 91 82 90" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linejoin="round"/>
+              <!-- 右翼 -->
+              <path d="M116 90 Q138 74 154 58 Q142 68 130 80 Q122 85 116 88" fill="none" stroke="url(#sg)" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M116 90 Q144 80 162 70 Q148 78 134 86 Q126 88 118 90" fill="none" stroke="url(#sg)" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M116 90 Q140 92 158 94 Q144 94 132 92 Q124 91 118 90" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linejoin="round"/>
+              <!-- 身体 -->
+              <ellipse cx="100" cy="96" rx="19" ry="24" fill="url(#sr)" stroke="url(#sg)" stroke-width="1.8"/>
+              <!-- 颈 -->
+              <path d="M91 78 Q87 68 82 62" fill="none" stroke="url(#sg)" stroke-width="2" stroke-linecap="round"/>
+              <!-- 头 -->
+              <ellipse cx="80" cy="58" rx="7.5" ry="6" fill="url(#sr)" stroke="url(#sg)" stroke-width="1.7" transform="rotate(-22 80 58)"/>
+              <!-- 冠羽 -->
+              <path d="M82 54 Q80 44 76 38" fill="none" stroke="url(#sg)" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M84 52 Q86 44 84 36" fill="none" stroke="url(#sg)" stroke-width="1.4" stroke-linecap="round"/>
+              <!-- 眼 -->
+              <circle cx="78" cy="57" r="1.3" fill="url(#sg)"/>
+              <!-- 喙 -->
+              <path d="M74 59 L68 61 L74 63 Z" fill="url(#sg)"/>
+              <!-- 身羽纹 -->
+              <path d="M94 90 Q98 94 102 90 M96 98 Q100 102 104 98 M94 106 Q98 110 102 106" fill="none" stroke="url(#sg)" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+            </g>
+            <!-- 印文 -->
+            <text x="100" y="186" text-anchor="middle" font-size="13" fill="url(#sg)" font-family="'Songti SC','STSong','SimSun',serif" font-weight="600" letter-spacing="6">凤 印</text>
           </svg>
           <div class="seal-dots" id="sealDots"></div>
         </div>
