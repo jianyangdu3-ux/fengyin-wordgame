@@ -504,6 +504,8 @@ body{background:#241816}
 .hero-badge{display:block;margin:0;text-align:left;cursor:default}.hero-badge:active .hero-frame{transform:none}
 .home-primary{width:calc(100% - 28px);height:68px;margin:-18px auto 0;border:1px solid #81261f;border-radius:18px;background:linear-gradient(135deg,#a93429,#8f281f);color:#fff4d6;box-shadow:0 12px 24px rgba(126,37,30,.22),inset 0 0 0 1px rgba(255,225,163,.18);font-family:"Songti SC",serif;font-size:24px;letter-spacing:7px;display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:5}
 .home-primary:after{content:'›';width:29px;height:29px;border:1px solid rgba(255,239,199,.7);border-radius:50%;display:grid;place-items:center;font-family:serif;font-size:25px;letter-spacing:0;line-height:1}.home-primary:active{transform:scale(.985)}
+.review-today{width:100%;min-height:52px;margin:9px 0 4px;border:1px solid #d8bc84;border-radius:15px;background:linear-gradient(135deg,#fffaf0,#f4e6ca);color:#70451f;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-size:13px;box-shadow:0 6px 16px rgba(91,57,27,.06)}
+.review-today b{font-family:Georgia,"Songti SC",serif;font-size:19px;color:#972f29;margin:0 4px}.review-today .review-arrow{color:#a77b31;font-size:18px}.review-today.done{opacity:.72;background:#f8f3e9}
 .today-count{text-align:center;font-family:"Songti SC",serif;font-size:14px;letter-spacing:2px;color:#5f4b42;margin:14px 0 20px}.today-count b{color:#a23228;font-size:18px}
 .rank-journey{display:flex;align-items:center;justify-content:space-between;position:relative;margin:0 3px 22px}.rank-journey:before{content:'';position:absolute;left:7%;right:7%;top:17px;height:1px;background:#d2b370}
 .journey-node{position:relative;z-index:1;width:43px;text-align:center;color:#695950;font-size:11px}.journey-dot{width:36px;height:36px;margin:0 auto 6px;border:1px solid #d7c49e;background:#f9f1e3;border-radius:50% 50% 45% 45%;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:12px}.journey-node.current .journey-dot{background:#a93429;border:3px solid #ecd697;color:#fff5d9;box-shadow:0 4px 12px rgba(153,47,39,.18)}.journey-node.past .journey-dot{color:#a23228;border-color:#ba776c}.journey-node.future:nth-child(n+8){display:none}
@@ -653,6 +655,7 @@ body{background:#241816}
           </section>
         </div>
         <button class="home-primary" id="btnStart" onclick="startGame()">入宫选秀</button>
+        <button class="review-today" id="homeReviewBtn" onclick="startReview('due')"><span>📚 今日待复习 <b id="homeDueCount">0</b> 词</span><span class="review-arrow">›</span></button>
         <div class="today-count">今日已习 <b id="todayWords">0</b> / 20 词</div>
         <div class="rank-journey" id="homeJourney" aria-label="九重位份进度"></div>
         <div class="home-stats">
@@ -1164,7 +1167,7 @@ var S={
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
-  wrongs:{}, favs:{}, learning:{}, covered:{}, records:[]
+  wrongs:{}, favs:{}, learning:{}, covered:{}, records:[], reviews:{}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -1186,7 +1189,7 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; if(!S.reviews)S.reviews={}; migrateReviewSchedule(); try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -1209,17 +1212,37 @@ function markRight(w){
   save();
 }
 function isFav(w){ return S.favs&&S.favs[w]; }
+var REVIEW_INTERVALS=[20*60*1000,24*60*60*1000,2*24*60*60*1000,4*24*60*60*1000,7*24*60*60*1000,15*24*60*60*1000,30*24*60*60*1000];
+function migrateReviewSchedule(){
+  if(!S.reviews)S.reviews={};
+  Object.keys(S.learning||{}).forEach(function(w){if(!S.reviews[w])S.reviews[w]={stage:0,due:Date.now(),last:0,lastCorrect:0,lapses:(S.learning[w].wrong||0)};});
+}
+function dueWords(){
+  var now=Date.now();
+  return Object.keys(S.reviews||{}).filter(function(w){return VOCAB_MAP[w]&&Number(S.reviews[w].due||0)<=now;}).sort(function(a,b){return (S.reviews[a].due||0)-(S.reviews[b].due||0);});
+}
+function nextReviewText(){
+  var now=Date.now(),arr=Object.keys(S.reviews||{}).filter(function(w){return VOCAB_MAP[w]&&S.reviews[w].due>now;}).sort(function(a,b){return S.reviews[a].due-S.reviews[b].due;});
+  if(!arr.length)return '暂无待复习词';
+  var mins=Math.ceil((S.reviews[arr[0]].due-now)/60000);if(mins<60)return '下一轮约 '+mins+' 分钟后';
+  var hrs=Math.ceil(mins/60);return hrs<24?'下一轮约 '+hrs+' 小时后':'下一轮约 '+Math.ceil(hrs/24)+' 天后';
+}
 function recordLearning(w,correct){
   if(!w) return;
   if(!S.learning) S.learning={};
   var p=S.learning[w]||(S.learning[w]={right:0,wrong:0,days:{},last:0});
-  if(correct){ p.right++; p.days[todayStr()]=1; }
-  else p.wrong++;
-  p.last=Date.now();
+  if(!S.reviews)S.reviews={};
+  var now=Date.now(),r=S.reviews[w]||(S.reviews[w]={stage:0,due:now,last:0,lastCorrect:0,lapses:0});
+  if(correct){
+    p.right++;p.days[todayStr()]=1;
+    if(!r.lastCorrect||now-r.lastCorrect>5*60*1000){var idx=Math.min(r.stage||0,REVIEW_INTERVALS.length-1);r.stage=Math.min((r.stage||0)+1,REVIEW_INTERVALS.length);r.due=now+REVIEW_INTERVALS[idx];r.lastCorrect=now;}
+  }else{p.wrong++;r.stage=0;r.due=now;r.lapses=(r.lapses||0)+1;}
+  p.last=now;r.last=now;
 }
 function isMastered(w){
   var p=S.learning&&S.learning[w];
-  return !!(p && p.right>=3 && Object.keys(p.days||{}).length>=2 && p.right>=p.wrong+2);
+  var r=S.reviews&&S.reviews[w];
+  return !!(p&&r&&r.stage>=5&&Object.keys(p.days||{}).length>=3&&p.right>=p.wrong+2);
 }
 function masteredWords(){
   return Object.keys(S.learning||{}).filter(isMastered);
@@ -1257,15 +1280,15 @@ function favWords(){
   return arr;
 }
 function startReview(type){
-  var words=(type==='wrong')?wrongWords():favWords();
+  var words=(type==='wrong')?wrongWords():(type==='due'?dueWords():favWords());
   if(words.length<1){
-    toast(type==='wrong'?'暂无错词，答题后再来复习':'先点开词条 ⭐ 收藏几个词吧');
+    toast(type==='wrong'?'暂无错词，答题后再来复习':(type==='due'?'今日到期复习已完成 · '+nextReviewText():'先点开词条 ⭐ 收藏几个词吧'));
     return;
   }
   // 复习是学习的核心行为，永久免费，不消耗心力。
   // 单个错词也可复习，会连续练两遍，避免被门槛卡住。
   var items=[];
-  var n=Math.min(Math.max(words.length,2),8);
+  var n=Math.min(Math.max(words.length,2),type==='due'?12:8);
   var pick=words.slice();
   for(var i=0;i<n;i++){
     var w=pick[i%pick.length];
@@ -1558,6 +1581,9 @@ function renderHomeDashboard(){
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
   var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
+  var dueN=dueWords().length,dueEl=$('homeDueCount'),dueBtn=$('homeReviewBtn');
+  if(dueEl)dueEl.textContent=dueN;
+  if(dueBtn){dueBtn.classList.toggle('done',dueN===0);dueBtn.title=dueN?'点击开始免费复习':nextReviewText();}
   var totalWords=Object.keys(VOCAB_MAP).length,coveredN=Object.keys(S.covered||{}).length;
   var covTotal=$('storyCoverageTotal');if(covTotal)covTotal.textContent=totalWords+' / '+totalWords;
   var covFill=$('storyCoverageFill');if(covFill)covFill.style.width=totalWords?'100%':'0%';
@@ -1975,7 +2001,7 @@ function renderQuiz(){
   /* 复习模式标题（覆盖题型小字，强化温习感） */
   if(cur.chapterCfg && cur.chapterCfg.review){
     var qp=$(ui.qPos);
-    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':(cur.chapterCfg.review==='correction'?'即时订正 · 全对后继续':'收藏温习 · 学而时习之'));
+    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':(cur.chapterCfg.review==='correction'?'即时订正 · 全对后继续':(cur.chapterCfg.review==='due'?'今日复习 · 对抗遗忘':'收藏温习 · 学而时习之')));
   }
   /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
   startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
@@ -2097,6 +2123,8 @@ function finishQuiz(){
   if(cfg && cfg.review){
     if(cfg.review==='correction') passed=correctCount===total;
     finishReviewCleanup();
+    if(cfg.review==='due')addRecord('review','完成今日复习','答对 '+correctCount+' / '+total+' 题 · '+nextReviewText(),'review-'+Date.now(),passed);
+    save();
     var charBoxR=$('quizChar'); if(charBoxR) charBoxR.style.display='none';
     var qPanelR=$('qOpts'); if(qPanelR) qPanelR.style.display='none';
     var qSpellR=$('qSpell'); if(qSpellR) qSpellR.style.display='none';
@@ -2113,7 +2141,7 @@ function finishQuiz(){
           var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
           return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
         }).join('')+'</div>':'')+
-      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">'+(cfg.review==='correction'?(passed?'订正完成，继续剧情':'再订正一次'):'返回词库')+'</button>'+ 
+      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">'+(cfg.review==='correction'?(passed?'订正完成，继续剧情':'再订正一次'):(cfg.review==='due'?'完成复习，返回首页':'返回词库'))+'</button>'+ 
     '</div>';
     var btnR=$('quizReviewBack');
     if(btnR) btnR.onclick=function(){
@@ -2121,7 +2149,8 @@ function finishQuiz(){
       if(cfg.review==='correction'){
         var ws=cfg.correctionWords||[]; var returnCfg=cfg.returnCfg; cur=null;
         if(passed) afterGate(true); else startCorrection(ws,returnCfg);
-      }else{ cur=null; goTab('library'); }
+      }else if(cfg.review==='due'){cur=null;showPage('page-start');renderHeroBadge();}
+      else{ cur=null; goTab('library'); }
     };
     return;
   }
@@ -2660,7 +2689,7 @@ function renderRecord(){
     return;
   }
   var h='';
-  var icons={rank:'印',quiz:'答',chapter:'章',choice:'择'};
+  var icons={rank:'印',quiz:'答',chapter:'章',choice:'择',review:'习'};
   S.records.slice().reverse().forEach(function(v){
     h+='<div class="rec-item"><div class="q">'+(icons[v.type]||'记')+' · '+v.title+'</div><div class="a'+(v.good?'':' bad')+'">'+(v.good?'✓ ':'✗ ')+v.detail+'</div></div>';
   });
@@ -2698,6 +2727,7 @@ function decodeSave(code){
     if(!o.learning) o.learning={};
     if(!o.covered) o.covered={};
     if(!o.records) o.records=[];
+    if(!o.reviews) o.reviews={};
     if(typeof o.energy!=='number') o.energy=100;
     return {ok:true,data:o};
   }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
@@ -3027,7 +3057,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=101').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=110').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3039,8 +3069,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v101')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v101','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v110')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v110','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
