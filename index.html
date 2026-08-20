@@ -149,10 +149,56 @@ nav.tabbar{
 .cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
 .cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
 .cover .desc b{color:var(--red);font-weight:500}
-.seal{
-  width:84px;height:84px;border:3px solid var(--red);border-radius:10px;margin:0 auto 6px;display:flex;
-  align-items:center;justify-content:center;color:var(--red);font-size:26px;letter-spacing:2px;transform:rotate(-4deg);
+/* ===== 凤印·朱砂印章（首页主视觉 / 点击入宫入口） ===== */
+.seal-wrap{
+  position:relative;display:inline-block;margin:8px auto 10px;cursor:pointer;
+  transform:rotate(-4deg);
+  -webkit-tap-highlight-color:transparent;user-select:none;
 }
+.seal-wrap:active .seal{transform:scale(.92)}
+.seal-wrap.stamped{animation:stamp .55s cubic-bezier(.22,.9,.3,1) forwards}
+.seal{
+  width:92px;height:92px;position:relative;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#C0392B 0%,#96251A 55%,#7A150C 100%);
+  color:#F7E9C9;font-size:27px;letter-spacing:4px;text-indent:4px;
+  font-family:"Songti SC","STSong","SimSun","Kaiti SC","STKaiti",serif;font-weight:600;
+  border:1px solid #6E120A;border-radius:12px;
+  box-shadow:0 4px 14px rgba(122,21,12,.4),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55);
+  animation:sealBreathe 2.8s ease-in-out infinite;
+  transition:transform .12s ease;
+}
+/* 印章内描边 */
+.seal::before{
+  content:'';position:absolute;inset:4px;border:1px solid rgba(247,233,201,.55);border-radius:8px;pointer-events:none;
+}
+/* 金色流光扫过 */
+.seal::after{
+  content:'';position:absolute;top:0;bottom:0;left:-70%;width:45%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:skewX(-20deg);animation:sealShine 3.6s ease-in-out infinite;pointer-events:none;
+}
+/* 凤凰额饰 */
+.phoenix{
+  display:block;width:126px;height:52px;margin:0 auto 4px;overflow:visible;pointer-events:none;
+  filter:drop-shadow(0 1px 2px rgba(201,162,39,.35));
+}
+/* 九印（九重位份收集进度） */
+.seal-dots{display:flex;justify-content:center;gap:7px;margin-top:12px}
+.seal-dot{
+  width:9px;height:9px;transform:rotate(45deg);border-radius:2px;
+  border:1px solid rgba(201,162,39,.75);background:rgba(201,162,39,.12);
+  transition:background .3s,border-color .3s,box-shadow .3s;
+}
+.seal-dot.on{
+  background:linear-gradient(135deg,#F0D488,#C9A227);
+  border-color:#C9A227;
+  box-shadow:0 0 6px rgba(201,162,39,.85);
+}
+@keyframes sealBreathe{
+  0%,100%{box-shadow:0 4px 14px rgba(122,21,12,.4),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55)}
+  50%{box-shadow:0 6px 22px rgba(201,60,30,.55),inset 0 2px 4px rgba(255,235,200,.4),inset 0 -4px 8px rgba(60,8,4,.55)}
+}
+@keyframes sealShine{0%,55%{left:-70%}100%{left:130%}}
 .chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
 .chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
@@ -277,14 +323,6 @@ nav.tabbar{
   background:linear-gradient(90deg,transparent,#C9A227,#E4C87A,#C9A227,transparent);
 }
 /* 封面氛围 */
-.cover .seal{
-  background:linear-gradient(135deg,#FFFDF8,#F8F0E0);
-  box-shadow:0 2px 12px rgba(122,31,31,.12);
-  position:relative;
-}
-.cover .seal::before{
-  content:'';position:absolute;inset:-3px;border:1px solid #C9A227;border-radius:13px;opacity:.5;
-}
 /* 装饰线 */
 .decor-line{
   width:100%;height:1px;
@@ -335,7 +373,23 @@ nav.tabbar{
             <path d="M0 100 L0 70 L50 50 L100 70 L150 45 L215 20 L280 45 L330 70 L380 50 L430 70 L430 100Z" fill="#7A1F1F"/>
           </svg>
         </div>
-        <div class="seal">凤印</div>
+        <div class="seal-wrap" id="sealWrap" onclick="startGame()" role="button" aria-label="点击凤印，盖章入宫">
+          <svg class="phoenix" viewBox="0 0 150 64" fill="none" stroke="#C9A227" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M75 46 C69 42 67 34 69 28 L75 20 L81 28 C83 34 81 42 75 46Z" fill="#C9A227" stroke="none" opacity=".92"/>
+            <path d="M75 20 C71 14 67 10 61 8" stroke-width="1.3"/>
+            <path d="M75 20 C75 12 75 7 75 4" stroke-width="1.3"/>
+            <path d="M75 20 C79 14 83 10 89 8" stroke-width="1.3"/>
+            <path d="M69 30 C55 26 39 26 25 32 C39 34 49 34 57 32" stroke-width="1.4"/>
+            <path d="M57 32 C53 40 45 48 35 52 C41 44 45 38 51 34" stroke-width="1.4"/>
+            <path d="M81 30 C95 26 111 26 125 32 C111 34 101 34 93 32" stroke-width="1.4"/>
+            <path d="M93 32 C97 40 105 48 115 52 C109 44 105 38 99 34" stroke-width="1.4"/>
+            <path d="M75 46 C69 54 61 58 51 58" stroke-width="1.3"/>
+            <path d="M75 46 C75 55 75 59 75 61" stroke-width="1.3"/>
+            <path d="M75 46 C81 54 89 58 99 58" stroke-width="1.3"/>
+          </svg>
+          <div class="seal">凤印</div>
+          <div class="seal-dots" id="sealDots"></div>
+        </div>
         <div class="decor-line"></div>
         <div class="logo">凤印九重</div>
         <div class="sublogo">宫 斗 背 词 · 考 研 篇</div>
@@ -845,6 +899,24 @@ function renderRankBar(){
   if(sealEl) sealEl.textContent=S.rank>0?('凤印×'+S.rank):'';
   bar.innerHTML=h;
   $(ui.favText).textContent='圣宠 '+S.points;
+  renderSealDots();
+}
+/* 九印收集进度（首页凤印下方，rank 越高点亮越多） */
+function renderSealDots(){
+  var box=$('sealDots'); if(!box) return;
+  var n=S.rank||0;
+  var h='';
+  for(var i=0;i<9;i++){
+    h+='<i class="seal-dot'+(i<n?' on':'')+'"></i>';
+  }
+  box.innerHTML=h;
+}
+/* 首页凤印盖章动画（首次进入 / 重新盖印） */
+function playStamp(){
+  var w=$('sealWrap'); if(!w) return;
+  w.classList.remove('stamped');
+  void w.offsetWidth; /* 强制重排以重启动画 */
+  w.classList.add('stamped');
 }
 function showPage(id){
   var pages=document.querySelectorAll('.page');
@@ -1741,6 +1813,7 @@ function init(){
   renderTasks();
   renderRankBar();
   renderLoveEntry();
+  playStamp();
   if(has && S.chapter>0){
     // 有进度 → 回到封面，用户点"继续"由 tab 剧情进入
   }
@@ -1761,6 +1834,9 @@ window.speakWord=speakWord;
 window.speakSpell=speakSpell;
 window.openLove=openLove;
 window.loveSelect=loveSelect;
+window.renderSealDots=renderSealDots;
+window.playStamp=playStamp;
+window.S=S;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
