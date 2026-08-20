@@ -22,6 +22,26 @@ const dom = new JSDOM(patchedHtml, {
       setItem(k, v) { this._store[k] = String(v); },
       removeItem(k) { delete this._store[k]; }
     };
+    // mock GitHub Contents API
+    window.__cloudStore = {};
+    window.__cloudCalls = [];
+    window.fetch = function (url, opt) {
+      window.__cloudCalls.push({ url: String(url), method: (opt && opt.method) || 'GET', body: opt && opt.body });
+      const m = /\/repos\/[^/]+\/[^/]+\/contents\/(.+)$/.exec(String(url));
+      if (!m) return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
+      const p = m[1];
+      const store = window.__cloudStore;
+      if (!opt || !opt.method || opt.method === 'GET') {
+        if (store[p]) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(store[p]) });
+        return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
+      }
+      if (opt.method === 'PUT') {
+        const body = JSON.parse(opt.body);
+        store[p] = { sha: 'mock' + (store[p] ? store[p].sha : '') + 'x', content: body.content };
+        return Promise.resolve({ ok: true, status: 201, json: () => Promise.resolve({}) });
+      }
+      return Promise.resolve({ ok: false, status: 405, json: () => Promise.resolve({}) });
+    };
   }
 });
 
@@ -34,7 +54,7 @@ function check(label, cond, detail) {
   else { fail++; console.log('❌', label, detail || ''); }
 }
 
-setTimeout(() => {
+setTimeout(async () => {
   console.log('=== V6.0 博弈化 + Hero Badge 验证 ===\n');
 
   // ---------- 1. 首页结构 ----------
@@ -151,6 +171,46 @@ setTimeout(() => {
   const dec2 = window.decodeSave(code);
   check('换设备导入缺字段自动补齐', dec2.ok && dec2.data.rank === 6 && dec2.data.wrongs && dec2.data.tasks && dec2.data.love, dec2.ok ? 'ok' : 'fail');
   window.S = oldState;
+
+  // ---------- 8. V6.3 云同步 ----------
+  const gcode = window.genCode();
+  check('存档码 8 位', typeof gcode === 'string' && gcode.length === 8, gcode);
+  check('存档码无易混淆字符 I/O/0/1', !/[IO01]/.test(gcode), gcode);
+  // 未配置 → 不发任何请求
+  const cfg0 = window.cloudCfg();
+  cfg0.owner = ''; cfg0.repo = ''; cfg0.token = '';
+  window.__cloudCalls.length = 0;
+  await window.cloudUpload();
+  check('未配置时不上传', window.__cloudCalls.length === 0, 'calls=' + window.__cloudCalls.length);
+  // 配置 + 上传
+  const cfg = window.cloudCfg();
+  cfg.owner = 'tester'; cfg.repo = 'saves'; cfg.token = 'tok_123'; cfg.code = 'TESTCODE';
+  window.S.rank = 6; window.S.points = 777; window.save();
+  window.__cloudCalls.length = 0;
+  const upOk = await window.cloudUpload();
+  check('上传成功', upOk === true);
+  check('上传发起 PUT 请求', window.__cloudCalls.some(c => c.method === 'PUT'));
+  const stored = window.__cloudStore['saves/TESTCODE.json'];
+  check('云端文件已存储', !!stored);
+  const payload = stored ? JSON.parse(Buffer.from(stored.content, 'base64').toString('utf8')) : null;
+  check('云端 rank 正确', !!payload && payload.data.rank === 6);
+  check('云端 points 正确', !!payload && payload.data.points === 777);
+  check('云端含 savedAt 时间戳', !!payload && typeof payload.savedAt === 'number');
+  // 云端更新 → 本地被接管
+  window.S.savedAt = 1;
+  const newer = { savedAt: Date.now() + 100000, data: Object.assign({}, window.S, { rank: 8, points: 999, savedAt: Date.now() + 100000 }) };
+  window.__cloudStore['saves/TESTCODE.json'] = { sha: 'shaX', content: Buffer.from(JSON.stringify(newer)).toString('base64') };
+  await window.cloudPull();
+  check('云端更新时本地被接管(rank=8)', window.S.rank === 8, 'rank=' + window.S.rank);
+  check('接管后 points=999', window.S.points === 999);
+  // 本地更新 → 触发上传
+  window.S.savedAt = Date.now() + 200000; window.S.points = 111;
+  window.__cloudCalls.length = 0;
+  await window.cloudPull();
+  check('本地新时触发上传', window.__cloudCalls.some(c => c.method === 'PUT'));
+  // 状态显示
+  window.renderCloudStatus();
+  check('云状态显示存档码', doc.getElementById('cloudStatus').textContent.includes('TESTCODE'));
 
   console.log('\n=== 结果:', pass, '通过,', fail, '失败 ===');
   process.exit(fail > 0 ? 1 : 0);

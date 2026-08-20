@@ -155,6 +155,28 @@ nav.tabbar{
 .save-modal .sv-tip b{color:var(--gold)}
 .save-btn-row{display:flex;gap:8px;margin-bottom:12px}
 .save-btn-row .btn{flex:1;margin:0}
+/* V6.3 云同步 */
+.cloud-status{
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px;
+  font-size:12.5px;color:var(--ink2);line-height:1.8;
+}
+.cloud-status b{color:var(--red)}
+.cloud-status .ok{color:var(--ok)}
+.cloud-status .off{color:var(--ink2)}
+.cloud-code{
+  font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;letter-spacing:5px;color:var(--red);
+  background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px;text-align:center;margin:8px 0;
+  user-select:all;cursor:pointer;
+}
+.cloud-row{margin-bottom:10px}
+.cloud-row label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
+.cloud-row input{
+  width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  color:var(--ink);font-size:13px;padding:9px 10px;
+}
+.cloud-row .btn{width:100%;margin:0;margin-top:4px}
+.cloud-actions{display:flex;gap:8px;margin-top:4px}
+.cloud-actions .btn{flex:1;margin:0}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
   background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
@@ -603,6 +625,8 @@ nav.tabbar{
           <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
           <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
         </div>
+        <div class="cloud-status" id="cloudStatus">☁️ 云同步未开启</div>
+        <button class="btn ghost" onclick="openCloudCfg()">☁️ 云端配置</button>
         <button class="btn ghost" onclick="resetGame()">重入轮回（清空进度）</button>
       </div>
     </div>
@@ -643,6 +667,33 @@ nav.tabbar{
       <button class="btn ghost" onclick="closeSaveModal()">关闭</button>
     </div>
     <div class="sv-tip" id="saveTip"></div>
+  </div>
+
+  <!-- V6.3 云同步配置弹层 -->
+  <div class="sheet-mask" id="cloudMask" onclick="closeCloudCfg()"></div>
+  <div class="save-modal" id="cloudModal">
+    <div class="sv-title">☁️ 云端同步配置</div>
+    <div class="sv-sub">自动上传/拉取进度，多设备无缝续玩</div>
+    <div class="cloud-code" id="cloudCode" title="点击复制存档码">--------</div>
+    <div class="sv-sub" style="margin-top:0">⬆️ 你的存档码（新设备输入它即可接管）</div>
+    <div class="cloud-row">
+      <label>GitHub 用户名</label>
+      <input id="cfgOwner" placeholder="如 jianyangdu3-ux">
+    </div>
+    <div class="cloud-row">
+      <label>私有仓库名（用来存存档）</label>
+      <input id="cfgRepo" placeholder="如 fengyin-saves">
+    </div>
+    <div class="cloud-row">
+      <label>Token（只勾选该仓库 Contents 读写权限）</label>
+      <input id="cfgToken" type="password" placeholder="github_pat_xxx">
+      <button class="btn ghost" onclick="saveCloudCfgForm()">保存配置</button>
+    </div>
+    <div class="cloud-actions">
+      <button class="btn gold" onclick="cloudNow('up')">⬆️ 立即上传</button>
+      <button class="btn ghost" onclick="cloudNow('down')">⬇️ 云端恢复</button>
+    </div>
+    <div class="sv-tip" id="cloudTip"></div>
   </div>
   <div class="toast" id="toast"></div>
 </div>
@@ -838,7 +889,9 @@ function extractPOS(def){
   return {pos:'',mean:def||''};
 }
 function save(){
+  S.savedAt=Date.now();
   try{localStorage.setItem(SAVE_KEY, JSON.stringify(S));}catch(e){}
+  scheduleAutoSync();
 }
 function load(){
   try{
@@ -2283,6 +2336,183 @@ function downloadSave(){
   }catch(e){ toast('下载失败，请用复制密文'); }
 }
 
+/* ---------- V6.3 云同步（GitHub 私有仓库） ---------- */
+var CLOUD_KEY='gd12_cloud';
+var cloudCfgMem={code:'',owner:'',repo:'',token:'',savedAt:0,lastSync:0,lastErr:''};
+var _autoSyncT=null, _syncing=false;
+function cloudCfg(){
+  try{
+    var raw=localStorage.getItem(CLOUD_KEY);
+    if(raw){ var o=JSON.parse(raw); if(o&&o.code) cloudCfgMem=o; }
+  }catch(e){}
+  if(!cloudCfgMem.code) cloudCfgMem.code=genCode();
+  return cloudCfgMem;
+}
+function genCode(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var c='';
+  for(var i=0;i<8;i++) c+=chars.charAt(rand(chars.length));
+  return c;
+}
+function cloudReady(){ var c=cloudCfg(); return !!(c.code&&c.owner&&c.repo&&c.token); }
+function cloudPath(){ return 'saves/'+cloudCfg().code+'.json'; }
+function cloudApi(method,url,body){
+  var c=cloudCfg();
+  var opt={
+    method:method,
+    headers:{
+      'Authorization':'Bearer '+c.token,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      'Content-Type':'application/json'
+    },
+    keepalive:true /* 页面关闭时尽量完成上传 */
+  };
+  if(body) opt.body=JSON.stringify(body);
+  return fetch('https://api.github.com'+url,opt);
+}
+/* 关闭页面时兜底同步一次 */
+try{ window.addEventListener('pagehide',function(){ if(cloudReady()&&!_syncing){ _doUpload(); } }); }catch(e){}
+function cloudUpload(){
+  if(typeof fetch!=='function') return Promise.resolve(false);
+  if(!cloudReady()||_syncing) return Promise.resolve(false);
+  return _doUpload();
+}
+function _doUpload(){
+  var c=cloudCfg();
+  var path=cloudPath();
+  var payload={savedAt:Date.now(),data:S};
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+path)
+    .then(function(res){
+      return res.json().then(function(j){
+        var body={message:'sync '+new Date().toISOString(),content:content};
+        if(j&&j.sha) body.sha=j.sha; /* 已存在 → 带 sha 覆盖 */
+        return cloudApi('PUT','/repos/'+c.owner+'/'+c.repo+'/contents/'+path,body);
+      });
+    })
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      c.savedAt=payload.savedAt; c.lastSync=Date.now(); c.lastErr='';
+      saveCloudCfg();
+      return true;
+    })
+    .catch(function(e){
+      c.lastErr=String(e&&e.message||e);
+      saveCloudCfg();
+      return false;
+    });
+}
+function cloudPull(){
+  if(typeof fetch!=='function') return Promise.resolve(false);
+  if(!cloudReady()||_syncing) return Promise.resolve(false);
+  _syncing=true;
+  var c=cloudCfg();
+  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+cloudPath())
+    .then(function(res){
+      if(res.status===404) return null; /* 云端还没有 → 首次上传由 autoSync 完成 */
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
+    })
+    .then(function(j){
+      if(!j||!j.content) return false;
+      var payload=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+      var cloudT=payload&&payload.savedAt||0;
+      var localT=S.savedAt||0;
+      if(cloudT>localT){
+        /* 云端新 → 接管 */
+        S=payload.data||S;
+        try{ window.S=S; }catch(e){}
+        c.savedAt=cloudT; c.lastSync=Date.now(); c.lastErr='';
+        saveCloudCfg();
+        return true;
+      }else if(localT>cloudT){
+        /* 本地新 → 推上去 */
+        return _doUpload();
+      }
+      return false;
+    })
+    .catch(function(e){
+      c.lastErr=String(e&&e.message||e);
+      saveCloudCfg();
+      return false;
+    })
+    .finally(function(){ _syncing=false; });
+}
+function scheduleAutoSync(){
+  try{
+    if(!cloudReady()) return;
+    if(_autoSyncT) clearTimeout(_autoSyncT);
+    _autoSyncT=setTimeout(function(){ _autoSyncT=null; cloudUpload(); },2500);
+  }catch(e){}
+}
+function renderCloudStatus(){
+  var el=$('cloudStatus'); if(!el) return;
+  var c=cloudCfg();
+  if(!cloudReady()){
+    el.innerHTML='☁️ 云同步未开启<br><span class="off">配置后自动同步 · 换设备无缝续玩</span>';
+  }else{
+    var t=c.lastSync?fmtTime(c.lastSync):'从未同步';
+    var err=c.lastErr?'<br><span style="color:var(--danger)">上次失败：'+escapeHtml(c.lastErr)+'</span>':'';
+    el.innerHTML='☁️ 已开启 · <b>'+c.code+'</b><br><span class="ok">上次同步：'+t+'</span>'+err;
+  }
+}
+function fmtTime(ts){
+  var d=new Date(ts);
+  function p(n){return (n<10?'0':'')+n;}
+  return (d.getMonth()+1)+'月'+d.getDate()+'日 '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function openCloudCfg(){
+  var c=cloudCfg();
+  var m=$('cloudModal'); if(!m) return;
+  $('cloudCode').textContent=c.code;
+  $('cfgOwner').value=c.owner||'';
+  $('cfgRepo').value=c.repo||'';
+  $('cfgToken').value=c.token||'';
+  $('cloudTip').innerHTML=cloudReady()
+    ?'已配置。保存后每次存档自动上传，打开游戏自动拉取。'
+    :'① GitHub 新建<b>私有</b>仓库（如 fengyin-saves）<br>② Settings→Developer settings→Fine-grained tokens 创建 token，权限只勾该仓库 <b>Contents: Read and write</b><br>③ 填入上方并保存';
+  $('cloudMask').style.display='block';
+  m.style.display='block';
+}
+function closeCloudCfg(){
+  var m=$('cloudModal'), mk=$('cloudMask');
+  if(m) m.style.display='none';
+  if(mk) mk.style.display='none';
+}
+function saveCloudCfgForm(){
+  var c=cloudCfg();
+  c.owner=($('cfgOwner').value||'').trim();
+  c.repo=($('cfgRepo').value||'').trim();
+  c.token=($('cfgToken').value||'').trim();
+  if(!c.owner||!c.repo||!c.token){ toast('请填全三项再保存'); return; }
+  saveCloudCfg();
+  toast('配置已保存');
+  closeCloudCfg();
+  renderCloudStatus();
+  /* 配置完成后立即做一次双向校验：先拉再传 */
+  cloudPull().then(function(pulled){
+    if(pulled){ toast('已从云端恢复最新进度'); location.reload(); }
+    else{ cloudUpload().then(function(ok){ toast(ok?'已上传到云端':'云端不可达，稍后自动重试'); }); }
+  });
+}
+function saveCloudCfg(){
+  try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(cloudCfgMem)); }catch(e){}
+}
+function cloudNow(dir){
+  if(!cloudReady()){ toast('请先完成云端配置'); return; }
+  toast(dir==='up'?'正在上传…':'正在拉取…');
+  var p=(dir==='up')?cloudUpload():cloudPull();
+  p.then(function(ok){
+    if(dir==='up'){ toast(ok?'已上传到云端':'上传失败，检查配置/网络'); }
+    else{ if(ok){ toast('已从云端恢复，即将刷新'); setTimeout(function(){ location.reload(); },600); } else { toast('云端没有可恢复的数据或失败'); } }
+    renderCloudStatus();
+  });
+}
+
 /* ---------- 初始化 ---------- */
 function init(){
   ui={
@@ -2315,6 +2545,17 @@ function init(){
   renderRankBar();
   renderLoveEntry();
   renderHeroBadge();
+  renderCloudStatus();
+  /* V6.3 云同步：打开自动拉取（云端新则接管刷新） */
+  cloudPull().then(function(pulled){
+    if(!pulled) return;
+    renderTasks();
+    renderRankBar();
+    renderLoveEntry();
+    renderHeroBadge();
+    renderLibrary('');
+    toast('已从云端恢复最新进度');
+  });
   if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
     /* 有进度 → 首页按钮改为"继续" */
     var bs=$('btnStart'); if(bs) bs.textContent='继 续 深 宫';
@@ -2340,6 +2581,13 @@ window.loveSelect=loveSelect;
 window.renderHeroBadge=renderHeroBadge;
 window.encodeSave=encodeSave;
 window.decodeSave=decodeSave;
+window.cloudCfg=cloudCfg;
+window.cloudReady=cloudReady;
+window.cloudUpload=cloudUpload;
+window.cloudPull=cloudPull;
+window.genCode=genCode;
+window.saveCloudCfg=saveCloudCfg;
+window.renderCloudStatus=renderCloudStatus;
 window.openExport=openExport;
 window.openImport=openImport;
 window.closeSaveModal=closeSaveModal;
