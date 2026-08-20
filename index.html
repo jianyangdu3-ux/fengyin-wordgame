@@ -303,6 +303,18 @@ nav.tabbar{
 .palace-silhouette{
   width:100%;height:80px;opacity:.08;pointer-events:none;margin-bottom:-8px;
 }
+/* 情缘·私奔支线 */
+.love-entry{background:var(--bg-card);color:var(--red);border:1px solid var(--gold);margin-top:10px}
+.love-card{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(142,43,43,.05)}
+.love-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.love-emoji{font-size:26px}
+.love-name{font-size:16px;color:var(--red);font-weight:500}
+.love-title{font-size:12px;color:var(--ink2);margin-top:2px}
+.love-tag{margin-left:auto;font-size:11px;color:var(--gold);border:1px solid var(--gold2);padding:2px 8px;border-radius:10px;white-space:nowrap}
+.love-bar{height:8px;background:#F0E4D0;border-radius:4px;margin:8px 0 4px;overflow:hidden}
+.love-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:4px;transition:width .4s}
+.love-pts{font-size:11px;color:var(--ink2);margin-bottom:6px}
+.love-end{font-size:12px;color:var(--red);margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -333,6 +345,7 @@ nav.tabbar{
           从秀女到皇后九重位份，每晋一级<b>获赐一枚凤印</b>。
         </div>
         <button class="btn gold" id="btnStart" onclick="startGame()">入 宫 选 秀</button>
+        <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
         <div class="hint">剧情·斗法·抉择·查案 全部绑定考词<br>本地自动存档，进度不丢</div>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
@@ -470,6 +483,13 @@ nav.tabbar{
         <button class="btn ghost" onclick="resetGame()">重入轮回（清空进度）</button>
       </div>
     </div>
+
+    <div class="page" id="page-love">
+      <div class="chap-title">🌸 情缘 · 私奔支线</div>
+      <div class="chap-sub" id="loveIntro">位份晋至贵人，宫墙外的缘分悄然靠近。<br>情缘考校同样绑定词库——答对 60% 即过，答错只能重来。</div>
+      <div id="loveList"></div>
+      <div class="hint">每位男主四段情缘 · 最终抉择答对即私奔成功<br>各线结局独立，可全部攻略</div>
+    </div>
   </main>
 
   <nav class="tabbar">
@@ -606,12 +626,63 @@ var STORY=[
 }
 ];
 
+/* ---------- 情缘·私奔支线（rank>=3 贵人解锁；剧情词全部取自词库） ---------- */
+var LOVES=[
+{
+  id:'doctor', name:'温既明', title:'太医院医正', emoji:'🌿', tag:'药石仁心',
+  words:['heal','cure','medicine','health','pain','wound','fever','relief','remedy','symptom','disease','patient','treat','recover','vital','pulse','poison','physician','bandage','dizzy','fatigue','virus','cell','sick','anxiety','panic','faint','chronic'],
+  nodes:[
+    {t:'初遇 · 太医院', d:'你奉皇后懿旨到太医院取药。廊下悬着一块旧匾，刻着两个褪色的词——cure 与 heal。他正伏案写方，见你进来抬眸，指腹轻搭你腕脉：「娘娘脉象虚浮，需静养。」宫人说这位医正医术高明，却从不攀附任何一派。你忽然觉得，这深宫里总算有个不设防的人。'},
+    {t:'夜诊 · 三更灯火', d:'你摔伤了膝盖，不敢声张。三更时分，他提着药箱翻窗而入，替你缠上 bandage，动作比宫人还轻。他低声说：「伤口不深，但若不及时 treat，恐留病根。」月光照着他额角的细汗，你忽然想——这宫里能为你深夜赶来的人，竟只有一个他。'},
+    {t:'传情 · 一盒药膏', d:'他托人送来一盒药膏，笺上只有一行字：「病来如山倒，病去如抽丝。愿你无病无忧，心无恐惧。」你认出那字迹，是他在太医院写方子的手。盒底压着一枚竹符，上刻 recover——他说，这是他开给天下人的方子，独这一味，想开给你。'},
+    {t:'密约 · 西角门外', d:'秋猎在即，宫中松懈。他递来一方帕子，帕角绣着一个词：escape。他望着你：「宫墙再高，也高不过人心。若你愿意，三日后子时，西角门外，我备好马车。」你攥紧帕子，听见自己心跳如擂鼓。'}
+  ],
+  final:{
+    q:'三日后子时，你如期赴约。他站在马车旁，月色照着他清瘦的脸。他递来一枚竹简，只刻着一个词——他低声问：你可还记得，它是什么意思？',
+    heText:'你轻声念出那个词。他眼眶一红，把你扶上马车，鞭声清脆，马蹄踏碎满地月光。三年后江南药庐，你为他熬药，他为你看诊。这世间再没有宫墙，只有药香与晨昏。',
+    beText:'你一时记不起那个词的意思，愣在原地。他眼中的光暗了暗，正要开口——身后传来侍卫的厉喝：「什么人！」马车惊散，他被押下，你被带回宫。这一夜，成了你此生最长的夜。'
+  }
+},
+{
+  id:'general', name:'沈破军', title:'镇北大将军', emoji:'⚔️', tag:'沙场点兵',
+  words:['brave','battle','army','soldier','sword','shield','victory','defeat','danger','courage','fierce','camp','march','guard','protect','defend','attack','conquer','enemy','troop','siege','strategy','tactic','surrender','retreat','glory','honor','loyal','duty','arrow','blade','fight','resist','invade','revolt','ally','raid','occupy'],
+  nodes:[
+    {t:'初遇 · 凯旋', d:'镇北将军班师回朝，你随宫人挤在御道旁。城门洞开，百姓高呼 victory。他一身玄甲跨马而过，目光掠过人潮，在你脸上顿了一瞬。城楼上有人喊他的名字，他扬手——手中长枪映着日光，像一道不驯的闪电。宫人议论：这位将军，是从死人堆里杀出来的，从不把宫规放在眼里。'},
+    {t:'教习 · 校场弯弓', d:'圣上命将军教习侍卫骑射，你因司职路过校场。他见你立在烈日下，把水囊抛过来：「站那么远，怕马？」你接住水囊，他咧嘴一笑：「军中无戏言。要学，便认真学。」他教你拉弓，说：「握弓的手要稳，心里更要稳——如 brave 二字，不是不怕，是怕了还往前走。」'},
+    {t:'传情 · 火漆密信', d:'他奉旨北巡，临行前托人塞给你一封火漆密信。信上只有一句：「若边关有变，我护你出城。」落款是他的军印，印旁画着一柄 sword。你捧着信，指尖发烫——他竟把身家性命，写进了给一个宫人的信里。'},
+    {t:'密约 · 雁门关外', d:'他回京述职，夜里翻墙来见你。月光下他摊开一张舆图：「雁门关外三千里，有草场，有马群。你愿意，我这就去向圣上请辞，带你远走高飞。」他顿了顿：「若你不愿，我便当今夜从未来过。」'}
+  ],
+  final:{
+    q:'他等你到子时。你推开角门，他卸了甲，站在月色里，手里攥着一枚刻着词的木牌——他低声问：跟不跟我走？你可还记得这个词的意思？',
+    heText:'你念出那个词，声音不大，却像军令。他大笑一声，将你抱上马背：「好！此生不负。」大漠孤烟，他教你骑马，你教他认字。边关的风再烈，也吹不散并肩的人。',
+    beText:'你念错了那个词。他眼神一凝，远处传来巡夜的脚步声。他护着你退回角门内：「今夜之事，从未发生。」木牌落在他掌中，被攥得发白。此后边关来信，你一封也没再收到。'
+  }
+},
+{
+  id:'scholar', name:'顾青衿', title:'御前教习', emoji:'🖋️', tag:'诗书风流',
+  words:['poem','verse','ink','paper','read','write','learn','wisdom','scholar','literature','talent','genius','elegant','culture','ancient','classic','soul','dream','beauty','grace','harmony','music','melody','style','imagination','inspire','passion','romance','tender','gentle','poet','charm','admire','emotion'],
+  nodes:[
+    {t:'初遇 · 御前授课', d:'新来一位教习，姓顾，江南人，掌一宫书文。他讲学时不爱之乎者也，倒爱引外邦新词：他说 wisdom 不在书里，在人心。宫里规矩重，他却在无人处教你研墨临帖，一笔一画，写得极慢，像怕惊着谁。'},
+    {t:'相知 · 上元灯会', d:'上元灯会，你隔着人潮望见他。他提一盏兔子灯挤过来，袖口沾了墨：「猜谜吗？谜底是一个词，猜对了，灯送你。」你红着脸猜中，他笑：「灯送你。谜底……也送你。」灯影摇晃，满街喧嚣，你只听清自己心跳的声音。'},
+    {t:'传情 · 手抄诗集', d:'他托书童送来一册手抄诗集，扉页只有一句：「人间词话三千，不敌你窗前研墨一回。」书页间夹着一枚书签，上写 romance——他注：此词意为"浪漫"，亦意为"私奔"。你忽然懂了什么，把书签贴身藏好。'},
+    {t:'密约 · 画舫南下', d:'他告诉你，下月初五，江南有一艘画舫北行，可直下扬州。「我有功名在身，却从不想困在庙堂。」他摊开一幅山水：「扬州城外，我有一间书斋，三亩荷塘。若你愿来，便是书斋主人。」'}
+  ],
+  final:{
+    q:'初五夜，你提着包袱走到西角门。画舫泊在护城河外，他立在船头，手里擎着一盏灯，灯上写着一个词——他遥遥喊：你可认得？认得，便上船。',
+    heText:'你高声念出那个词。他长笑一声，船头灯晃了晃：「好！好得很！」你提裙踏上跳板，画舫离岸，顺水南下。青灯古卷，他写诗，你研墨，三亩荷塘，一生长安。',
+    beText:'你没能认出那个词，犹豫间画舫已渐行渐远。他站在船头久久未动，灯影在水面碎成一片。第二天你收到一页素笺：「山长水远，各自珍重。」你攥着那页纸，哭了一夜。'
+  }
+}
+];
+
 /* ---------- 全局状态 ---------- */
 var S={
   v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
   right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[],
   // 每日任务
-  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]}
+  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
+  // 情缘·私奔支线（rank>=3 贵人解锁）
+  love:{char:null,stage:0,points:0,endings:{}}
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -794,7 +865,7 @@ function setTab(which){
   if(idx!==undefined&&tabs[idx]) tabs[idx].classList.add('active');
 }
 function goTab(which){
-  if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} openStory(); }
+  if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} if(loveActive){ loveStory(); return; } openStory(); }
   else if(which==='library'){ showPage('page-library'); renderLibrary(''); setTab('library'); }
   else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
 }
@@ -805,8 +876,10 @@ function linkWords(text, words, cls){
   (words||[]).forEach(function(w){
     var key=String(w).toLowerCase();
     if(!VOCAB_MAP[key]) return;
-    var re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','i');
-    if(out.match(re) && !out.includes('<span')){
+    var esc=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    var re=new RegExp('('+esc+')','i');
+    var spanRe=new RegExp('class="gword[^"]*"[^>]*>'+esc+'<','i');
+    if(out.match(re) && !spanRe.test(out)){
       out=out.replace(re,'<span class="gword '+cls+'" data-w="'+key+'">$1</span>');
     }
   });
@@ -836,6 +909,195 @@ function speakSheet(){
 function closeSheet(){
   $(ui.sheetMask).style.display='none';
   $(ui.sheet).style.display='none';
+}
+
+/* ---------- 情缘·私奔支线 ---------- */
+var loveActive=false;   // 情缘剧情模式（storyNext 分支用）
+function currentLove(){
+  for(var i=0;i<LOVES.length;i++) if(LOVES[i].id===S.love.char) return LOVES[i];
+  return LOVES[0];
+}
+function renderLoveEntry(){
+  var el=$('loveEntry');
+  if(el) el.style.display=(S.rank>=3)?'block':'none';
+}
+function openLove(){
+  loveActive=false;
+  showPage('page-love');
+  var h='';
+  for(var i=0;i<LOVES.length;i++){
+    var L=LOVES[i];
+    var e=S.love.endings[L.id]||null;
+    var p=S.love.char===L.id?Math.min(100,S.love.points):0;
+    var ongoing=(S.love.char===L.id && S.love.stage>0 && S.love.stage<5);
+    h+='<div class="love-card">'+
+      '<div class="love-head"><span class="love-emoji">'+L.emoji+'</span>'+
+      '<div class="love-meta"><div class="love-name">'+L.name+'</div><div class="love-title">'+L.title+'</div></div>'+
+      '<div class="love-tag">'+L.tag+'</div></div>'+
+      '<div class="love-bar"><div class="love-fill" style="width:'+p+'%"></div></div>'+
+      '<div class="love-pts">好感 '+p+' / 100'+(e?(' · '+(e==='he'?'✅ 已私奔':'💔 事败')):(ongoing?' · 情缘进行中':''))+'</div>'+
+      (e?'<div class="love-end">'+(e==='he'?'这一世，你随他出了宫墙。':'那一夜之后，你们再未相见。')+'</div>':'')+
+      '<button class="btn '+(ongoing?'gold':'')+'" onclick="loveSelect(\''+L.id+'\')">'+
+      (e?'回顾结局':(ongoing?'继续情缘':'结缘'))+'</button>'+
+      '</div>';
+  }
+  $(ui.loveList).innerHTML=h;
+  setTab('story');
+}
+function loveSelect(id){
+  var L=null;
+  for(var i=0;i<LOVES.length;i++) if(LOVES[i].id===id) L=LOVES[i];
+  if(!L) return;
+  if(S.love.endings[id]){ loveEnding(S.love.endings[id]==='he'); return; }
+  if(S.love.char!==id){ S.love.char=id; S.love.stage=0; S.love.points=0; }
+  save();
+  loveStory();
+}
+function loveStory(){
+  if(S.love.stage>=5){ loveEnding(S.love.endings[S.love.char]==='he'); return; }
+  var L=currentLove();
+  loveActive=true;
+  var st=S.love.stage;
+  showPage('page-story');
+  var cb=$('charBox'); if(cb) cb.style.display='none';
+  if(st===4){
+    $(ui.storyTitle).textContent=L.name+' · 私奔密约';
+    $(ui.storySub).textContent='好感 '+Math.min(100,S.love.points)+' / 100';
+    $(ui.storyText).innerHTML=linkWords(L.final.q,L.words);
+    $(ui.btnStoryNext).textContent='作出抉择';
+  }else{
+    $(ui.storyTitle).textContent=L.name+' · '+L.nodes[st].t;
+    $(ui.storySub).textContent='情缘 · 好感 '+Math.min(100,S.love.points)+' / 100';
+    $(ui.storyText).innerHTML=linkWords(L.nodes[st].d,L.words);
+    $(ui.btnStoryNext).textContent='情缘考校';
+  }
+  bindWordClicks();
+  $(ui.storyHint).textContent='剧情中的词可点开看释义 · 考校答对 60% 即过';
+  setTab('story');
+}
+function loveNext(){
+  var st=S.love.stage;
+  if(st<4){
+    var L=currentLove();
+    startQuiz({scenes:[{w:L.words}],quiz:4,love:{}});
+  }else if(st===4){
+    loveFinalChoice();
+  }else{
+    openLove();
+  }
+}
+function loveFinish(passed,correct,total,passLine,wrongWords,cfg){
+  var charBox=$('quizChar'); if(charBox) charBox.style.display='none';
+  var qPanel=$('qOpts'); if(qPanel) qPanel.style.display='none';
+  var qSpell=$('qSpell'); if(qSpell) qSpell.style.display='none';
+  $(ui.quizHint).textContent='';
+  var resBox=$('quizResult');
+  resBox.style.display='block';
+  var L=currentLove();
+  if(passed){
+    var gain=20+correct*2;
+    S.love.points=Math.min(100,S.love.points+gain);
+    S.love.stage++;
+    save();
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp pass">情缘渐深</div>'+
+      '<div class="result-score">'+L.name+' 好感 +'+gain+'（当前 '+Math.min(100,S.love.points)+' / 100）</div>'+
+      (wrongWords.length>0?
+        '<div class="result-wrong-title">错词复习（点单词可听发音）</div>'+
+        '<div class="result-wrong-list">'+wrongWords.map(function(w){
+          var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+          return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+        }).join('')+'</div>':'')+
+      '<button class="btn gold" id="loveContinueBtn" style="margin-top:6px">继续情缘</button>'+
+    '</div>';
+    var b=$('loveContinueBtn');
+    if(b) b.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      if(qSpell) qSpell.style.display='none';
+      cur=null;
+      loveStory();
+    };
+  }else{
+    resBox.innerHTML='<div class="quiz-result">'+
+      '<div class="result-stamp fail">考校未过</div>'+
+      '<div class="result-score">答对 <b>'+correct+'</b> / '+total+' 题 · 需 '+passLine+' 题通过</div>'+
+      '<div class="result-wrong-title">错词复习（点单词可听发音），记住后重新考校</div>'+
+      '<div class="result-wrong-list">'+wrongWords.map(function(w){
+        var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
+        return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
+      }).join('')+'</div>'+
+      '<button class="btn gold" id="loveRetryBtn" style="margin-top:6px">重新考校</button>'+
+    '</div>';
+    var b2=$('loveRetryBtn');
+    if(b2) b2.onclick=function(){
+      resBox.style.display='none'; resBox.innerHTML='';
+      if(charBox) charBox.style.display='flex';
+      if(qPanel) qPanel.style.display='block';
+      cur=null;
+      if(cfg) startQuiz(cfg);
+    };
+  }
+}
+function loveFinalChoice(){
+  var L=currentLove();
+  cur={stage:'loveFinal',answered:false};
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=L.name+' · 私奔密约';
+  $(ui.choiceText).innerHTML=linkWords(L.final.q,L.words);
+  bindWordClicks($(ui.choiceText));
+  var word=L.words[rand(L.words.length)];
+  var opts=makeOptions(word,4,'en2zh');
+  var h='';
+  for(var i=0;i<opts.length;i++){
+    h+='<button class="qopt" data-i="'+i+'"'+(opts[i].is?' data-ok="1"':'')+'><span class="pos">'+opts[i].pos+'</span>'+opts[i].label+'</button>';
+  }
+  $(ui.choiceOpts).innerHTML=h;
+  var btns=$(ui.choiceOpts).querySelectorAll('.qopt');
+  for(var j=0;j<btns.length;j++) btns[j].onclick=function(){ answerLoveFinal(this.getAttribute('data-i')); };
+  $(ui.choiceHint).textContent='他给的暗号——答对，随他远走；答错，或许就再也见不到了。';
+}
+function answerLoveFinal(idx){
+  if(!cur||cur.answered) return;
+  cur.answered=true;
+  var L=currentLove();
+  var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
+  var isRight=!!opts[parseInt(idx,10)].getAttribute('data-ok');
+  opts[parseInt(idx,10)].classList.add(isRight?'right':'wrong');
+  if(!isRight){
+    for(var k=0;k<opts.length;k++) if(opts[k].getAttribute('data-ok')){
+      opts[k].classList.add('right'); break;
+    }
+  }
+  for(var m=0;m<opts.length;m++) opts[m].style.pointerEvents='none';
+  S.love.endings[L.id]=isRight?'he':'be';
+  S.love.stage=5;
+  if(isRight){ S.love.points=100; S.points+=50; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('你念对了暗号，随他远走高飞！+50 圣宠'); }
+  else{ S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; toast('暗号答错，功亏一篑 -15 圣宠'); }
+  save();
+  setTimeout(function(){ loveEnding(isRight); },900);
+}
+function loveEnding(he){
+  var L=currentLove();
+  loveActive=false;
+  showPage('page-choice');
+  $(ui.choiceTitle).textContent=L.name+' · '+(he?'得偿所愿 · 私奔':'事败 · 一别两宽');
+  $(ui.choiceText).innerHTML='<p class="p-text" style="text-indent:0">'+(he?L.final.heText:L.final.beText)+'</p>';
+  $(ui.choiceOpts).style.display='none';
+  $(ui.choiceHint).textContent='';
+  var parent=$(ui.choiceHint).parentNode;
+  var old=parent.querySelector('.love-end-btn');
+  if(old) old.remove();
+  var b=document.createElement('button');
+  b.className='btn gold love-end-btn';
+  b.textContent=he?'回到情缘':'再试一次';
+  b.onclick=function(){
+    if(he){ openLove(); }
+    else{ S.love.stage=4; S.love.points=Math.max(0,S.love.points-10); save(); loveFinalChoice(); }
+  };
+  parent.appendChild(b);
+  renderLoveEntry();
 }
 
 /* ---------- 测验（词关） ---------- */
@@ -1047,6 +1309,8 @@ function finishQuiz(){
   var passed=correctCount>=passLine;
   var wrongWords=cur.wrongWords||[];
   var cfg=cur.chapterCfg;
+  /* 情缘线考校：结果由 loveFinish 处理 */
+  if(cfg && cfg.love){ loveFinish(passed,correctCount,total,passLine,wrongWords,cfg); return; }
 
   if(passed){
     /* 隐藏角色台词和考校内容，显示通过结果 */
@@ -1304,6 +1568,7 @@ function answerCase(idx){
 /* ---------- 章节流程 ---------- */
 function startGame(){
   renderRankBar();
+  loveActive=false;
   S.chapter=0; S.step=0; S.storyIdx=0; save();
   openStory();
 }
@@ -1337,6 +1602,7 @@ function openStory(){
   setTab('story');
 }
 function storyNext(){
+  if(loveActive){ loveNext(); return; }
   if(S.chapter>=STORY.length) return;
   var ch=STORY[S.chapter];
   if(S.storyIdx<ch.scenes.length-1){
@@ -1380,6 +1646,7 @@ function promote(rank){
     :'内侍捧着鎏金凤印走到你面前，宫人纷纷跪下请安。你想起母亲那句"深宫险恶"——你活下来了，而且还要活得更好。';
   $(ui.btnRewardNext).textContent='进入第'+(S.chapter+2)+'章';
   renderRankBar();
+  renderLoveEntry();
 }
 function rewardNext(){
   S.chapter++; S.storyIdx=0; S.step=0; save();
@@ -1458,7 +1725,8 @@ function init(){
     rewardFrom:'rewardFrom',rewardRank:'rewardRank',rewardSlogan:'rewardSlogan',rewardText:'rewardText',btnRewardNext:'btnRewardNext',
     libSearch:'libSearch',libList:'libList',libTotal:'libTotal',libKnow:'libKnow',
     recList:'recList',stRight:'stRight',stWrong:'stWrong',stStreak:'stStreak',
-    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef',sheet:'sheet'
+    sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef',sheet:'sheet',
+    loveList:'loveList',loveIntro:'loveIntro'
   };
   /* 弹层按钮直接事件绑定（不依赖 onclick 全局查找，手机端更稳） */
   var sEl=$(ui.sheet), mEl=$(ui.sheetMask);
@@ -1472,6 +1740,7 @@ function init(){
   var has=load();
   renderTasks();
   renderRankBar();
+  renderLoveEntry();
   if(has && S.chapter>0){
     // 有进度 → 回到封面，用户点"继续"由 tab 剧情进入
   }
@@ -1490,6 +1759,8 @@ window.resetGame=resetGame;
 window.answerSpell=answerSpell;
 window.speakWord=speakWord;
 window.speakSpell=speakSpell;
+window.openLove=openLove;
+window.loveSelect=loveSelect;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
