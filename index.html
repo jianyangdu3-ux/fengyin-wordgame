@@ -809,9 +809,9 @@ body{background:#241816}
     </div>
 
     <div class="page" id="page-record">
-      <div class="section-head"><b>宫册藏录</b><span>功 绩 · 抉 择 · 存 档</span></div>
-      <div class="panel"><h2>藏录 <span class="en">抉择回望</span></h2><div id="recList"></div></div>
-      <div class="panel"><h2>宫册 <span class="en">你的功绩</span></h2>
+      <div class="section-head"><b>宫册</b><span>成 长 · 抉 择 · 存 档</span></div>
+      <div class="panel"><h2>成长记录 <span class="en">晋升与历程</span></h2><div id="recList"></div></div>
+      <div class="panel"><h2>功绩总览 <span class="en">你的成绩</span></h2>
         <div class="stats-row">
           <div class="stat"><b id="stRight">0</b><span>答对</span></div>
           <div class="stat"><b id="stWrong">0</b><span>答错</span></div>
@@ -839,7 +839,7 @@ body{background:#241816}
   <nav class="tabbar">
     <button class="tab active" onclick="goTab('story')"><span class="ti">📜</span>剧情</button>
     <button class="tab" onclick="goTab('library')"><span class="ti">📖</span>词库</button>
-    <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>藏录</button>
+    <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>宫册</button>
   </nav>
 
   <div class="sheet-mask" id="sheetMask"></div>
@@ -1164,7 +1164,7 @@ var S={
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
-  wrongs:{}, favs:{}, learning:{}, covered:{}
+  wrongs:{}, favs:{}, learning:{}, covered:{}, records:[]
 };
 var SAVE_KEY='gd12_state_v1';
 var cur=null;      // 当前测验上下文
@@ -1186,7 +1186,7 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -2127,6 +2127,8 @@ function finishQuiz(){
   }
 
   if(passed){
+    addRecord('quiz','通过考校 · '+((STORY[S.chapter]&&STORY[S.chapter].title)||'宫廷考校'),'答对 '+correctCount+' / '+total+' 题'+(wrongWords.length?'，错词已进入即时订正':'，全题通过'),'quiz-'+S.chapter,true);
+    save();
     /* 隐藏角色台词和考校内容，显示通过结果 */
     var charBox=$('quizChar'); if(charBox) charBox.style.display='none';
     var qPanel=$('qOpts'); if(qPanel) qPanel.style.display='none';
@@ -2378,6 +2380,7 @@ function answerChoice(idx){
     }
   }
   S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
+  addRecord('choice','作出剧情抉择',o.t+(isGood?' · 判断得当':' · 判断失当'),'choice-'+S.chapter+'-'+S.verdict.length,isGood);
   if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('抉择正确 +20 圣宠'); }
   else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
   save();
@@ -2541,10 +2544,11 @@ function afterGate(ok){
   if(ch.case && !done.case){ done.case=true; ch._done=done; openStory(); return; }
   // 全部完成 → 晋升
   if(S.rank<ch.reward) promote(ch.reward);
-  else { S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
+  else { addRecord('chapter','完成章节 · '+ch.title,'本章剧情与考校已经完成','chapter-'+S.chapter,true); S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
 }
 function promote(rank){
   S.rank=rank;
+  addRecord('rank','获赐第 '+rank+' 枚凤印','晋位「'+RANKS[rank].n+'」 · '+RANKS[rank].s,'rank-'+rank,true);
   taskInc('promote');
   var ch=STORY[S.chapter];
   if(ch._done) delete ch._done;
@@ -2633,16 +2637,32 @@ function bindLibClicks(list){
   }
 }
 
-/* ---------- 藏录 & 宫册 ---------- */
+/* ---------- 宫册：成长、晋升、考校与抉择 ---------- */
+function addRecord(type,title,detail,key,good){
+  if(!S.records)S.records=[];
+  if(key&&S.records.some(function(r){return r.key===key;}))return;
+  S.records.push({type:type,title:title,detail:detail,key:key||('record-'+Date.now()),good:good!==false,time:Date.now()});
+  if(S.records.length>300)S.records=S.records.slice(-300);
+}
+function ensureHistoricalRecords(){
+  if(!S.records)S.records=[];
+  for(var r=1;r<=(S.rank||0);r++)addRecord('rank','获赐第 '+r+' 枚凤印','晋位「'+RANKS[r].n+'」 · 已根据现有存档补录','rank-'+r,true);
+  var completed=Math.min(S.chapter||0,STORY.length);
+  for(var c=0;c<completed;c++)addRecord('chapter','完成章节 · '+STORY[c].title,'剧情与考校已经完成','chapter-'+c,true);
+  (S.verdict||[]).forEach(function(v,i){addRecord('choice','剧情抉择',v.t,'legacy-choice-'+i,v.good);});
+  save();
+}
 function renderRecord(){
   var list=$(ui.recList);
-  if(!S.verdict.length){
-    list.innerHTML='<div class="lib-empty">尚未做出抉择。走到剧情岔路口时，你的选择会记在这里。</div>';
+  ensureHistoricalRecords();
+  if(!S.records.length){
+    list.innerHTML='<div class="lib-empty">尚无成长记录。完成首章考校后，晋升、章节与抉择都会记在这里。</div>';
     return;
   }
   var h='';
-  S.verdict.slice().reverse().forEach(function(v){
-    h+='<div class="rec-item"><div class="q">'+v.c+'</div><div class="a'+(v.good?'':' bad')+'">'+(v.good?'✓ 你选了：「'+v.t+'」':'✗ 你选了：「'+v.t+'」')+'</div></div>';
+  var icons={rank:'印',quiz:'答',chapter:'章',choice:'择'};
+  S.records.slice().reverse().forEach(function(v){
+    h+='<div class="rec-item"><div class="q">'+(icons[v.type]||'记')+' · '+v.title+'</div><div class="a'+(v.good?'':' bad')+'">'+(v.good?'✓ ':'✗ ')+v.detail+'</div></div>';
   });
   list.innerHTML=h;
 }
@@ -2675,6 +2695,9 @@ function decodeSave(code){
     if(!o.favs) o.favs={};
     if(!o.tasks) o.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
     if(!o.love) o.love={char:null,stage:0,points:0,endings:{}};
+    if(!o.learning) o.learning={};
+    if(!o.covered) o.covered={};
+    if(!o.records) o.records=[];
     if(typeof o.energy!=='number') o.energy=100;
     return {ok:true,data:o};
   }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
@@ -3004,7 +3027,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=100').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=101').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3016,8 +3039,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v100')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v100','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v101')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v101','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
