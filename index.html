@@ -632,7 +632,7 @@ body{background:#241816}
     <header class="topbar">
       <h1 onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</h1>
       <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
-      <button class="help-circle top-help" type="button" onclick="openManual('quickstart')" aria-label="打开玩法说明">?</button>
+      <button class="help-circle top-help" type="button" onclick="location.href='manual.html#quickstart'" aria-label="打开玩法说明">?</button>
     </header>
     <div class="rank-bar" id="rankBar"></div>
   </div>
@@ -645,7 +645,7 @@ body{background:#241816}
           <div class="home-resources">
             <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
             <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
-            <button class="help-circle" type="button" onclick="openManual('quickstart')" aria-label="打开玩法说明">?</button>
+            <button class="help-circle" type="button" onclick="location.href='manual.html#quickstart'" aria-label="打开玩法说明">?</button>
           </div>
         </div>
         <div class="home-location" id="homeLocation">首页 · 当前位份 <b>秀女</b> · 第 1 章</div>
@@ -655,7 +655,7 @@ body{background:#241816}
             <div class="rank-copy">
               <div class="eyebrow">今日晋封</div>
               <div class="home-rank" id="heroRank">秀女</div>
-              <div class="seal-progress-label" onclick="event.stopPropagation();openManual('fengyin')" role="button" tabindex="0" aria-label="查看凤印与晋位说明"><span>凤印</span><span id="htNum">0 / 9</span></div>
+              <div class="seal-progress-label" onclick="event.stopPropagation();location.href='manual.html#fengyin'" role="button" tabindex="0" aria-label="查看凤印与晋位说明"><span>凤印</span><span id="htNum">0 / 9</span></div>
               <div class="seal-progress"><i id="htFill" style="width:0%"></i></div>
               <div class="rank-next" id="rankNext">踏入宫门，完成首章即可获赐第一枚凤印</div>
             </div>
