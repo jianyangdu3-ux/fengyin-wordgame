@@ -40,33 +40,33 @@ setTimeout(() => {
 
   // 1. 结构存在
   check('heroBadge 存在', !!doc.getElementById('heroBadge'));
-  check('rankRing 存在', !!doc.getElementById('rankRing'));
-  check('rankEmoji 存在', !!doc.getElementById('rankEmoji'));
-  check('rankLabel 存在', !!doc.getElementById('rankLabel'));
-  check('rtFill 存在', !!doc.getElementById('rtFill'));
-  check('rtNum 存在', !!doc.getElementById('rtNum'));
+  check('heroAvatar 存在', !!doc.getElementById('heroAvatar'));
+  check('heroFrame 存在', !!doc.getElementById('heroFrame'));
+  check('heroRank 存在', !!doc.getElementById('heroRank'));
+  check('htFill 存在', !!doc.getElementById('htFill'));
+  check('htNum 存在', !!doc.getElementById('htNum'));
 
   // 2. 初始 rank=0
-  check('rank=0 时 emoji 为 👑', doc.getElementById('rankEmoji').textContent === '👑');
-  check('rank=0 时 label 为 秀女', doc.getElementById('rankLabel').textContent === '秀女');
-  check('rank=0 时进度条 0%', doc.getElementById('rtFill').style.width === '0%');
-  check('rank=0 时进度 0/9', doc.getElementById('rtNum').textContent === '0/9');
+  check('rank=0 时头像为 char-maid.png', doc.getElementById('heroAvatar').src.includes('char-maid.png'));
+  check('rank=0 时 label 为 秀女', doc.getElementById('heroRank').textContent === '秀女');
+  check('rank=0 时进度条 0%', doc.getElementById('htFill').style.width === '0%');
+  check('rank=0 时进度 0/9', doc.getElementById('htNum').textContent === '0/9');
 
   // 3. rank=3
   window.S.rank = 3;
   window.renderHeroBadge();
-  check('rank=3 emoji 为 🏮', doc.getElementById('rankEmoji').textContent === '🏮');
-  check('rank=3 label 为 贵人', doc.getElementById('rankLabel').textContent === '贵人');
-  check('rank=3 进度条 37.5%', doc.getElementById('rtFill').style.width === '37.5%');
-  check('rank=3 进度 3/9', doc.getElementById('rtNum').textContent === '3/9');
+  check('rank=3 头像为 char-consort.png', doc.getElementById('heroAvatar').src.includes('char-consort.png'));
+  check('rank=3 label 为 贵人', doc.getElementById('heroRank').textContent === '贵人');
+  check('rank=3 进度条 37.5%', doc.getElementById('htFill').style.width === '37.5%');
+  check('rank=3 进度 3/9', doc.getElementById('htNum').textContent === '3/9');
 
   // 4. rank=9
   window.S.rank = 8;
   window.renderHeroBadge();
-  check('rank=8 emoji 为 🔥', doc.getElementById('rankEmoji').textContent === '🔥');
-  check('rank=8 label 为 皇后', doc.getElementById('rankLabel').textContent === '皇后');
-  check('rank=8 进度条 100%', doc.getElementById('rtFill').style.width === '100%');
-  check('rank=8 进度 8/9', doc.getElementById('rtNum').textContent === '8/9');
+  check('rank=8 头像为 char-queen.png', doc.getElementById('heroAvatar').src.includes('char-queen.png'));
+  check('rank=8 label 为 皇后', doc.getElementById('heroRank').textContent === '皇后');
+  check('rank=8 进度条 100%', doc.getElementById('htFill').style.width === '100%');
+  check('rank=8 进度 8/9', doc.getElementById('htNum').textContent === '8/9');
 
   // 5. 点击入宫 → 进入剧情页
   const badge = doc.getElementById('heroBadge');

@@ -149,45 +149,60 @@ nav.tabbar{
 .cover .sublogo{font-size:12px;color:var(--gold);letter-spacing:4px;margin-bottom:18px}
 .cover .desc{font-size:13px;color:var(--ink2);line-height:1.75;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 4px 14px}
 .cover .desc b{color:var(--red);font-weight:500}
-/* ===== 首页主视觉·位份圆环+金钗（学修仙版简洁风格） ===== */
+/* ===== 首页主视觉·古风画框+角色立绘（工笔淡彩风格） ===== */
 .hero-badge{
-  position:relative;display:inline-block;margin:2px auto 12px;cursor:pointer;
+  position:relative;display:inline-block;margin:4px auto 14px;cursor:pointer;
   -webkit-tap-highlight-color:transparent;user-select:none;
   text-align:center;
 }
-.hero-badge:active .rank-ring{transform:scale(.94)}
-/* 金钗装饰 */
-.hairpin{
-  display:block;width:30px;height:58px;margin:0 auto 6px;
-  filter:drop-shadow(0 2px 5px rgba(201,162,39,.35));
-}
-/* 位份圆环 */
-.rank-ring{
-  width:96px;height:96px;border-radius:50%;margin:0 auto;
-  border:3.5px solid var(--gold);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+.hero-badge:active .hero-frame{transform:scale(.96)}
+/* 古风画框 */
+.hero-frame{
+  position:relative;width:130px;height:172px;margin:0 auto 10px;
+  border-radius:3px;border:2.5px solid var(--gold);
   background:linear-gradient(145deg,#FFFDF8,#F5EDD0);
-  box-shadow:0 4px 18px rgba(122,21,12,.12),inset 0 2px 6px rgba(255,255,255,.8);
-  transition:transform .12s ease;
-  position:relative;
+  box-shadow:0 6px 20px rgba(122,21,12,.18),inset 0 0 14px rgba(201,162,39,.1);
+  padding:4px;transition:transform .12s ease;
 }
-.rank-ring .rank-emoji{font-size:30px;line-height:1;margin-bottom:1px}
-.rank-ring .rank-label{font-size:13px;color:var(--red);font-weight:600;letter-spacing:1px}
-/* 九印进度条 */
-.rank-track{
-  display:flex;align-items:center;gap:8px;margin-top:10px;justify-content:center;
+/* 内衬线 */
+.hero-frame::before{
+  content:'';position:absolute;top:3px;left:3px;right:3px;bottom:3px;
+  border:1px solid rgba(201,162,39,.4);border-radius:1px;pointer-events:none;
 }
-.rank-track .rt-label{font-size:10px;color:var(--gold);letter-spacing:1px}
-.rank-track .rt-bar{
-  width:110px;height:4px;background:rgba(201,162,39,.15);border-radius:2px;overflow:hidden;
+/* 四角回纹 */
+.hero-frame .corner{
+  position:absolute;width:10px;height:10px;
+  border-color:var(--gold);border-style:solid;pointer-events:none;
 }
-.rank-track .rt-fill{
+.hero-frame .corner.tl{top:-1px;left:-1px;border-width:2.5px 0 0 2.5px}
+.hero-frame .corner.tr{top:-1px;right:-1px;border-width:2.5px 2.5px 0 0}
+.hero-frame .corner.bl{bottom:-1px;left:-1px;border-width:0 0 2.5px 2.5px}
+.hero-frame .corner.br{bottom:-1px;right:-1px;border-width:0 2.5px 2.5px 0}
+/* 角色立绘 */
+.hero-avatar{
+  width:100%;height:100%;object-fit:cover;object-position:top center;
+  border-radius:1px;display:block;
+}
+/* 位份名 */
+.hero-rank{
+  font-size:17px;color:var(--red);font-weight:600;letter-spacing:4px;
+  margin-bottom:3px;font-family:"Songti SC","STSong","SimSun",serif;
+}
+/* 凤印进度 */
+.hero-track{
+  display:flex;align-items:center;gap:7px;justify-content:center;margin-top:5px;
+}
+.hero-track .ht-label{font-size:10px;color:var(--gold);letter-spacing:1px}
+.hero-track .ht-bar{
+  width:90px;height:3px;background:rgba(201,162,39,.15);border-radius:2px;overflow:hidden;
+}
+.hero-track .ht-fill{
   height:100%;background:linear-gradient(90deg,var(--gold),#F0D488);border-radius:2px;
   transition:width .5s ease;
 }
-.rank-track .rt-num{font-size:10px;color:var(--gold);min-width:26px;text-align:right}
+.hero-track .ht-num{font-size:10px;color:var(--gold);min-width:28px;text-align:right}
 /* 入宫提示 */
-.hero-hint{font-size:11px;color:var(--gold);margin-top:6px;letter-spacing:2px;opacity:.85}
+.hero-hint{font-size:11px;color:var(--gold);margin-top:7px;letter-spacing:2px;opacity:.75}
 .chap-title{text-align:center;font-size:16px;color:var(--red);font-weight:500;letter-spacing:3px;margin:8px 0 2px}
 .chap-sub{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:12px}
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
@@ -363,37 +378,16 @@ nav.tabbar{
           </svg>
         </div>
         <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="点击入宫">
-          <!-- 金钗装饰 -->
-          <svg class="hairpin" viewBox="0 0 30 58" aria-hidden="true">
-            <defs>
-              <linearGradient id="hg" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#D9B64C"/>
-                <stop offset=".5" stop-color="#F2D98F"/>
-                <stop offset="1" stop-color="#A67C0B"/>
-              </linearGradient>
-            </defs>
-            <!-- 钗杆 -->
-            <line x1="15" y1="24" x2="15" y2="54" stroke="url(#hg)" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- 钗头菱形 -->
-            <path d="M15 6 L23 16 L15 24 L7 16 Z" fill="url(#hg)" opacity=".92"/>
-            <!-- 两侧凤翅简化 -->
-            <path d="M7 16 Q3 12 5 8 Q7 10 9 14" fill="none" stroke="url(#hg)" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M23 16 Q27 12 25 8 Q23 10 21 14" fill="none" stroke="url(#hg)" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- 珠饰 -->
-            <circle cx="15" cy="28" r="1.8" fill="url(#hg)"/>
-            <circle cx="15" cy="34" r="1.5" fill="url(#hg)" opacity=".7"/>
-            <circle cx="15" cy="40" r="1.2" fill="url(#hg)" opacity=".5"/>
-          </svg>
-          <!-- 位份圆环 -->
-          <div class="rank-ring" id="rankRing">
-            <div class="rank-emoji" id="rankEmoji">👑</div>
-            <div class="rank-label" id="rankLabel">秀女</div>
+          <div class="hero-frame" id="heroFrame">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <img class="hero-avatar" id="heroAvatar" src="assets/char-maid.png" alt="角色">
           </div>
-          <!-- 九印进度 -->
-          <div class="rank-track" id="rankTrack">
-            <span class="rt-label">凤印</span>
-            <div class="rt-bar"><div class="rt-fill" id="rtFill" style="width:0%"></div></div>
-            <span class="rt-num" id="rtNum">0/9</span>
+          <div class="hero-rank" id="heroRank">秀女</div>
+          <div class="hero-track">
+            <span class="ht-label">凤印</span>
+            <div class="ht-bar"><div class="ht-fill" id="htFill" style="width:0%"></div></div>
+            <span class="ht-num" id="htNum">0/9</span>
           </div>
           <div class="hero-hint">点击入宫</div>
         </div>
@@ -910,12 +904,14 @@ function renderRankBar(){
 }
 /* 首页主视觉渲染：金钗 + 位份圆环 + 九印进度 */
 function renderHeroBadge(){
-  var emojis=['👑','🌸','💎','🏮','👘','🦋','✨','🐉','🔥'];
+  var imgs=['assets/char-maid.png','assets/char-maid.png','assets/char-maid.png',
+            'assets/char-consort.png','assets/char-consort.png','assets/char-consort.png',
+            'assets/char-queen.png','assets/char-queen.png','assets/char-queen.png'];
   var r=S.rank||0;
-  var re=$('rankEmoji'); if(re) re.textContent=emojis[r]||'👑';
-  var rl=$('rankLabel'); if(rl) rl.textContent=(RANKS[r]||RANKS[0]).n;
-  var rf=$('rtFill'); if(rf) rf.style.width=Math.min((r/8)*100,100)+'%';
-  var rn=$('rtNum'); if(rn) rn.textContent=r+'/9';
+  var ha=$('heroAvatar'); if(ha) ha.src=imgs[r]||imgs[0];
+  var hr=$('heroRank'); if(hr) hr.textContent=(RANKS[r]||RANKS[0]).n;
+  var hf=$('htFill'); if(hf) hf.style.width=Math.min((r/8)*100,100)+'%';
+  var hn=$('htNum'); if(hn) hn.textContent=r+'/9';
   var st=$('sealText'); if(st) st.textContent=r>0?('凤印×'+r):'';
 }
 function showPage(id){
