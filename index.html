@@ -108,12 +108,14 @@ main{flex:1;padding:14px 14px 20px;overflow-y:auto;overflow-x:hidden}
 .stat span{font-size:11px;color:var(--ink2)}
 nav.tabbar{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:60;
-  background:var(--bg-card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(255,253,248,.97);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -8px 24px rgba(70,41,24,.08);backdrop-filter:blur(12px);
 }
-.tab{flex:1;padding:9px 0 8px;text-align:center;font-size:11px;color:var(--ink2);cursor:pointer;background:none;border:none}
+.tab{flex:1;padding:8px 0 7px;text-align:center;font-size:10px;color:var(--ink2);cursor:pointer;background:none;border:none;position:relative}
 .tab .ti{display:block;font-size:16px;line-height:1.3}
 .tab.active{color:var(--red)}
 .tab.active .ti{transform:translateY(-1px)}
+.tab.active:after{content:'';position:absolute;left:31%;right:31%;top:0;height:2px;border-radius:2px;background:var(--red)}
 .library-top{position:sticky;top:120px;z-index:30;background:var(--bg);padding:4px 0 10px}
 .lib-search{
   width:100%;padding:10px 14px;border:1px solid var(--line2);border-radius:12px;font-size:14px;
@@ -478,12 +480,13 @@ body{background:#241816}
 .page-start-active .header-wrap{display:none}
 .page-start-active main{padding:0;scrollbar-width:none}
 .page-start-active main::-webkit-scrollbar{display:none}
-.home-v7{min-height:100%;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));position:relative;overflow:hidden;background:
+.home-v7{min-height:100%;padding:calc(18px + env(safe-area-inset-top)) 18px calc(92px + env(safe-area-inset-bottom));position:relative;overflow:hidden;background:
   radial-gradient(circle at 88% 9%,rgba(201,162,39,.09),transparent 26%),
   linear-gradient(180deg,#fbf7f0 0%,#f7efe3 58%,#f4eadb 100%)}
 .home-v7:before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E")}
 .home-v7>*{position:relative;z-index:1}
 .home-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.home-location{margin:-8px 2px 13px;color:#987a68;font-size:11px;letter-spacing:1px}.home-location b{color:#8f3029;font-weight:600}
 .home-seal{width:38px;height:38px;border:2px solid #a33b2f;border-radius:7px;color:#a33b2f;display:grid;place-items:center;font-family:"Songti SC",serif;font-size:18px;font-weight:700;transform:rotate(-2deg);box-shadow:inset 0 0 0 2px #fbf7f0, inset 0 0 0 3px rgba(163,59,47,.35)}
 .home-brand{font-family:"Songti SC","STSong",serif;font-size:23px;letter-spacing:4px;color:#38251f;font-weight:700;white-space:nowrap}
 .home-resources{margin-left:auto;display:flex;gap:6px}
@@ -625,7 +628,7 @@ body{background:#241816}
 <div id="app">
   <div class="header-wrap">
     <header class="topbar">
-      <h1>凤印九重</h1>
+      <h1 onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</h1>
       <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
     </header>
     <div class="rank-bar" id="rankBar"></div>
@@ -635,12 +638,13 @@ body{background:#241816}
     <div class="page active" id="page-start">
       <div class="home-v7">
         <div class="home-head">
-          <div class="home-seal">凤</div><div class="home-brand">凤印九重</div>
+          <div class="home-seal" onclick="goTab('home')" role="button" aria-label="返回首页">凤</div><div class="home-brand" onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</div>
           <div class="home-resources">
             <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
             <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
           </div>
         </div>
+        <div class="home-location" id="homeLocation">首页 · 当前位份 <b>秀女</b> · 第 1 章</div>
         <div class="hero-badge" id="heroBadge" onclick="startGame()" role="button" aria-label="当前位份，点击继续闯关">
           <section class="rank-hero">
             <div class="palace-wash"></div>
@@ -840,8 +844,10 @@ body{background:#241816}
   </main>
 
   <nav class="tabbar">
-    <button class="tab active" onclick="goTab('story')"><span class="ti">📜</span>剧情</button>
-    <button class="tab" onclick="goTab('library')"><span class="ti">📖</span>词库</button>
+    <button class="tab active" onclick="goTab('home')"><span class="ti">🏠</span>首页</button>
+    <button class="tab" onclick="goTab('story')"><span class="ti">📜</span>闯关</button>
+    <button class="tab" onclick="goTab('library')"><span class="ti">📖</span>藏录</button>
+    <button class="tab" onclick="goTab('review')"><span class="ti">🕰️</span>复习</button>
     <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>宫册</button>
   </nav>
 
@@ -1581,6 +1587,7 @@ function renderHomeDashboard(){
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
   var accuracy=$('homeAccuracy'); if(accuracy) accuracy.textContent=total?Math.round((S.right||0)/total*100):0;
+  var loc=$('homeLocation');if(loc){var chNo=Math.min((S.chapter||0)+1,STORY.length);loc.innerHTML='首页 · 当前位份 <b>'+RANKS[Math.min(S.rank||0,RANKS.length-1)].n+'</b> · 第 '+chNo+' 章';}
   var dueN=dueWords().length,dueEl=$('homeDueCount'),dueBtn=$('homeReviewBtn');
   if(dueEl)dueEl.textContent=dueN;
   if(dueBtn){dueBtn.classList.toggle('done',dueN===0);dueBtn.title=dueN?'点击开始免费复习':nextReviewText();}
@@ -1605,9 +1612,9 @@ function showPage(id){
   var pages=document.querySelectorAll('.page');
   for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
   $(id).classList.add('active');
-  // 首页也显示 rank-bar，让用户随时看到位份进度；tabbar 仍隐藏
+  // 底部导航在所有页面始终显示，用户随时可以回首页
   var tb=document.querySelector('.tabbar');
-  if(tb) tb.style.display=(id==='page-start')?'none':'flex';
+  if(tb) tb.style.display='flex';
   var rb=document.querySelector('.rank-bar');
   if(rb) rb.style.display='flex';
   document.body.classList.toggle('page-start-active',id==='page-start');
@@ -1622,18 +1629,25 @@ function showPage(id){
   if(id==='page-choice') document.body.classList.add('page-choice-active');
   if(id==='page-case') document.body.classList.add('page-case-active');
   if(id==='page-love') document.body.classList.add('page-love-active');
+  if(id==='page-start') setTab('home');
   window.scrollTo(0,0);
 }
 function setTab(which){
   var tabs=document.querySelectorAll('.tab');
   for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
-  var map={story:0,library:1,record:2};
+  var map={home:0,story:1,library:2,review:3,record:4};
   var idx=map[which];
   if(idx!==undefined&&tabs[idx]) tabs[idx].classList.add('active');
 }
 function goTab(which){
-  if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} if(loveActive){ loveStory(); return; } openStory(); }
+  if(which==='home'){ showPage('page-start'); renderHomeDashboard(); renderRankBar(); setTab('home'); }
+  else if(which==='story'){ renderRankBar(); if(cur&&cur.stage){cur.stage();return;} if(loveActive){ loveStory(); return; } openStory(); }
   else if(which==='library'){ showPage('page-library'); renderLibCounts(); renderLibrary(''); setTab('library'); }
+  else if(which==='review'){
+    setTab('review');
+    if(dueWords().length){ startReview('due'); }
+    else{ showPage('page-library'); renderLibCounts(); renderLibrary(''); setTab('review'); toast('今日到期复习已完成 · 可在藏录查看其他词'); }
+  }
   else if(which==='record'){ showPage('page-record'); renderRecord(); renderStats(); setTab('record'); }
 }
 
@@ -3057,7 +3071,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=111').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=112').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3069,8 +3083,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v111')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v111','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v112')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v112','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
