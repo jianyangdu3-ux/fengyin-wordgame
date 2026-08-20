@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>凤印九重 · 宫斗背词</title>
 <style>
 :root{
@@ -20,7 +23,8 @@ body{
 .header-wrap{position:sticky;top:0;z-index:50}
 header.topbar{
   background:linear-gradient(180deg,#7A1F1F,#8E2B2B);
-  color:#F5E9C9;padding:calc(10px + env(safe-area-inset-top)) 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,.18);
+  color:#F5E9C9;padding:10px 14px 8px;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,.18);
 }
 .topbar h1{font-size:19px;letter-spacing:2px;font-weight:600}
 .topbar .sub{font-size:13px;color:#E4C87A;margin-top:3px;display:flex;justify-content:space-between;align-items:center}
@@ -118,10 +122,11 @@ nav.tabbar{
 .rec-item .q{font-size:13.5px;color:var(--ink);line-height:1.7}
 .rec-item .a{font-size:12px;color:var(--ok);margin-top:6px}
 .rec-item .a.bad{color:var(--danger)}
-.sheet-mask{position:fixed;inset:0;background:rgba(46,34,34,.5);z-index:90;display:none}
+.sheet-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(46,34,34,.5);z-index:90;display:none}
 .sheet{
   position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;z-index:91;
-  background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
+  background:var(--bg-card);border-radius:18px 18px 0 0;padding:18px 18px 26px;
+  padding:18px 18px calc(26px + env(safe-area-inset-bottom));
   box-shadow:0 -6px 24px rgba(0,0,0,.15);
   max-height:80vh;overflow-y:auto;
   display:none; /* 默认隐藏，openSheet 时显示，closeSheet 时隐藏 */
@@ -473,13 +478,13 @@ nav.tabbar{
     <button class="tab" onclick="goTab('record')"><span class="ti">🏮</span>藏录</button>
   </nav>
 
-  <div class="sheet-mask" id="sheetMask" onclick="closeSheet()"></div>
+  <div class="sheet-mask" id="sheetMask"></div>
   <div class="sheet" id="sheet">
     <div class="sw" id="sWord"></div>
     <div class="sp" id="sPho"></div>
     <div class="sd" id="sDef"></div>
-    <button class="btn ghost" onclick="speakSheet()">🔊 听发音</button>
-    <button class="btn" onclick="closeSheet()">收起</button>
+    <button class="btn ghost" id="sSpeakBtn">🔊 听发音</button>
+    <button class="btn" id="sCloseBtn">收起</button>
   </div>
   <div class="toast" id="toast"></div>
 </div>
@@ -1455,6 +1460,15 @@ function init(){
     recList:'recList',stRight:'stRight',stWrong:'stWrong',stStreak:'stStreak',
     sheetMask:'sheetMask',sWord:'sWord',sPho:'sPho',sDef:'sDef',sheet:'sheet'
   };
+  /* 弹层按钮直接事件绑定（不依赖 onclick 全局查找，手机端更稳） */
+  var sEl=$(ui.sheet), mEl=$(ui.sheetMask);
+  if(sEl){
+    var spk=document.getElementById('sSpeakBtn');
+    if(spk) spk.addEventListener('click',speakSheet);
+    var cls=document.getElementById('sCloseBtn');
+    if(cls) cls.addEventListener('click',closeSheet);
+  }
+  if(mEl) mEl.addEventListener('click',closeSheet);
   var has=load();
   renderTasks();
   renderRankBar();
