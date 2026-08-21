@@ -836,7 +836,7 @@ body{background:#241816}
         </div>
       </div>
       <div class="panel"><h2>存档与备份 <span class="en">换设备时使用</span></h2>
-        <div class="hint" style="text-align:left;margin:0 0 12px">同一台手机会自动保存，无需注册或配置账号。换手机前请先导出存档，再在新设备导入。</div>
+        <div class="hint" style="text-align:left;margin:0 0 12px"><b>更新游戏不会清空旧进度，之前的位份、凤印、错词和复习记录都会保留。</b><br>同一台手机会自动保存，无需注册或配置账号；只有换手机、换浏览器或清理浏览器数据前，需要先导出存档，再在新设备导入。</div>
         <div class="save-btn-row">
           <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
           <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
@@ -3034,7 +3034,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=117').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=118').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3046,8 +3046,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v117')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v117','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v118')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v118','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
