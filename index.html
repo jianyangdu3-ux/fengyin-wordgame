@@ -286,6 +286,7 @@ nav.tabbar{
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
 .task-panel{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;text-align:left}
 .task-title{font-size:13px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.task-title small{float:right;color:var(--ink2);font-family:inherit;font-size:10px;font-weight:400;letter-spacing:0}
 .task-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
 .task-item:last-child{border-bottom:none}
 .task-label{font-size:12px;color:var(--ink)}
@@ -617,6 +618,7 @@ body{background:#241816}
 #page-library .lib-list{border:1px solid #ddc9a7;border-radius:18px;background:rgba(255,253,248,.82);box-shadow:0 9px 25px rgba(70,41,24,.05)}#page-library .lib-item{min-height:58px;padding:11px 15px;border-bottom-color:#eadfcd}#page-library .lib-item .w{font-family:Georgia,serif;font-size:16px;color:#8f302a}#page-library .lib-item .d{max-width:62%;font-size:11px}#page-library .stats-row .stat{background:#fffaf2;border-color:#ddc9a7}
 #page-record .panel{border:1px solid #dcc7a4;border-radius:19px;background:rgba(255,253,248,.86);padding:17px;box-shadow:0 9px 25px rgba(70,41,24,.06)}#page-record .panel h2{font-family:"Songti SC",serif;font-size:19px;letter-spacing:3px;color:#922e28;border-bottom:1px solid #eadcc5;padding-bottom:11px;margin-bottom:13px}#page-record .panel h2 .en{float:right;font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:1px;color:#ac8648;margin-top:5px}
 #page-record .stat{padding:13px 5px;border-radius:13px;background:#fff9ef}#page-record .stat b{font-family:Georgia,serif;font-size:22px}#page-record .save-btn-row{margin-top:15px}#page-record .save-btn-row .btn,#page-record .panel>a.btn,#page-record .panel>button.btn{min-height:46px;border-radius:13px;letter-spacing:1px}#page-record .cloud-status{border-color:#ddcaa9;background:#faf3e7;padding:12px 13px}.page-record-active .rec-item{border:1px solid #e1ceb0;border-left:4px solid #b18438;border-radius:13px;background:#fffaf2}
+.relation-list{display:grid;gap:10px}.relation-item{display:grid;grid-template-columns:76px 1fr 44px;align-items:center;gap:10px;padding:10px 11px;border:1px solid #e5d5ba;border-radius:13px;background:#fffaf2}.relation-name{font-family:"Songti SC",serif;color:#7f2b27;font-weight:600}.relation-track{height:7px;border-radius:9px;background:#eee2cf;overflow:hidden}.relation-track i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#b88b36,#d7bd78)}.relation-state{text-align:right;color:#806a5d;font-size:11px}.branch-echo{display:none;margin:0 0 12px;padding:10px 12px;border-left:3px solid #a8352e;border-radius:8px;background:#fff4e5;color:#72574a;font-size:12px;line-height:1.65}.branch-echo.show{display:block}
 /* ===== V7.4 抉择 / 查案 / 情缘 / 放榜 ===== */
 .page-choice-active .rank-bar,.page-case-active .rank-bar,.page-love-active .rank-bar{display:none!important}.page-choice-active header.topbar,.page-case-active header.topbar,.page-love-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-choice-active .topbar h1,.page-case-active .topbar h1,.page-love-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-choice-active .topbar .fav,.page-case-active .topbar .fav,.page-love-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
 .page-choice-active main,.page-case-active main,.page-love-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:radial-gradient(circle at 85% 0,rgba(174,115,39,.09),transparent 28%),linear-gradient(180deg,#faf6ee,#f3e9db)}
@@ -666,7 +668,7 @@ body{background:#241816}
         </div>
         <button class="home-primary" id="btnStart" onclick="startGame()">入宫选秀</button>
         <button class="review-today" id="homeReviewBtn" onclick="startReview('due')"><span>📚 今日待复习 <b id="homeDueCount">0</b> 词</span><span class="review-arrow">›</span></button>
-        <div class="today-count">今日已习 <b id="todayWords">0</b> / 20 词</div>
+        <div class="today-count">今日已习 <b id="todayWords">0</b> / <span id="todayWordGoal">20</span> 词</div>
         <div class="rank-journey" id="homeJourney" aria-label="九重位份进度"></div>
         <div class="home-stats">
           <div class="home-stat"><span>已掌握</span><b id="homeMastered">0</b><em>词</em></div>
@@ -681,7 +683,7 @@ body{background:#241816}
         <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
-          <div class="task-title">今日宫务</div>
+          <div class="task-title">今日宫务 <small id="taskDateHint">每日轮换 · 次日刷新</small></div>
           <div class="task-list" id="taskList"></div>
           <div class="task-reward" id="taskReward" style="display:none">
             <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
@@ -701,6 +703,7 @@ body{background:#241816}
       </div>
       <div class="chap-title" id="storyTitle"></div>
       <div class="chap-sub" id="storySub"></div>
+      <div class="branch-echo" id="branchEcho"></div>
       <div class="panel"><p class="p-text" id="storyText"></p></div>
       <button class="btn" id="btnStoryNext" onclick="storyNext()">继续</button>
       <div class="hint" id="storyHint"></div>
@@ -823,6 +826,7 @@ body{background:#241816}
 
     <div class="page" id="page-record">
       <div class="section-head"><b>宫册</b><span>成 长 · 抉 择 · 存 档</span></div>
+      <div class="panel"><h2>宫中人脉 <span class="en">人物关系</span></h2><div class="relation-list" id="relationList"></div></div>
       <div class="panel"><h2>成长记录 <span class="en">晋升与历程</span></h2><div id="recList"></div></div>
       <div class="panel"><h2>功绩总览 <span class="en">你的成绩</span></h2>
         <div class="stats-row">
@@ -1184,7 +1188,8 @@ var S={
   // V6.0 心力（体力）：考校/斗法入场与答错消耗，每日回满
   energy:100, energyDate:'',
   // 每日任务
-  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
+  tasks:{date:'',ids:[],progress:{},wordSeen:{},claimed:false},
+  relations:{queen:0,huafei:0,aunt:0}, branchFlags:{}, chapterDone:{},
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
@@ -1210,7 +1215,7 @@ function save(){
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; if(!S.reviews)S.reviews={}; migrateReviewSchedule(); try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; if(!S.relations)S.relations={queen:0,huafei:0,aunt:0}; if(!S.branchFlags)S.branchFlags={}; if(!S.chapterDone)S.chapterDone={}; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; if(!S.reviews)S.reviews={}; migrateReviewSchedule(); try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -1221,6 +1226,7 @@ function markWrong(w){
   try{
     S.wrongs[w]=(S.wrongs[w]||0)+1;
   }catch(e){ S.wrongs={}; S.wrongs[w]=1; }
+  taskLearnWord(w);
   recordLearning(w,false);
   save();
 }
@@ -1272,7 +1278,7 @@ function toggleFav(){
   var w=$(ui.sWord).textContent; if(!w) return;
   try{
     if(S.favs[w]){ delete S.favs[w]; }
-    else{ S.favs[w]=1; }
+    else{ S.favs[w]=1; taskInc('favorite'); }
   }catch(e){ S.favs={}; S.favs[w]=1; }
   save();
   renderFavBtn(w);
@@ -1439,26 +1445,28 @@ function todayStr(){
   return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 }
 function initTasks(){
-  if(!S.tasks) S.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
+  if(!S.tasks) S.tasks={date:'',ids:[],progress:{},wordSeen:{},claimed:false};
   var t=todayStr();
-  if(S.tasks.date!==t){
-    S.tasks={date:t,done:[0,0,0],claimed:[0,0,0]};
+  if(S.tasks.date!==t || !Array.isArray(S.tasks.ids) || !S.tasks.progress){
+    var seed=0; for(var i=0;i<t.length;i++) seed=(seed*31+t.charCodeAt(i))>>>0;
+    function dailySlot(offset,len){var x=(seed+Math.imul(offset+1,0x9e3779b9))>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;return(x>>>0)%len;}
+    var wordIds=['words10','words15','words20'],rightIds=['correct8','correct10','correct12'];
+    var focusIds=S.chapter>=STORY.length?['streak5','streak7','favorite1']:['streak5','streak7','chapter1','favorite1'];
+    S.tasks={date:t,ids:[wordIds[dailySlot(0,wordIds.length)],rightIds[dailySlot(1,rightIds.length)],focusIds[dailySlot(2,focusIds.length)]],progress:{words:0,correct:0,streak:0,chapter:0,favorite:0},wordSeen:{},claimed:false};
     save();
   }
+  if(!S.tasks.wordSeen)S.tasks.wordSeen={};
 }
+var TASK_POOL={words10:{label:'新识 10 个词',target:10,key:'words'},words15:{label:'新识 15 个词',target:15,key:'words'},words20:{label:'新识 20 个词',target:20,key:'words'},correct8:{label:'答对 8 题',target:8,key:'correct'},correct10:{label:'答对 10 题',target:10,key:'correct'},correct12:{label:'答对 12 题',target:12,key:'correct'},streak5:{label:'取得 5 题连胜',target:5,key:'streak'},streak7:{label:'取得 7 题连胜',target:7,key:'streak'},chapter1:{label:'完成 1 章宫闱剧情',target:1,key:'chapter'},favorite1:{label:'收藏 1 个重点词',target:1,key:'favorite'}};
 function getTasks(){
   initTasks();
-  return [
-    {label:'背词 20 个', target:20, key:'words'},
-    {label:'答对 10 题', target:10, key:'correct'},
-    {label:'晋升 1 级', target:1, key:'promote'}
-  ];
+  return S.tasks.ids.map(function(id){return TASK_POOL[id];}).filter(Boolean);
 }
 function renderTasks(){
   var list=$('taskList'); if(!list) return;
   var tasks=getTasks(); var h=''; var allDone=true;
   for(var i=0;i<tasks.length;i++){
-    var t=tasks[i]; var done=S.tasks.done[i]||0; var pct=Math.min(100,Math.round(done/t.target*100));
+    var t=tasks[i]; var done=S.tasks.progress[t.key]||0; var pct=Math.min(100,Math.round(done/t.target*100));
     var finished=done>=t.target;
     if(!finished) allDone=false;
     h+='<div class="task-item">'+
@@ -1470,26 +1478,25 @@ function renderTasks(){
   list.innerHTML=h;
   var panel=$('taskPanel'); if(panel) panel.style.display='block';
   var reward=$('taskReward');
-  if(reward) reward.style.display=(allDone && !S.tasks.claimed[0])?'block':'none';
+  if(reward) reward.style.display=(allDone && !S.tasks.claimed)?'block':'none';
 }
 function claimTaskReward(){
-  S.tasks.claimed=[1,1,1];
+  if(S.tasks.claimed)return;
+  S.tasks.claimed=true;
   S.points+=30; save();
   toast('领取赏赐 +30 圣宠！');
   renderTasks(); renderRankBar();
 }
 function taskInc(key,n){
   initTasks();
-  var tasks=getTasks();
-  for(var i=0;i<tasks.length;i++){
-    if(tasks[i].key===key){
-      S.tasks.done[i]=(S.tasks.done[i]||0)+(n||1);
-      if(S.tasks.done[i]>tasks[i].target) S.tasks.done[i]=tasks[i].target;
-    }
-  }
+  if(typeof S.tasks.progress[key]!=='number')S.tasks.progress[key]=0;
+  S.tasks.progress[key]+=(n||1);
+  if(key==='correct')S.tasks.progress.streak=Math.max(S.tasks.progress.streak||0,S.streak||0);
+  getTasks().forEach(function(t){if(t.key===key)S.tasks.progress[key]=Math.min(t.target,S.tasks.progress[key]);if(t.key==='streak')S.tasks.progress.streak=Math.min(t.target,S.tasks.progress.streak||0);});
   save();
   renderTasks();
 }
+function taskLearnWord(word){if(!word)return;initTasks();if(S.tasks.wordSeen[word])return;S.tasks.wordSeen[word]=1;taskInc('words');}
 function toast(msg){
   var t=$(ui.toast);
   t.textContent=msg; t.classList.add('show');
@@ -1597,7 +1604,9 @@ function renderHomeDashboard(){
   var r=S.rank||0;
   var he=$('homeEnergy'); if(he) he.textContent=S.energy;
   var hp=$('homeFavor'); if(hp) hp.textContent=S.points;
-  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.done&&S.tasks.done[0])||0;
+  var wordTask=getTasks().filter(function(t){return t.key==='words';})[0];
+  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.progress&&S.tasks.progress.words)||0;
+  var twg=$('todayWordGoal'); if(twg) twg.textContent=wordTask?wordTask.target:20;
   var mastered=$('homeMastered'); if(mastered) mastered.textContent=masteredWords().length;
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
@@ -1701,7 +1710,7 @@ function openSheet(key){
   $(ui.sheetMask).style.display='block';
   $(ui.sheet).style.display='block';
   renderFavBtn(key);
-  try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
+  try{ if(!S.seen[key])S.seen[key]=1; taskLearnWord(key); save(); }catch(e){}
 }
 function speakSheet(){
   var w=$(ui.sWord).textContent; if(w) speak(w);
@@ -2065,7 +2074,7 @@ function answerQuiz(idx){
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
     var gain=10*(S.streak>1?2:1);
     S.points+=gain;
-    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    try{ if(!S.seen[it.word])S.seen[it.word]=1; taskLearnWord(it.word); }catch(e){}
     recordLearning(it.word,true);
     taskInc('correct');
     toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
@@ -2111,7 +2120,7 @@ function answerSpell(timedOut){
     S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak;
     var gain=20*(S.streak>1?2:1);
     S.points+=gain;
-    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
+    try{ if(!S.seen[it.word])S.seen[it.word]=1; taskLearnWord(it.word); }catch(e){}
     recordLearning(it.word,true);
     taskInc('correct');
     toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
@@ -2340,6 +2349,7 @@ function answerBattle(idx){
     cur.hp-=dmg;
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
     S.points+=12;
+    taskLearnWord(cur.q.word); recordLearning(cur.q.word,true);
     var cn=comboName(cur.combo);
     cur.log+='第'+cur.turn+'回合：你「'+(cn||'见招拆招')+'」命中，'+cur.enemy+' -'+dmg+(cur.combo>=2?'（连击×'+cur.combo+'）':'')+'\n';
     dmgFloat($('enemyHp'),'-'+dmg,'hit');
@@ -2441,6 +2451,9 @@ function answerChoice(idx){
     }
   }
   S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
+  var branchKey='chapter'+(S.chapter+1),firstChoice=!S.branchFlags[branchKey];
+  S.branchFlags[branchKey]=o.k;
+  if(S.chapter===1&&firstChoice)adjustRelation('huafei',isGood?-8:5);
   addRecord('choice','作出剧情抉择',o.t+(isGood?' · 判断得当':' · 判断失当'),'choice-'+S.chapter+'-'+S.verdict.length,isGood);
   if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('抉择正确 +20 圣宠'); }
   else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
@@ -2490,6 +2503,9 @@ function answerCase(idx){
       $(ui.caseOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
     }
   }
+  var branchKey='chapter'+(S.chapter+1),firstChoice=!S.branchFlags[branchKey];
+  S.branchFlags[branchKey]=isGood?'truth':'misread';
+  if(S.chapter===2&&firstChoice)adjustRelation('queen',isGood?8:-5);
   if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('查明真相 +25 圣宠'); }
   else{ S.points=Math.max(0,S.points-12); S.wrong++; S.streak=0; toast('误判了 -12 圣宠'); }
   save();
@@ -2547,6 +2563,7 @@ function closeOnboarding(){
   toast('从首页红色按钮开始，玩法会随剧情自动出现');
 }
 function openStory(){
+  var echo=$('branchEcho');if(echo){echo.textContent='';echo.classList.remove('show');}
   if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
   var ch=STORY[S.chapter];
   showPage('page-story');
@@ -2562,6 +2579,7 @@ function openStory(){
   }else if(cb){ cb.style.display='none'; }
   $(ui.storyTitle).textContent=ch.title;
   $(ui.storySub).textContent=ch.sub;
+  if(echo){var echoText='';if(S.chapter===2&&S.branchFlags.chapter2==='insist')echoText='前情回响：你没有向华妃退让。她虽记恨，却也不敢再把你当作任人拿捏的新人。';if(S.chapter===2&&S.branchFlags.chapter2==='let')echoText='前情回响：你把侍寝机会让了出去。宫人看你的眼神，已经比昨日多了几分轻慢。';echo.textContent=echoText;echo.classList.toggle('show',!!echoText);}
   $(ui.btnStoryNext).style.display='block';
   $(ui.storyHint).textContent='';
   var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
@@ -2588,7 +2606,7 @@ function storyNext(){
     return;
   }
   // 场景走完 → 按章内顺序推进未完成事件
-  var done=ch._done||{};
+  var done=S.chapterDone[S.chapter]||{};
   if(ch.quiz>0 && !done.quiz){ startQuiz(ch); return; }
   if(ch.battle && !done.battle){ startBattle(ch.battle); return; }
   if(ch.choice && !done.choice){ showChoice(ch.choice); return; }
@@ -2599,21 +2617,22 @@ function afterGate(ok){
   if(S.chapter>=STORY.length){ openStory(); return; }
   var ch=STORY[S.chapter];
   // 按章内顺序推进：quiz → battle → choice → case → reward
-  var done=ch._done||{};
-  if(ch.quiz>0 && !done.quiz){ done.quiz=true; ch._done=done; if(ok){ openStory(); return; } }
-  if(ch.battle && !done.battle){ done.battle=true; ch._done=done; openStory(); return; }
-  if(ch.choice && !done.choice){ done.choice=true; ch._done=done; openStory(); return; }
-  if(ch.case && !done.case){ done.case=true; ch._done=done; openStory(); return; }
+  var done=S.chapterDone[S.chapter]||{};
+  if(ch.quiz>0 && !done.quiz){ done.quiz=true; S.chapterDone[S.chapter]=done; save(); if(ok){ openStory(); return; } }
+  if(ch.battle && !done.battle){ done.battle=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
+  if(ch.choice && !done.choice){ done.choice=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
+  if(ch.case && !done.case){ done.case=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
   // 全部完成 → 晋升
+  if(S.chapter===0&&!S.branchFlags.chapter1){S.branchFlags.chapter1='admitted';adjustRelation('aunt',8);}
   if(S.rank<ch.reward) promote(ch.reward);
-  else { addRecord('chapter','完成章节 · '+ch.title,'本章剧情与考校已经完成','chapter-'+S.chapter,true); S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
+  else { taskInc('chapter'); addRecord('chapter','完成章节 · '+ch.title,'本章剧情与考校已经完成','chapter-'+S.chapter,true); delete S.chapterDone[S.chapter]; S.chapter++; S.storyIdx=0; S.step=0; save(); openStory(); }
 }
 function promote(rank){
   S.rank=rank;
   addRecord('rank','获赐第 '+rank+' 枚凤印','晋位「'+RANKS[rank].n+'」 · '+RANKS[rank].s,'rank-'+rank,true);
-  taskInc('promote');
+  taskInc('chapter');
   var ch=STORY[S.chapter];
-  if(ch._done) delete ch._done;
+  delete S.chapterDone[S.chapter];
   showPage('page-reward');
   $(ui.rewardFrom).textContent='获赐第 '+rank+' 枚凤印 · 晋位大典';
   $(ui.rewardRank).textContent=RANKS[rank].n;
@@ -2714,7 +2733,11 @@ function ensureHistoricalRecords(){
   (S.verdict||[]).forEach(function(v,i){addRecord('choice','剧情抉择',v.t,'legacy-choice-'+i,v.good);});
   save();
 }
+function adjustRelation(id,delta){if(!S.relations)S.relations={queen:0,huafei:0,aunt:0};S.relations[id]=Math.max(-100,Math.min(100,(S.relations[id]||0)+delta));}
+function relationLabel(v){if(v>=60)return'倚重';if(v>=25)return'亲近';if(v>5)return'留意';if(v<=-60)return'死敌';if(v<=-25)return'敌视';if(v<-5)return'戒备';return'平淡';}
+function renderRelations(){var list=$('relationList');if(!list)return;var people=[['queen','皇后'],['huafei','华妃'],['aunt','掌事姑姑']];list.innerHTML=people.map(function(p){var v=(S.relations&&S.relations[p[0]])||0;return'<div class="relation-item"><span class="relation-name">'+p[1]+'</span><span class="relation-track"><i style="width:'+Math.max(4,Math.min(100,(v+100)/2))+'%"></i></span><span class="relation-state">'+relationLabel(v)+'</span></div>';}).join('');}
 function renderRecord(){
+  renderRelations();
   var list=$(ui.recList);
   ensureHistoricalRecords();
   if(!S.records.length){
@@ -2761,6 +2784,9 @@ function decodeSave(code){
     if(!o.covered) o.covered={};
     if(!o.records) o.records=[];
     if(!o.reviews) o.reviews={};
+    if(!o.relations)o.relations={queen:0,huafei:0,aunt:0};
+    if(!o.branchFlags)o.branchFlags={};
+    if(!o.chapterDone)o.chapterDone={};
     if(typeof o.energy!=='number') o.energy=100;
     return {ok:true,data:o};
   }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
@@ -2930,6 +2956,7 @@ function cloudPull(){
       if(cloudT>localT){
         /* 云端新 → 接管 */
         S=payload.data||S;
+        if(!S.relations)S.relations={queen:0,huafei:0,aunt:0};if(!S.branchFlags)S.branchFlags={};if(!S.chapterDone)S.chapterDone={};if(!S.wrongs)S.wrongs={};if(!S.favs)S.favs={};if(!S.learning)S.learning={};if(!S.covered)S.covered={};if(!S.records)S.records=[];if(!S.reviews)S.reviews={};migrateReviewSchedule();initEnergy();initTasks();
         try{ window.S=S; }catch(e){}
         c.savedAt=cloudT; c.lastSync=Date.now(); c.lastErr='';
         saveCloudCfg();
@@ -3092,7 +3119,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=113').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=114').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3104,8 +3131,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v112')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v112','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v114')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v114','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
@@ -3163,6 +3190,9 @@ window.renderRankBar=renderRankBar;
 window.libTab=libTab;
 window.startReview=startReview;
 window.toggleFav=toggleFav;
+window.claimTaskReward=claimTaskReward;
+window.speak=speak;
+window.cloudNow=cloudNow;
 window.markWrong=markWrong;
 window.markRight=markRight;
 window.wrongWords=wrongWords;
