@@ -881,6 +881,7 @@ body{background:#241816}
     <div class="sv-title" id="saveTitle">导出存档</div>
     <div class="sv-sub" id="saveSub"></div>
     <textarea id="saveCode" placeholder="此处显示/粘贴存档密文"></textarea>
+    <input id="saveFile" type="file" accept=".txt,text/plain" style="display:none;width:100%;margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fffaf1">
     <div class="sv-actions">
       <button class="btn gold" id="saveCopyBtn">复制密文</button>
       <button class="btn ghost" id="saveDownBtn" style="display:none">下载文件</button>
@@ -2710,12 +2711,13 @@ function decodeSave(code){
 }
 function openExport(){
   var code=encodeSave();
-  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), file=$('saveFile'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
   if(!m) return;
   t.textContent='🔐 导出存档';
   s.textContent='将密文发给新设备（微信/文件传输），导入即可恢复进度';
   ta.value=code;
   ta.readOnly=true;
+  if(file){file.style.display='none';file.value='';file.onchange=null;}
   cp.style.display='';
   cp.textContent='复制密文';
   cp.onclick=function(){ copyCode(ta); };
@@ -2726,12 +2728,22 @@ function openExport(){
   m.style.display='block';
 }
 function openImport(){
-  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), file=$('saveFile'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
   if(!m) return;
   t.textContent='📥 导入存档';
   s.textContent='粘贴导出的存档密文，将覆盖当前进度';
   ta.value='';
   ta.readOnly=false;
+  if(file){
+    file.style.display='block';file.value='';
+    file.onchange=function(){
+      var chosen=file.files&&file.files[0];if(!chosen)return;
+      var reader=new FileReader();
+      reader.onload=function(){ta.value=String(reader.result||'').trim();toast('已读取存档文件，请点“确认导入”');};
+      reader.onerror=function(){toast('文件读取失败，请改用复制密文');};
+      reader.readAsText(chosen,'utf-8');
+    };
+  }
   cp.style.display='';
   cp.textContent='确认导入';
   cp.onclick=doImport;
@@ -3022,7 +3034,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=116').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=117').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3034,8 +3046,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v116')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v116','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v117')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v117','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
