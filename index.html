@@ -550,7 +550,7 @@ body{background:#241816}
 #page-story .chap-sub{font-size:11px;letter-spacing:2px;color:#ad843e;margin-bottom:13px}
 #page-story .panel{border:1px solid #dfc9a3;border-radius:18px;background:rgba(255,253,248,.82);padding:23px 20px;box-shadow:0 10px 28px rgba(77,47,28,.06)}
 #page-story .panel:before{left:22px;right:22px;background:linear-gradient(90deg,transparent,#c3943e,transparent)}
-#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:justify}
+#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:left;word-break:normal;overflow-wrap:break-word}
 #page-story #btnStoryNext{height:54px;border:1px solid #84241f;border-radius:15px;background:linear-gradient(135deg,#a7352b,#8d281f);box-shadow:0 9px 18px rgba(137,39,31,.18);font-family:"Songti SC",serif;font-size:17px;letter-spacing:5px}
 
 /* 考校：高专注单词宫笺 */
@@ -1108,16 +1108,17 @@ var STORY_EVENT_TYPES=[
   {name:'织造密纹',sub:'锦缎经纬，织着无人敢说的话',place:'江南织造送来贡缎，纹样之间藏着英文标记与求救线索。',end:'零散词义连成一封藏在锦缎里的信。'},
   {name:'廷前审问',sub:'证词反复，唯有词义不能作假',place:'内廷会审开始，三份证词都在关键位置留下英文原词。',end:'你校正证词，找到三份供状中唯一的矛盾。'}
 ];
-function storyMeaning(w){
-  var it=VOCAB_MAP[w]; if(!it)return '待查词义';
-  var p=extractPOS(it.def),mean=(p.mean||it.def||'').replace(/[；;]/g,'，');
-  return mean.length>22?mean.slice(0,22)+'…':mean;
-}
 function makeStoryScene(words,event,sceneNo){
-  var joins=['第一处写着','紧接着出现','另一枚朱批是','最后的暗记为'];
-  var clues=words.map(function(w,i){return joins[i]+' '+w+'，指向“'+storyMeaning(w)+'”';}).join('；');
-  var leads=[event.place,'你翻到下一页，前后的证词忽然有了关联。','掌事太监催问不休，你只能继续往下查。','殿外脚步渐近，有人显然不愿你读完卷宗。','你与上一页对照，发现有人故意混淆词义。','天色将明，这是卷宗中最后一组关键记号。'];
-  return {t:(leads[sceneNo]||event.place)+clues+'。'+event.end,w:words};
+  var marks=words.join('、');
+  var leads=[
+    event.place+'卷宗首页被朱笔圈出 '+marks+' 几个英文记号。你没有急着下结论，只把它们逐一誊在纸上。',
+    '你翻到下一页，发现 '+marks+' 被同一根红线相连。前后的证词开始有了关联。',
+    '掌事太监催问不休。你按住卷宗，在被刮去的墨迹下辨出 '+marks+'。这些记号绝不会无缘无故同时出现。',
+    '殿外脚步渐近。有人把 '+marks+' 藏进夹页，显然不愿你读完整份卷宗。',
+    '你与上一页对照，发现 '+marks+' 的位置被人动过。做手脚的人终于露出了一点破绽。',
+    '天色将明，最后一页只剩 '+marks+' 几个关键记号。你将它们与先前证词合在一处，真正的线索终于成形。'
+  ];
+  return {t:leads[sceneNo]||event.place,w:words};
 }
 function buildFullVocabStory(){
   var fixed={};
@@ -1680,18 +1681,16 @@ function openManual(section){
 
 /* ---------- 剧情词高亮 ---------- */
 function linkWords(text, words, cls){
-  var out=text;
-  (words||[]).forEach(function(w){
-    var key=String(w).toLowerCase();
-    if(!VOCAB_MAP[key]) return;
-    var esc=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    var re=new RegExp('('+esc+')','i');
-    var spanRe=new RegExp('class="gword[^"]*"[^>]*>'+esc+'<','i');
-    if(out.match(re) && !spanRe.test(out)){
-      out=out.replace(re,'<span class="gword '+cls+'" data-w="'+key+'">$1</span>');
-    }
+  var list=(words||[]).filter(function(w){return VOCAB_MAP[String(w).toLowerCase()];});
+  if(!list.length)return text;
+  var keys={};
+  list.forEach(function(w){keys[String(w).toLowerCase()]=1;});
+  var alternatives=list.slice().sort(function(a,b){return b.length-a.length;}).map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');});
+  var re=new RegExp('('+alternatives.join('|')+')','gi');
+  return text.replace(re,function(found){
+    var key=String(found).toLowerCase();
+    return keys[key]?'<span class="gword '+(cls||'')+'" data-w="'+key+'">'+found+'</span>':found;
   });
-  return out;
 }
 function bindWordClicks(root){
   var spans=root?root.querySelectorAll('.gword'):document.querySelectorAll('.gword');
@@ -2578,10 +2577,12 @@ function openStory(){
     $('charQuote').textContent='"'+c.quote+'"';
   }else if(cb){ cb.style.display='none'; }
   $(ui.storyTitle).textContent=ch.title;
-  $(ui.storySub).textContent=ch.sub;
+  var sceneCount=(ch.scenes||[]).length;
+  var scenePos=Math.min(S.storyIdx+1,sceneCount||1);
+  $(ui.storySub).textContent=ch.sub+(ch.generated?' · 第 '+scenePos+' / '+sceneCount+' 幕':'');
   if(echo){var echoText='';if(S.chapter===2&&S.branchFlags.chapter2==='insist')echoText='前情回响：你没有向华妃退让。她虽记恨，却也不敢再把你当作任人拿捏的新人。';if(S.chapter===2&&S.branchFlags.chapter2==='let')echoText='前情回响：你把侍寝机会让了出去。宫人看你的眼神，已经比昨日多了几分轻慢。';echo.textContent=echoText;echo.classList.toggle('show',!!echoText);}
   $(ui.btnStoryNext).style.display='block';
-  $(ui.storyHint).textContent='';
+  $(ui.storyHint).textContent='点击红色英文查看释义和发音 · 正文不会直接公布答案';
   var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
   $(ui.storyText).innerHTML=linkWords(s.t,s.w);
   if(!S.covered)S.covered={};
@@ -2593,7 +2594,7 @@ function openStory(){
     $(ui.storyText).innerHTML='<p class="p-text">'+(ch.gateText||'')+'</p>';
     $(ui.btnStoryNext).textContent=ch.quiz>0?'开始考校':'进入宫闱事件';
   }else{
-    $(ui.btnStoryNext).textContent='继续';
+    $(ui.btnStoryNext).textContent='继续查阅下一页';
   }
   setTab('story');
 }
@@ -3131,8 +3132,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v114')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v114','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v115')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v115','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
