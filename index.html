@@ -836,17 +836,12 @@ body{background:#241816}
         </div>
       </div>
       <div class="panel"><h2>存档与备份 <span class="en">换设备时使用</span></h2>
-        <div class="hint" style="text-align:left;margin:0 0 12px">同一台手机会自动保存，不换设备可以不用设置。换手机前建议先导出存档。</div>
+        <div class="hint" style="text-align:left;margin:0 0 12px">同一台手机会自动保存，无需注册或配置账号。换手机前请先导出存档，再在新设备导入。</div>
         <div class="save-btn-row">
           <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
           <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
         </div>
-        <div class="cloud-status" id="cloudStatus">☁️ 云同步未开启</div>
-        <details class="cloud-advanced">
-          <summary>高级备份 · 多设备云同步（可选）</summary>
-          <div class="cloud-explain">适合经常换手机或多设备使用。首次配置需要 GitHub；普通用户只用上面的导出、导入即可。</div>
-          <button class="btn ghost" onclick="openCloudCfg()">打开云同步设置</button>
-        </details>
+        <div class="hint" style="text-align:left;margin:12px 0 0">建议把导出的存档文件保存到百度网盘、微信文件传输助手或手机文件夹中。</div>
       </div>
       <div class="panel"><h2>帮助与重置 <span class="en">其他设置</span></h2>
         <a href="manual.html" class="btn ghost" style="text-decoration:none;text-align:center;display:block">📖 游戏说明</a>
@@ -894,85 +889,6 @@ body{background:#241816}
     <div class="sv-tip" id="saveTip"></div>
   </div>
 
-  <!-- V6.3 云同步配置弹层 -->
-  <div class="sheet-mask" id="cloudMask" onclick="closeCloudCfg()"></div>
-  <div class="save-modal" id="cloudModal">
-    <div class="sv-title">☁️ 云端同步配置</div>
-    <div class="sv-sub">自动上传/拉取进度，多设备无缝续玩</div>
-    <input class="cloud-code" id="cloudCode" placeholder="自动生成存档码" autocomplete="off" spellcheck="false">
-    <div class="sv-sub" style="margin-top:0">⬆️ 你的存档码（换设备时把它抄到新设备即可接管）</div>
-    <div class="cloud-row">
-      <label>GitHub 用户名</label>
-      <input id="cfgOwner" placeholder="如 jianyangdu3-ux">
-    </div>
-    <div class="cloud-row">
-      <label>私有仓库名（用来存存档）</label>
-      <input id="cfgRepo" placeholder="如 fengyin-saves">
-    </div>
-    <div class="cloud-row">
-      <label>Token（只勾选该仓库 Contents 读写权限）</label>
-      <input id="cfgToken" type="password" placeholder="github_pat_xxx">
-      <button class="btn ghost" onclick="saveCloudCfgForm()">保存配置</button>
-    </div>
-    <div class="cloud-guide" id="cloudGuide">
-      <div class="guide-title">三步开通（约 5 分钟）</div>
-      <div class="guide-step">
-        <span class="guide-num">1</span>
-        <span class="guide-txt">新建<strong>私有</strong>仓库，名字随意</span>
-        <a class="guide-link" href="https://github.com/new" target="_blank" rel="noopener">去建仓库 ↗</a>
-      </div>
-      <div class="guide-step">
-        <span class="guide-num">2</span>
-        <span class="guide-txt">创建 Token，只勾该仓库 <strong>Contents: Read and write</strong></span>
-        <a class="guide-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">去建 Token ↗</a>
-      </div>
-      <div class="guide-step">
-        <span class="guide-num">3</span>
-        <span class="guide-txt">填好上方三项，点「保存配置」自动校验</span>
-        <span class="guide-done">已保存 ✓</span>
-      </div>
-      <details class="cloud-details">
-        <summary>每步怎么点？照着做就行</summary>
-        <div>
-          <div class="step-sub"><b>第 1 步 · 建私有仓库</b>（github.com/new）</div>
-          ① Repository name 填 <b>fengyin-saves</b>（名字随意）<br>
-          ② 可见性选 <b>Private（私有）</b>，千万别选 Public<br>
-          ③ 其余不用动，点 <b>Create repository</b> 完成
-          <div class="step-sub"><b>第 2 步 · 建 Token（只给这一个仓库开权限）</b></div>
-          ① 打开上面「去建 Token」链接，用 GitHub 账号登录<br>
-          ② Token name 随意填；Expiration 选 <b>90 天</b>（到期可再建）或 No expiration<br>
-          ③ Repository access 选 <b>Only select repositories</b> → 勾选刚建的仓库<br>
-          ④ Permissions → Repository permissions → <b>Contents</b> → 选 <b>Read and write</b><br>
-          ⑤ 点最下方 <b>Generate token</b> → 立刻复制（<b>只显示这一次！</b>）
-          <div class="step-sub"><b>第 3 步 · 回来粘贴保存</b></div>
-          把 用户名 / 仓库名 / Token 填进上方三个框 → 点「保存配置」→ 看到"配置已保存"即成功
-        </div>
-      </details>
-      <details class="cloud-details">
-        <summary>📱 换手机 / 换电脑怎么接着玩？</summary>
-        <div>
-          <b>旧设备：</b>打开这个配置弹层，记下上方「存档码」（如 A3K9XQ2P）<br>
-          <b>新设备：</b>打开游戏 → 云端配置 → 填同样的三项配置 + 输入旧存档码 → 保存 → 自动拉回进度 ✓<br>
-          <div class="tip-inline">存档码相当于你这份存档的"暗号"，两设备填同一个码 + 同一套 GitHub 配置，就是同一份存档。</div>
-        </div>
-      </details>
-      <details class="cloud-details">
-        <summary>❓ 常见问题</summary>
-        <div>
-          <b>Token 安全吗？</b>它只是"开这一个仓库"的钥匙，只勾了 Contents 读写，碰不到你其他仓库和账号。<br>
-          <b>Token 没复制就关了页面？</b>去 GitHub 重新生成一个，游戏里换上新的保存即可。<br>
-          <b>存档码忘了？</b>随时打开这个弹层就能看到，建议抄到备忘录。<br>
-          <b>两台设备同时玩？</b>以时间最近的存档为准，打开游戏会自动比对并弹窗提示，放心点。<br>
-          <b>不想同步了？</b>清空三项配置保存即可断开，本地进度不受影响。
-        </div>
-      </details>
-    </div>
-    <div class="cloud-actions">
-      <button class="btn gold" onclick="cloudNow('up')">⬆️ 立即上传</button>
-      <button class="btn ghost" onclick="cloudNow('down')">⬇️ 云端恢复</button>
-    </div>
-    <div class="sv-tip" id="cloudTip"></div>
-  </div>
   <div class="toast" id="toast"></div>
 </div>
 
@@ -2546,7 +2462,7 @@ function renderOnboarding(step){
     {icon:'启',title:'先从首页开始',text:'点击首页中央的红色“开始／继续深宫闯关”，跟着剧情往下走即可，不用自己寻找关卡。',demo:'主线顺序：读剧情 → 遇单词 → 参加考校 → 获得凤印'},
     {icon:'词',title:'剧情里的词可以点',text:'故事中带红色虚线的英文词都能点击，随时查看释义、发音和例句。',demo:'例如：<span class="demo-word">careful</span>　点一下就能查，不会打断剧情'},
     {icon:'斗',title:'宫斗玩法会自动出现',text:'斗法、抉择、查案和飞花令都由章节剧情触发，不需要另找功能键。看到“继续”就跟着往下走。',demo:'这些玩法不是独立入口，推进剧情后会在该出现的时候出现'},
-    {icon:'册',title:'忘了随时回来查',text:'底部“复习”查看今日待复习和错词；“宫册”里有完整玩法说明、存档备份和可选的云端同步。',demo:'首页右上角“？”可重看说明　·　进度会自动保存在本机'}
+    {icon:'册',title:'忘了随时回来查',text:'底部“复习”查看今日待复习和错词；“宫册”里有完整玩法说明，以及换手机时使用的存档导出与导入。',demo:'首页右上角“？”可重看说明　·　进度会自动保存在本机'}
   ];
   var d=data[Math.max(0,Math.min(step,data.length-1))];
   var mask=document.getElementById('onboardMask');
@@ -2906,8 +2822,7 @@ function cloudApi(method,url,body){
   if(body) opt.body=JSON.stringify(body);
   return fetch('https://api.github.com'+url,opt);
 }
-/* 关闭页面时兜底同步一次 */
-try{ window.addEventListener('pagehide',function(){ if(cloudReady()&&!_syncing){ _doUpload(); } }); }catch(e){}
+/* V11.6：面向普通用户停用 GitHub Token 同步，不再注册离页上传。 */
 function cloudUpload(){
   if(typeof fetch!=='function') return Promise.resolve(false);
   if(!cloudReady()||_syncing) return Promise.resolve(false);
@@ -2976,11 +2891,7 @@ function cloudPull(){
     .finally(function(){ _syncing=false; });
 }
 function scheduleAutoSync(){
-  try{
-    if(!cloudReady()) return;
-    if(_autoSyncT) clearTimeout(_autoSyncT);
-    _autoSyncT=setTimeout(function(){ _autoSyncT=null; cloudUpload(); },2500);
-  }catch(e){}
+  /* 已停用：存档只保存在本机，跨设备使用导出/导入。 */
 }
 function renderCloudStatus(){
   var el=$('cloudStatus'); if(!el) return;
@@ -3093,17 +3004,8 @@ function init(){
   renderRankBar();
   renderLoveEntry();
   renderHeroBadge();
-  renderCloudStatus();
-  /* V6.3 云同步：打开自动拉取（云端新则接管刷新） */
-  cloudPull().then(function(pulled){
-    if(!pulled) return;
-    renderTasks();
-    renderRankBar();
-    renderLoveEntry();
-    renderHeroBadge();
-    renderLibrary('');
-    toast('已从云端恢复最新进度');
-  });
+  /* 清除旧版遗留的 GitHub 凭据，不影响任何学习进度。 */
+  try{ localStorage.removeItem('gd12_cloud'); }catch(e){}
   if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
     /* 有进度 → 首页按钮改为"继续" */
     var bs=$('btnStart'); if(bs) bs.textContent='继续深宫闯关';
@@ -3120,7 +3022,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=114').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=116').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3132,8 +3034,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v115')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v115','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v116')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v116','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
@@ -3164,16 +3066,6 @@ window.loveSelect=loveSelect;
 window.renderHeroBadge=renderHeroBadge;
 window.encodeSave=encodeSave;
 window.decodeSave=decodeSave;
-window.cloudCfg=cloudCfg;
-window.cloudReady=cloudReady;
-window.cloudUpload=cloudUpload;
-window.cloudPull=cloudPull;
-window.openCloudCfg=openCloudCfg;
-window.closeCloudCfg=closeCloudCfg;
-window.saveCloudCfgForm=saveCloudCfgForm;
-window.genCode=genCode;
-window.saveCloudCfg=saveCloudCfg;
-window.renderCloudStatus=renderCloudStatus;
 window.openExport=openExport;
 window.openImport=openImport;
 window.closeSaveModal=closeSaveModal;
@@ -3193,7 +3085,6 @@ window.startReview=startReview;
 window.toggleFav=toggleFav;
 window.claimTaskReward=claimTaskReward;
 window.speak=speak;
-window.cloudNow=cloudNow;
 window.markWrong=markWrong;
 window.markRight=markRight;
 window.wrongWords=wrongWords;
