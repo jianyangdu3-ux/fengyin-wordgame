@@ -1,4 +1,4 @@
-const CACHE_NAME='fengyin-v16-manual-100-2';
+const CACHE_NAME='fengyin-v17-full-231-1';
 const CORE=[
   './','./index.html','./vocab.js','./semantic-plan.js','./manual.html','./manifest.webmanifest',
   './assets/app-icon.svg','./assets/char-maid.webp','./assets/char-steward.webp',
