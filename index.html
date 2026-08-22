@@ -850,8 +850,8 @@ body{background:#241816}
   <div class="toast" id="toast"></div>
 </div>
 
-<script src="vocab.js?v=160"></script>
-<script src="semantic-plan.js?v=160"></script>
+<script src="vocab.js?v=161"></script>
+<script src="semantic-plan.js?v=161"></script>
 <script>
 (function(){
 "use strict";
@@ -2518,7 +2518,7 @@ function openStory(){
   $(ui.storyHint).textContent='';
   var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
   var sceneText=s.t||semanticSceneText(s);
-  $(ui.storyText).textContent=sceneText;
+  $(ui.storyText).innerHTML=linkWords(sceneText,s.w);
   renderSceneWords(ch.generated?s.w:[]);
   if(!S.covered)S.covered={};
   var coverageChanged=false;
@@ -2888,7 +2888,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=160').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=161').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
