@@ -4949,7 +4949,7 @@ window.VOCAB = [
   {word:'thermometer', phonetic:'/θə\'mɔmitə/', def:'n.温度计'},
   {word:'these', phonetic:'/ði:z/', def:'pron.&a.[this的复数]这些；这些人(东西)'},
   {word:'thesis', phonetic:'/\'θi:sis/', def:'n.(pl.theses) 论文;论题;论点'},
-  {word:'they', phonetic:'/ðei/', def:'商店(一般人经常用复数they来指一家商店)'},
+  {word:'they', phonetic:'/ðei/', def:'pron.他们；她们；它们'},
   {word:'thick', phonetic:'/θik/', def:'a.厚的，粗的，稠的，浓的  ad.厚，浓，密'},
   {word:'thief', phonetic:'/θi:f/', def:'n.(thieves)贼；小偷'},
   {word:'thigh', phonetic:'/θai/', def:'n.大腿；股骨'},

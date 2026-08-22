@@ -59,6 +59,12 @@ main{flex:1;padding:14px 14px 20px;overflow-y:auto;overflow-x:hidden}
 .p-text{font-size:14.5px;line-height:2;color:var(--ink);text-indent:2em}
 .gword{color:var(--red);border-bottom:1px dashed var(--red2);cursor:pointer;font-weight:500}
 .gword:active{background:var(--gold2)}
+.scene-words{margin-top:14px;padding-top:12px;border-top:1px solid rgba(157,50,43,.16)}
+.scene-words-title{font-size:12px;color:#9b765c;letter-spacing:2px;margin-bottom:9px;text-align:center}
+.scene-word-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.scene-word-chip{display:inline-flex;align-items:center;min-height:34px;padding:6px 12px;border:1px solid rgba(157,50,43,.28);border-radius:999px;background:#fffaf4;color:var(--red);font:600 14px/1.2 Georgia,serif;box-shadow:0 3px 9px rgba(90,42,29,.05);cursor:pointer}
+.scene-word-chip:before{content:'◆';font-size:6px;margin-right:7px;color:#c39951}
+.scene-word-chip:active{background:var(--gold2)}
 .btn{
   display:block;width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;letter-spacing:2px;
   background:var(--red);color:#F5E9C9;cursor:pointer;margin-top:12px;
@@ -165,54 +171,8 @@ nav.tabbar{
 .save-modal .sv-tip b{color:var(--gold)}
 .save-btn-row{display:flex;gap:8px;margin-bottom:12px}
 .save-btn-row .btn{flex:1;margin:0}
-/* V6.3 云同步 */
-.cloud-status{
-  background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px;
-  font-size:12.5px;color:var(--ink2);line-height:1.8;
-}
-.cloud-status b{color:var(--red)}
-.cloud-status .ok{color:var(--ok)}
-.cloud-status .off{color:var(--ink2)}
-.cloud-advanced{margin-top:10px;border:1px solid var(--line);border-radius:13px;background:#fffaf1;overflow:hidden}.cloud-advanced summary{padding:13px 14px;color:#7d4d28;font-size:13px;font-weight:600;cursor:pointer;list-style:none}.cloud-advanced summary:after{content:'＋';float:right;color:#a77b31}.cloud-advanced[open] summary:after{content:'－'}.cloud-advanced .cloud-explain{padding:0 14px 12px;color:var(--ink2);font-size:12px;line-height:1.75}.cloud-advanced .btn{margin:0 12px 12px;width:calc(100% - 24px)}
-.cloud-code{
-  width:100%;box-sizing:border-box;
-  font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;letter-spacing:5px;color:var(--red);
-  background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px;text-align:center;margin:8px 0;
-  user-select:all;cursor:text;
-}
-.cloud-code::placeholder{font-size:13px;letter-spacing:1px;color:var(--ink2);opacity:.55}
-/* V6.5 云端三步引导 */
-.cloud-guide{border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0 12px;background:var(--bg-card)}
-.guide-title{font-size:12.5px;color:var(--gold);font-weight:500;margin-bottom:8px;letter-spacing:1px}
-.guide-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:8px}
-.guide-step:last-child{margin-bottom:0}
-.guide-num{
-  flex:0 0 18px;height:18px;border-radius:50%;background:var(--red);color:#F5E9C9;
-  font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:1px;
-}
-.guide-txt{flex:1;min-width:0}
-.guide-txt strong{color:var(--ink);font-weight:500}
-.guide-link{color:var(--gold);text-decoration:none;white-space:nowrap;border-bottom:1px dashed var(--gold);padding-bottom:1px}
-.guide-link:active{opacity:.7}
-.guide-done{color:var(--ok);white-space:nowrap;font-size:11.5px}
-/* V6.6 云端详细说明折叠区 */
-.cloud-details{margin-top:8px;border-top:1px dashed var(--line);padding-top:7px;font-size:12px;color:var(--ink2);line-height:1.75}
-.cloud-details summary{cursor:pointer;list-style:none;color:var(--ink);font-weight:500;margin-bottom:2px;user-select:none;font-size:12.5px}
-.cloud-details summary::-webkit-details-marker{display:none}
-.cloud-details summary::before{content:'▸ ';color:var(--gold)}
-.cloud-details[open] summary::before{content:'▾ '}
-.cloud-details b{color:var(--ink);font-weight:500}
-.cloud-details .step-sub{margin:5px 0 1px}
-.cloud-details .tip-inline{background:rgba(0,0,0,0.05);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:11.5px;line-height:1.65}
-.cloud-row{margin-bottom:10px}
-.cloud-row label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
-.cloud-row input{
-  width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:8px;
-  color:var(--ink);font-size:13px;padding:9px 10px;
-}
-.cloud-row .btn{width:100%;margin:0;margin-top:4px}
-.cloud-actions{display:flex;gap:8px;margin-top:4px}
-.cloud-actions .btn{flex:1;margin:0}
+.save-simple{background:#fffaf1;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:12px;color:var(--ink2);font-size:12.5px;line-height:1.75}
+.save-simple b{color:var(--ink)}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:120;max-width:330px;width:max-content;
   background:rgba(46,34,34,.92);color:#F5E9C9;font-size:13px;padding:9px 16px;border-radius:20px;
@@ -286,7 +246,6 @@ nav.tabbar{
 .hint{font-size:12px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.7}
 .task-panel{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;text-align:left}
 .task-title{font-size:13px;color:var(--red);font-weight:500;margin-bottom:8px;letter-spacing:1px}
-.task-title small{float:right;color:var(--ink2);font-family:inherit;font-size:10px;font-weight:400;letter-spacing:0}
 .task-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
 .task-item:last-child{border-bottom:none}
 .task-label{font-size:12px;color:var(--ink)}
@@ -339,6 +298,7 @@ nav.tabbar{
 .spell-input.right{border-color:var(--ok);background:#E8F5E9;color:var(--ok)}
 .spell-input.wrong{border-color:var(--danger);background:#FFEBEE;color:var(--danger);animation:shake .3s ease}
 .spell-tip{font-size:12px;color:var(--ink2);text-align:center;margin:8px 0 10px;line-height:1.6}
+.spell-tip.correction{font-size:14px;color:var(--danger);background:#FFF1EE;border:1px solid #E9B2AA;border-radius:10px;padding:9px 10px;font-weight:600}
 
 /* ===== 古风视觉升级 ===== */
 /* 宣纸暖色背景 */
@@ -550,7 +510,7 @@ body{background:#241816}
 #page-story .chap-sub{font-size:11px;letter-spacing:2px;color:#ad843e;margin-bottom:13px}
 #page-story .panel{border:1px solid #dfc9a3;border-radius:18px;background:rgba(255,253,248,.82);padding:23px 20px;box-shadow:0 10px 28px rgba(77,47,28,.06)}
 #page-story .panel:before{left:22px;right:22px;background:linear-gradient(90deg,transparent,#c3943e,transparent)}
-#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:left;word-break:normal;overflow-wrap:break-word}
+#page-story .p-text{font-family:"Songti SC","STSong",serif;font-size:16px;line-height:2.05;color:#45332c;text-align:justify}
 #page-story #btnStoryNext{height:54px;border:1px solid #84241f;border-radius:15px;background:linear-gradient(135deg,#a7352b,#8d281f);box-shadow:0 9px 18px rgba(137,39,31,.18);font-family:"Songti SC",serif;font-size:17px;letter-spacing:5px}
 
 /* 考校：高专注单词宫笺 */
@@ -617,8 +577,7 @@ body{background:#241816}
 #page-library .library-top{top:0;background:transparent;padding:0 0 12px}#page-library .lib-search{height:48px;border:1px solid #dcc7a4;border-radius:15px;background:#fffdf8;padding-left:42px;box-shadow:0 6px 18px rgba(65,39,24,.04)}#page-library .library-top:before{content:'⌕';position:absolute;left:15px;top:6px;font-family:Georgia,serif;font-size:27px;color:#b18a4a;z-index:2}
 #page-library .lib-list{border:1px solid #ddc9a7;border-radius:18px;background:rgba(255,253,248,.82);box-shadow:0 9px 25px rgba(70,41,24,.05)}#page-library .lib-item{min-height:58px;padding:11px 15px;border-bottom-color:#eadfcd}#page-library .lib-item .w{font-family:Georgia,serif;font-size:16px;color:#8f302a}#page-library .lib-item .d{max-width:62%;font-size:11px}#page-library .stats-row .stat{background:#fffaf2;border-color:#ddc9a7}
 #page-record .panel{border:1px solid #dcc7a4;border-radius:19px;background:rgba(255,253,248,.86);padding:17px;box-shadow:0 9px 25px rgba(70,41,24,.06)}#page-record .panel h2{font-family:"Songti SC",serif;font-size:19px;letter-spacing:3px;color:#922e28;border-bottom:1px solid #eadcc5;padding-bottom:11px;margin-bottom:13px}#page-record .panel h2 .en{float:right;font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:1px;color:#ac8648;margin-top:5px}
-#page-record .stat{padding:13px 5px;border-radius:13px;background:#fff9ef}#page-record .stat b{font-family:Georgia,serif;font-size:22px}#page-record .save-btn-row{margin-top:15px}#page-record .save-btn-row .btn,#page-record .panel>a.btn,#page-record .panel>button.btn{min-height:46px;border-radius:13px;letter-spacing:1px}#page-record .cloud-status{border-color:#ddcaa9;background:#faf3e7;padding:12px 13px}.page-record-active .rec-item{border:1px solid #e1ceb0;border-left:4px solid #b18438;border-radius:13px;background:#fffaf2}
-.relation-list{display:grid;gap:10px}.relation-item{display:grid;grid-template-columns:76px 1fr 44px;align-items:center;gap:10px;padding:10px 11px;border:1px solid #e5d5ba;border-radius:13px;background:#fffaf2}.relation-name{font-family:"Songti SC",serif;color:#7f2b27;font-weight:600}.relation-track{height:7px;border-radius:9px;background:#eee2cf;overflow:hidden}.relation-track i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#b88b36,#d7bd78)}.relation-state{text-align:right;color:#806a5d;font-size:11px}.branch-echo{display:none;margin:0 0 12px;padding:10px 12px;border-left:3px solid #a8352e;border-radius:8px;background:#fff4e5;color:#72574a;font-size:12px;line-height:1.65}.branch-echo.show{display:block}
+#page-record .stat{padding:13px 5px;border-radius:13px;background:#fff9ef}#page-record .stat b{font-family:Georgia,serif;font-size:22px}#page-record .save-btn-row{margin-top:15px}#page-record .save-btn-row .btn,#page-record .panel>a.btn,#page-record .panel>button.btn{min-height:46px;border-radius:13px;letter-spacing:1px}.page-record-active .rec-item{border:1px solid #e1ceb0;border-left:4px solid #b18438;border-radius:13px;background:#fffaf2}
 /* ===== V7.4 抉择 / 查案 / 情缘 / 放榜 ===== */
 .page-choice-active .rank-bar,.page-case-active .rank-bar,.page-love-active .rank-bar{display:none!important}.page-choice-active header.topbar,.page-case-active header.topbar,.page-love-active header.topbar{background:rgba(251,247,240,.97);color:#38251f;box-shadow:0 1px 0 #e3d3b7}.page-choice-active .topbar h1,.page-case-active .topbar h1,.page-love-active .topbar h1{font-family:"Songti SC",serif;color:#38251f}.page-choice-active .topbar .fav,.page-case-active .topbar .fav,.page-love-active .topbar .fav{color:#59443a;background:#fffaf2;border-color:#d9c399}
 .page-choice-active main,.page-case-active main,.page-love-active main{padding:16px 16px calc(88px + env(safe-area-inset-bottom));background:radial-gradient(circle at 85% 0,rgba(174,115,39,.09),transparent 28%),linear-gradient(180deg,#faf6ee,#f3e9db)}
@@ -668,7 +627,7 @@ body{background:#241816}
         </div>
         <button class="home-primary" id="btnStart" onclick="startGame()">入宫选秀</button>
         <button class="review-today" id="homeReviewBtn" onclick="startReview('due')"><span>📚 今日待复习 <b id="homeDueCount">0</b> 词</span><span class="review-arrow">›</span></button>
-        <div class="today-count">今日已习 <b id="todayWords">0</b> / <span id="todayWordGoal">20</span> 词</div>
+        <div class="today-count">今日已习 <b id="todayWords">0</b> / 20 词</div>
         <div class="rank-journey" id="homeJourney" aria-label="九重位份进度"></div>
         <div class="home-stats">
           <div class="home-stat"><span>已掌握</span><b id="homeMastered">0</b><em>词</em></div>
@@ -683,7 +642,7 @@ body{background:#241816}
         <button class="btn love-entry" id="loveEntry" onclick="openLove()" style="display:none">🌸 情缘 · 私奔支线</button>
         <!-- 每日任务面板 -->
         <div class="task-panel" id="taskPanel" style="display:none">
-          <div class="task-title">今日宫务 <small id="taskDateHint">每日轮换 · 次日刷新</small></div>
+          <div class="task-title">今日宫务</div>
           <div class="task-list" id="taskList"></div>
           <div class="task-reward" id="taskReward" style="display:none">
             <button class="btn gold" onclick="claimTaskReward()">领取赏赐 (+30 圣宠)</button>
@@ -703,8 +662,7 @@ body{background:#241816}
       </div>
       <div class="chap-title" id="storyTitle"></div>
       <div class="chap-sub" id="storySub"></div>
-      <div class="branch-echo" id="branchEcho"></div>
-      <div class="panel"><p class="p-text" id="storyText"></p></div>
+      <div class="panel"><p class="p-text" id="storyText"></p><div class="scene-words" id="storyWords" style="display:none"></div></div>
       <button class="btn" id="btnStoryNext" onclick="storyNext()">继续</button>
       <div class="hint" id="storyHint"></div>
     </div>
@@ -826,7 +784,6 @@ body{background:#241816}
 
     <div class="page" id="page-record">
       <div class="section-head"><b>宫册</b><span>成 长 · 抉 择 · 存 档</span></div>
-      <div class="panel"><h2>宫中人脉 <span class="en">人物关系</span></h2><div class="relation-list" id="relationList"></div></div>
       <div class="panel"><h2>成长记录 <span class="en">晋升与历程</span></h2><div id="recList"></div></div>
       <div class="panel"><h2>功绩总览 <span class="en">你的成绩</span></h2>
         <div class="stats-row">
@@ -836,12 +793,13 @@ body{background:#241816}
         </div>
       </div>
       <div class="panel"><h2>存档与备份 <span class="en">换设备时使用</span></h2>
-        <div class="hint" style="text-align:left;margin:0 0 12px"><b>更新游戏不会清空旧进度，之前的位份、凤印、错词和复习记录都会保留。</b><br>同一台手机会自动保存，无需注册或配置账号；只有换手机、换浏览器或清理浏览器数据前，需要先导出存档，再在新设备导入。</div>
+        <div class="save-simple"><b>平时不用操作：</b>游戏进度会自动保存在当前浏览器里。<br><b>换手机或清缓存前：</b>点“下载备份文件”，把文件留好；新设备再点“导入备份文件”。</div>
         <div class="save-btn-row">
-          <button class="btn ghost" onclick="openExport()">🔐 导出存档</button>
-          <button class="btn ghost" onclick="openImport()">📥 导入存档</button>
+          <button class="btn ghost" onclick="downloadSave()">⬇️ 下载备份文件</button>
+          <button class="btn ghost" onclick="chooseSaveFile()">⬆️ 导入备份文件</button>
         </div>
-        <div class="hint" style="text-align:left;margin:12px 0 0">建议把导出的存档文件保存到百度网盘、微信文件传输助手或手机文件夹中。</div>
+        <input id="saveFileInput" type="file" accept=".json,application/json" style="display:none" onchange="importSaveFile(this)">
+        <div class="hint" style="text-align:left;margin:0">提醒：导入会覆盖当前进度。导入前如果还有需要保留的进度，请先下载一份备份。</div>
       </div>
       <div class="panel"><h2>帮助与重置 <span class="en">其他设置</span></h2>
         <a href="manual.html" class="btn ghost" style="text-decoration:none;text-align:center;display:block">📖 游戏说明</a>
@@ -881,7 +839,6 @@ body{background:#241816}
     <div class="sv-title" id="saveTitle">导出存档</div>
     <div class="sv-sub" id="saveSub"></div>
     <textarea id="saveCode" placeholder="此处显示/粘贴存档密文"></textarea>
-    <input id="saveFile" type="file" accept=".txt,text/plain" style="display:none;width:100%;margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fffaf1">
     <div class="sv-actions">
       <button class="btn gold" id="saveCopyBtn">复制密文</button>
       <button class="btn ghost" id="saveDownBtn" style="display:none">下载文件</button>
@@ -893,16 +850,19 @@ body{background:#241816}
   <div class="toast" id="toast"></div>
 </div>
 
-<script src="vocab.js"></script>
+<script src="vocab.js?v=160"></script>
+<script src="semantic-plan.js?v=160"></script>
 <script>
 (function(){
 "use strict";
+function wordKey(value){return String(value||'').normalize('NFKC').replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim().toLowerCase();}
 var VOCAB_MAP = {};
 try{
   if(window.VOCAB && window.VOCAB.length){
     window.VOCAB.forEach(function(it){
-      var k=String(it.word).toLowerCase();
-      if(!VOCAB_MAP[k]) VOCAB_MAP[k]=it;
+      var k=wordKey(it.word);
+      if(!VOCAB_MAP[k]) VOCAB_MAP[k]={word:it.word,phonetic:it.phonetic||'',def:it.def||''};
+      else if(it.def&&VOCAB_MAP[k].def.indexOf(it.def)===-1)VOCAB_MAP[k].def+='；'+it.def;
     });
   }
 }catch(e){}
@@ -1010,43 +970,77 @@ var STORY=[
 }
 ];
 
-/* ---------- V10 全词库剧情引擎 ---------- */
-var STORY_EVENT_TYPES=[
-  {name:'尚宫错账',sub:'一页账簿，牵动六宫赏罚',place:'尚宫局送来一册英文账簿，华妃认定其中有人暗改用度。',end:'你辨清朱批，账册背后的关系渐渐浮出水面。'},
-  {name:'御前密折',sub:'字里行间，藏着朝堂风向',place:'御前新到一封外邦密折，皇后命你在早朝前译出关键线索。',end:'词义彼此咬合，一条隐秘证词终于成形。'},
-  {name:'太医院疑案',sub:'药香之下，也可能藏着杀机',place:'太医院药柜被人调换了签条，温太医只敢把线索写成英文。',end:'你核对药案，离真正动手的人又近了一步。'},
-  {name:'宫宴口供',sub:'席间一句话，足以定人生死',place:'宫宴之后有人失踪，席上众人的口供却彼此矛盾。',end:'关键词补上口供缺口，也让说谎的人露出破绽。'},
-  {name:'边关军报',sub:'烽火入宫，真假只在一词之间',place:'八百里军报送入宫门，沈将军用英文标出了最紧要的情报。',end:'你读懂军报暗号，为宫中争取到应对时间。'},
-  {name:'冷宫旧卷',sub:'被抹去的名字，仍在纸上说话',place:'冷宫墙缝里藏着一册旧卷，每页都留下不同的英文记号。',end:'尘封词义重新连成往事，旧案中的名字再次被提起。'},
-  {name:'使臣考问',sub:'答错一词，便失一国体面',place:'外邦使臣当殿设问，要以英文考校大周女官的见识。',end:'你接住问难，殿中原本的轻慢悄然收敛。'},
-  {name:'凤印暗纹',sub:'金印无言，暗纹却指向真相',place:'新铸凤印出现陌生暗纹，工匠说那是英文词的缩记。',end:'你对应暗纹与词义，发现凤印并非出自原模。'},
-  {name:'书院辩词',sub:'近义易混，最见真章',place:'御前书院开讲，顾教习让你用词义替一名受罚宫女申辩。',end:'你没有放过细微差别，原本含混的罪名开始动摇。'},
-  {name:'夜巡暗号',sub:'宫门将闭，暗号只念一次',place:'夜巡换防忽然提前，值守名册只留下几枚英文暗号。',end:'你在宫门落锁前破解暗号，避开一场埋伏。'},
-  {name:'织造密纹',sub:'锦缎经纬，织着无人敢说的话',place:'江南织造送来贡缎，纹样之间藏着英文标记与求救线索。',end:'零散词义连成一封藏在锦缎里的信。'},
-  {name:'廷前审问',sub:'证词反复，唯有词义不能作假',place:'内廷会审开始，三份证词都在关键位置留下英文原词。',end:'你校正证词，找到三份供状中唯一的矛盾。'}
-];
-function makeStoryScene(words,event,sceneNo){
-  var marks=words.join('、');
-  var leads=[
-    event.place+'卷宗首页被朱笔圈出 '+marks+' 几个英文记号。你没有急着下结论，只把它们逐一誊在纸上。',
-    '你翻到下一页，发现 '+marks+' 被同一根红线相连。前后的证词开始有了关联。',
-    '掌事太监催问不休。你按住卷宗，在被刮去的墨迹下辨出 '+marks+'。这些记号绝不会无缘无故同时出现。',
-    '殿外脚步渐近。有人把 '+marks+' 藏进夹页，显然不愿你读完整份卷宗。',
-    '你与上一页对照，发现 '+marks+' 的位置被人动过。做手脚的人终于露出了一点破绽。',
-    '天色将明，最后一页只剩 '+marks+' 几个关键记号。你将它们与先前证词合在一处，真正的线索终于成形。'
-  ];
-  return {t:leads[sceneNo]||event.place,w:words};
+/* ---------- V12 语义剧情引擎 ---------- */
+var STORY_PLAN=window.SEMANTIC_STORY_PLAN||null;
+function semanticMeaning(w){
+  if(STORY_PLAN&&STORY_PLAN.senses&&STORY_PLAN.senses[w])return STORY_PLAN.senses[w];
+  var it=VOCAB_MAP[w];if(!it)return '待查词义';
+  var p=extractPOS(it.def),mean=String(p.mean||it.def||'').replace(/\([^)]*\)/g,'').split(/[；;]/)[0];
+  mean=mean.replace(/\s+(?:n|v|vt|vi|a|adj|adv|ad|prep|conj|pron|aux)\.\s*[\s\S]*$/i,'');
+  var bits=mean.split(/[,，]/).filter(Boolean).slice(0,2);
+  mean=bits.join('、')||mean;
+  return mean.length>18?mean.slice(0,18)+'…':mean;
+}
+function semanticPos(w){
+  var it=VOCAB_MAP[w],p=it?String(extractPOS(it.def).pos||'').toLowerCase():'';
+  if(/prep|conj|pron|art|aux|num|int/.test(p))return 'function';
+  if(/adv|ad\./.test(p))return 'adverb';
+  if(/adj|^a\.?$/.test(p))return 'adjective';
+  if(/^v|vt|vi/.test(p))return 'verb';
+  return 'noun';
+}
+var SEMANTIC_LINES={
+  noun:[
+    '案卷首页先出现 {w}，它成了追查的起点。','第二份口供反复提到 {w}，却没人肯解释它的来源。',
+    '案头的 {w} 把线索引向另一处宫门。','最后补上的 {w}，恰好填住了证据缺口。',
+    '旧档里有关 {w} 的记录，与今日说法并不一致。','真正牵动全局的，是一直被忽略的 {w}。',
+    '宫人重新核对 {w}，这才意识到先前判断错了方向。','你在两份卷宗里同时看见 {w}，巧合便不再是巧合。'
+  ],
+  verb:[
+    '下一步需要做的是 {w}，这才有机会继续追查。','对方试图按 {w} 的方式行事，反而在慌乱中留下破绽。',
+    '皇后命你立即执行 {w}，而且不得走漏风声。','你没有急着采取 {w} 这一步，而是等前后证据彼此印证。',
+    '掌事原本准备 {w}，却被一封急报打断。','若此刻选择 {w} 这一步，整件事的结果都会改变。',
+    '华妃逼众人当场执行 {w}，你却发现时机并不对。','你依照 {w} 的线索行动，局面终于出现转机。'
+  ],
+  adjective:[
+    '这条线索符合 {w} 的描述，却又与旧档完全吻合。','证词中最符合 {w} 描述的一处，恰是破局关键。',
+    '华妃认定此事可以用 {w} 概括，要求当场定论。','你发现真正符合 {w} 特征的，并不是表面那个人。',
+    '两份方案都被标成 {w}，细看条件却截然不同。','这项安排若真符合 {w}，就不该留下这样的后果。',
+    '宫人只记得那东西带有 {w} 的特征，这条描述缩小了范围。','皇后重新判断 {w} 所提示的性质，终于改了主意。'
+  ],
+  adverb:[
+    '值守宫人必须按 {w} 所提示的方式行事，才不会惊动幕后之人。','对方按 {w} 的方式改了口供，前后顺序因此露馅。',
+    '你注意到 {w} 改变了这道命令的语气。','掌事要求事情依照 {w} 的提示推进，不得再拖延。',
+    '证人并非随口一说，而是用 {w} 特意强调了语气。','几条线索都以 {w} 所提示的方式指向同一人，嫌疑逐渐清楚。',
+    '若不按 {w} 的提示处理，消息很快会传遍六宫。','你依照 {w} 对照两页记录，终于看出改动。'
+  ],
+  function:[
+    '诏书中的 {w} 改变了前后句关系。','若把 {w} 误解，原本的限制就会被读反。',
+    '译官漏掉 {w}，整道命令因此换了方向。','你补回 {w} 重新断句，意思终于通顺。',
+    '两份译文只差一个 {w}，结论却完全相反。','使臣故意重读 {w}，想借语气改变条件。',
+    '你指出 {w} 在这里影响了句意，殿中争论顿时停下。','最后核对 {w}，整封国书才没有被误判。'
+  ]
+};
+function semanticWordLine(w,n){
+  var group=semanticPos(w),list=SEMANTIC_LINES[group]||SEMANTIC_LINES.noun;
+  return list[n%list.length].replace('{w}',w);
+}
+function semanticSceneText(scene){
+  if(!scene||!scene.semanticTopic||!STORY_PLAN)return scene&&scene.t||'';
+  var meta=STORY_PLAN.themes[scene.semanticTopic]||STORY_PLAN.themes.concepts;
+  var stage=scene.semanticStage||0;
+  var leads=[meta.setting,'你顺着前一幕继续查，新的说法却与旧档相冲。','掌事催你尽快定论，你先把每个词放回原意。','殿外脚步渐近，有人显然不愿你查完。','证人与物证终于对上，幕后之人开始慌乱。','天色将明，这是呈到御前前的最后核对。'];
+  var text=(leads[stage%leads.length]||meta.setting);
+  (scene.w||[]).forEach(function(w,i){text+=semanticWordLine(w,stage*4+i);});
+  if(stage%6===5)text+='你把线索连起，终于可以'+meta.goal+'。';
+  return text;
 }
 function buildFullVocabStory(){
-  var fixed={};
-  STORY.forEach(function(ch){(ch.scenes||[]).forEach(function(s){(s.w||[]).forEach(function(w){fixed[w]=1;});});});
-  var pool=Object.keys(VOCAB_MAP).filter(function(w){return !fixed[w];});
-  var size=24,total=Math.ceil(pool.length/size);
-  for(var u=0;u<total;u++){
-    var words=pool.slice(u*size,(u+1)*size),event=STORY_EVENT_TYPES[u%STORY_EVENT_TYPES.length],scenes=[];
-    for(var i=0;i<words.length;i+=4)scenes.push(makeStoryScene(words.slice(i,i+4),event,Math.floor(i/4)));
-    STORY.push({title:'第'+(u+4)+'章 · '+event.name,sub:event.sub+' · 本章 '+words.length+' 词',scenes:scenes,quiz:words.length,battle:null,choice:null,case:null,reward:Math.min(8,3+Math.floor((u+1)*6/total)),gateText:'卷宗已读完。辨清本章词义，才能把证据呈到御前。',generated:true});
-  }
+  if(!STORY_PLAN||!STORY_PLAN.chapters){console.error('语义剧情计划未加载');return;}
+  STORY_PLAN.chapters.forEach(function(ch){
+    var count=0,scenes=(ch.scenes||[]).map(function(s){count+=(s.w||[]).length;return {w:s.w,t:s.t||'',semanticTopic:s.topic,semanticStage:s.stage,semanticId:s.id};});
+    STORY.push({id:ch.id,title:'第'+ch.displayNo+'章 · '+ch.title,sub:ch.sub+' · 本章 '+count+' 词',scenes:scenes,quiz:count,battle:null,choice:null,case:null,reward:ch.reward,gateText:ch.gateText,generated:true,semantic:true});
+  });
 }
 buildFullVocabStory();
 
@@ -1102,12 +1096,12 @@ var LOVES=[
 /* ---------- 全局状态 ---------- */
 var S={
   v:1, rank:0, points:0, chapter:0, step:0, storyIdx:0,
+  contentPlan:'semantic-v4',
   right:0, wrong:0, streak:0, bestStreak:0, seen:{}, verdict:[],
   // V6.0 心力（体力）：考校/斗法入场与答错消耗，每日回满
   energy:100, energyDate:'',
   // 每日任务
-  tasks:{date:'',ids:[],progress:{},wordSeen:{},claimed:false},
-  relations:{queen:0,huafei:0,aunt:0}, branchFlags:{}, chapterDone:{},
+  tasks:{date:'',done:[0,0,0],claimed:[0,0,0]},
   // 情缘·私奔支线（rank>=3 贵人解锁）
   love:{char:null,stage:0,points:0,endings:{}},
   // V6.1 复习系统：错词本（词→错次）与收藏
@@ -1121,19 +1115,34 @@ var ui={};
 function $(id){return document.getElementById(id);}
 function extractPOS(def){
   var raw=String(def||'').replace(/^\/+/, '').trim();
-  var m=/^([a-zA-Z.]+)\s*(.*)$/.exec(raw);
+  var m=/^((?:(?:n|v|vt|vi|a|adj|adv|ad|prep|conj|pron|aux)(?:\.(?:\/|&)?|\/|&)\s*)+)(.*)$/i.exec(raw);
+  if(m) return {pos:m[1].trim().replace(/^\/+|\/+$/g,''), mean:m[2].replace(/^[/；;\s]+/,'')};
+  m=/^([a-zA-Z.]+)\s*(.*)$/.exec(raw);
   if(m) return {pos:m[1].replace(/^\/+|\/+$/g,''), mean:m[2].replace(/^[/；;\s]+/,'')};
   return {pos:'',mean:raw};
+}
+function migrateSemanticState(o){
+  if(!o||!STORY_PLAN||!STORY_PLAN.planId||o.contentPlan===STORY_PLAN.planId)return false;
+  var oldChapter=Number(o.chapter||0);
+  var previousPlan=o.contentPlan||'legacy-alphabetical';
+  o.contentPlan=STORY_PLAN.planId;
+  if(oldChapter>=3){
+    o.semanticMigration={from:previousPlan,oldChapter:oldChapter,at:Date.now(),notice:true};
+    // The old numeric chapter pointed into an alphabetical plan. It cannot map
+    // safely to the new semantic order, so only the story cursor is restarted;
+    // rank, favor, wrong words, reviews, seen words and statistics are retained.
+    o.chapter=3;o.storyIdx=0;o.step=0;
+  }
+  return true;
 }
 function save(){
   S.savedAt=Date.now();
   try{localStorage.setItem(SAVE_KEY, JSON.stringify(S));}catch(e){}
-  scheduleAutoSync();
 }
 function load(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
-    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; if(!S.relations)S.relations={queen:0,huafei:0,aunt:0}; if(!S.branchFlags)S.branchFlags={}; if(!S.chapterDone)S.chapterDone={}; initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; if(!S.reviews)S.reviews={}; migrateReviewSchedule(); try{window.S=S;}catch(e){} return true;}}
+    if(raw){var o=JSON.parse(raw); if(o&&o.v===1){S=o; var migrated=migrateSemanticState(S); initEnergy(); initTasks(); if(!S.wrongs)S.wrongs={}; if(!S.favs)S.favs={}; if(!S.learning)S.learning={}; if(!S.covered)S.covered={}; if(!S.records)S.records=[]; if(!S.reviews)S.reviews={}; migrateReviewSchedule(); if(migrated)try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){} try{window.S=S;}catch(e){} return true;}}
   }catch(e){}
   return false;
 }
@@ -1144,7 +1153,6 @@ function markWrong(w){
   try{
     S.wrongs[w]=(S.wrongs[w]||0)+1;
   }catch(e){ S.wrongs={}; S.wrongs[w]=1; }
-  taskLearnWord(w);
   recordLearning(w,false);
   save();
 }
@@ -1196,7 +1204,7 @@ function toggleFav(){
   var w=$(ui.sWord).textContent; if(!w) return;
   try{
     if(S.favs[w]){ delete S.favs[w]; }
-    else{ S.favs[w]=1; taskInc('favorite'); }
+    else{ S.favs[w]=1; }
   }catch(e){ S.favs={}; S.favs[w]=1; }
   save();
   renderFavBtn(w);
@@ -1363,28 +1371,26 @@ function todayStr(){
   return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 }
 function initTasks(){
-  if(!S.tasks) S.tasks={date:'',ids:[],progress:{},wordSeen:{},claimed:false};
+  if(!S.tasks) S.tasks={date:'',done:[0,0,0],claimed:[0,0,0]};
   var t=todayStr();
-  if(S.tasks.date!==t || !Array.isArray(S.tasks.ids) || !S.tasks.progress){
-    var seed=0; for(var i=0;i<t.length;i++) seed=(seed*31+t.charCodeAt(i))>>>0;
-    function dailySlot(offset,len){var x=(seed+Math.imul(offset+1,0x9e3779b9))>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;return(x>>>0)%len;}
-    var wordIds=['words10','words15','words20'],rightIds=['correct8','correct10','correct12'];
-    var focusIds=S.chapter>=STORY.length?['streak5','streak7','favorite1']:['streak5','streak7','chapter1','favorite1'];
-    S.tasks={date:t,ids:[wordIds[dailySlot(0,wordIds.length)],rightIds[dailySlot(1,rightIds.length)],focusIds[dailySlot(2,focusIds.length)]],progress:{words:0,correct:0,streak:0,chapter:0,favorite:0},wordSeen:{},claimed:false};
+  if(S.tasks.date!==t){
+    S.tasks={date:t,done:[0,0,0],claimed:[0,0,0]};
     save();
   }
-  if(!S.tasks.wordSeen)S.tasks.wordSeen={};
 }
-var TASK_POOL={words10:{label:'新识 10 个词',target:10,key:'words'},words15:{label:'新识 15 个词',target:15,key:'words'},words20:{label:'新识 20 个词',target:20,key:'words'},correct8:{label:'答对 8 题',target:8,key:'correct'},correct10:{label:'答对 10 题',target:10,key:'correct'},correct12:{label:'答对 12 题',target:12,key:'correct'},streak5:{label:'取得 5 题连胜',target:5,key:'streak'},streak7:{label:'取得 7 题连胜',target:7,key:'streak'},chapter1:{label:'完成 1 章宫闱剧情',target:1,key:'chapter'},favorite1:{label:'收藏 1 个重点词',target:1,key:'favorite'}};
 function getTasks(){
   initTasks();
-  return S.tasks.ids.map(function(id){return TASK_POOL[id];}).filter(Boolean);
+  return [
+    {label:'背词 20 个', target:20, key:'words'},
+    {label:'答对 10 题', target:10, key:'correct'},
+    {label:'晋升 1 级', target:1, key:'promote'}
+  ];
 }
 function renderTasks(){
   var list=$('taskList'); if(!list) return;
   var tasks=getTasks(); var h=''; var allDone=true;
   for(var i=0;i<tasks.length;i++){
-    var t=tasks[i]; var done=S.tasks.progress[t.key]||0; var pct=Math.min(100,Math.round(done/t.target*100));
+    var t=tasks[i]; var done=S.tasks.done[i]||0; var pct=Math.min(100,Math.round(done/t.target*100));
     var finished=done>=t.target;
     if(!finished) allDone=false;
     h+='<div class="task-item">'+
@@ -1396,25 +1402,26 @@ function renderTasks(){
   list.innerHTML=h;
   var panel=$('taskPanel'); if(panel) panel.style.display='block';
   var reward=$('taskReward');
-  if(reward) reward.style.display=(allDone && !S.tasks.claimed)?'block':'none';
+  if(reward) reward.style.display=(allDone && !S.tasks.claimed[0])?'block':'none';
 }
 function claimTaskReward(){
-  if(S.tasks.claimed)return;
-  S.tasks.claimed=true;
+  S.tasks.claimed=[1,1,1];
   S.points+=30; save();
   toast('领取赏赐 +30 圣宠！');
   renderTasks(); renderRankBar();
 }
 function taskInc(key,n){
   initTasks();
-  if(typeof S.tasks.progress[key]!=='number')S.tasks.progress[key]=0;
-  S.tasks.progress[key]+=(n||1);
-  if(key==='correct')S.tasks.progress.streak=Math.max(S.tasks.progress.streak||0,S.streak||0);
-  getTasks().forEach(function(t){if(t.key===key)S.tasks.progress[key]=Math.min(t.target,S.tasks.progress[key]);if(t.key==='streak')S.tasks.progress.streak=Math.min(t.target,S.tasks.progress.streak||0);});
+  var tasks=getTasks();
+  for(var i=0;i<tasks.length;i++){
+    if(tasks[i].key===key){
+      S.tasks.done[i]=(S.tasks.done[i]||0)+(n||1);
+      if(S.tasks.done[i]>tasks[i].target) S.tasks.done[i]=tasks[i].target;
+    }
+  }
   save();
   renderTasks();
 }
-function taskLearnWord(word){if(!word)return;initTasks();if(S.tasks.wordSeen[word])return;S.tasks.wordSeen[word]=1;taskInc('words');}
 function toast(msg){
   var t=$(ui.toast);
   t.textContent=msg; t.classList.add('show');
@@ -1482,7 +1489,6 @@ function speakSpell(){
   var w=cur && cur.items ? cur.items[cur.i].word : '';
   if(!w) return;
   speak(w);
-  toast('🔊 发音：'+w);
 }
 function rand(n){return Math.floor(Math.random()*n);}
 function pick(arr){return arr[rand(arr.length)];}
@@ -1522,9 +1528,7 @@ function renderHomeDashboard(){
   var r=S.rank||0;
   var he=$('homeEnergy'); if(he) he.textContent=S.energy;
   var hp=$('homeFavor'); if(hp) hp.textContent=S.points;
-  var wordTask=getTasks().filter(function(t){return t.key==='words';})[0];
-  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.progress&&S.tasks.progress.words)||0;
-  var twg=$('todayWordGoal'); if(twg) twg.textContent=wordTask?wordTask.target:20;
+  var tw=$('todayWords'); if(tw) tw.textContent=(S.tasks&&S.tasks.done&&S.tasks.done[0])||0;
   var mastered=$('homeMastered'); if(mastered) mastered.textContent=masteredWords().length;
   var streak=$('homeStreak'); if(streak) streak.textContent=S.bestStreak||0;
   var total=(S.right||0)+(S.wrong||0);
@@ -1536,7 +1540,7 @@ function renderHomeDashboard(){
   var totalWords=Object.keys(VOCAB_MAP).length,coveredN=Object.keys(S.covered||{}).length;
   var covTotal=$('storyCoverageTotal');if(covTotal)covTotal.textContent=totalWords+' / '+totalWords;
   var covFill=$('storyCoverageFill');if(covFill)covFill.style.width=totalWords?'100%':'0%';
-  var covMine=$('storyCoverageMine');if(covMine)covMine.textContent=STORY.length+' 章 · 全词库已编入剧情 · 你已遇见 '+coveredN+' 词';
+  var covMine=$('storyCoverageMine');if(covMine)covMine.textContent=STORY.length+' 章 · 全词库已纳入剧情闯关 · 你已遇见 '+coveredN+' 词';
   var next=$('rankNext');
   if(next) next.textContent=r>=8?'九重凤印已集齐，凤临天下':('距离下一次晋封还差 '+(8-r)+' 枚凤印');
   var journey=$('homeJourney');
@@ -1598,15 +1602,21 @@ function openManual(section){
 
 /* ---------- 剧情词高亮 ---------- */
 function linkWords(text, words, cls){
-  var list=(words||[]).filter(function(w){return VOCAB_MAP[String(w).toLowerCase()];});
+  var list=[];
+  (words||[]).forEach(function(w){
+    var key=String(w).toLowerCase();
+    if(VOCAB_MAP[key]&&list.indexOf(key)===-1)list.push(key);
+  });
   if(!list.length)return text;
-  var keys={};
-  list.forEach(function(w){keys[String(w).toLowerCase()]=1;});
-  var alternatives=list.slice().sort(function(a,b){return b.length-a.length;}).map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');});
-  var re=new RegExp('('+alternatives.join('|')+')','gi');
-  return text.replace(re,function(found){
-    var key=String(found).toLowerCase();
-    return keys[key]?'<span class="gword '+(cls||'')+'" data-w="'+key+'">'+found+'</span>':found;
+  // One longest-first pass prevents a short word such as “trade” from matching
+  // inside “trademark” or inside markup already created for another word.
+  list.sort(function(a,b){return b.length-a.length;});
+  var pattern=list.map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('|');
+  var re=new RegExp('(^|[^A-Za-z])('+pattern+')(?![A-Za-z])','gi');
+  return String(text).replace(re,function(all,prefix,matched){
+    var key=matched.toLowerCase();
+    var safe=key.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return prefix+'<span class="gword '+(cls||'')+'" data-w="'+safe+'">'+matched+'</span>';
   });
 }
 function bindWordClicks(root){
@@ -1614,6 +1624,19 @@ function bindWordClicks(root){
   for(var i=0;i<spans.length;i++){
     spans[i].onclick=function(){ openSheet(this.getAttribute('data-w')); };
   }
+}
+function renderSceneWords(words){
+  var box=$(ui.storyWords); if(!box)return;
+  var list=[];
+  (words||[]).forEach(function(w){var k=wordKey(w);if(VOCAB_MAP[k]&&list.indexOf(k)===-1)list.push(k);});
+  if(!list.length){box.style.display='none';box.innerHTML='';return;}
+  box.style.display='block';
+  box.innerHTML='<div class="scene-words-title">本幕密令词 · 点词查看</div><div class="scene-word-list">'+list.map(function(k){
+    var label=(VOCAB_MAP[k]&&VOCAB_MAP[k].word)||k;
+    var safe=k.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<button type="button" class="scene-word-chip gword" data-w="'+safe+'">'+label+'</button>';
+  }).join('')+'</div>';
+  bindWordClicks(box);
 }
 
 /* ---------- 释义弹层 ---------- */
@@ -1626,7 +1649,7 @@ function openSheet(key){
   $(ui.sheetMask).style.display='block';
   $(ui.sheet).style.display='block';
   renderFavBtn(key);
-  try{ if(!S.seen[key])S.seen[key]=1; taskLearnWord(key); save(); }catch(e){}
+  try{ if(!S.seen[key]){S.seen[key]=1; save();} }catch(e){}
 }
 function speakSheet(){
   var w=$(ui.sWord).textContent; if(w) speak(w);
@@ -1933,6 +1956,7 @@ function renderQuiz(){
     var input=$('spellInput');
     input.value=''; input.className='spell-input'; input.disabled=false;
     $('spellSubmit').disabled=false;
+    $('spellTip').className='spell-tip';
     $('spellTip').textContent='\u9996\u5b57\u6bcd\uff1a'+it.word.charAt(0).toUpperCase()+'  \u00b7  \u5171 '+it.word.length+' \u4e2a\u5b57\u6bcd';
     setTimeout(function(){try{input.focus();}catch(e){}},120);
   }else{
@@ -1990,7 +2014,7 @@ function answerQuiz(idx){
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
     var gain=10*(S.streak>1?2:1);
     S.points+=gain;
-    try{ if(!S.seen[it.word])S.seen[it.word]=1; taskLearnWord(it.word); }catch(e){}
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
     recordLearning(it.word,true);
     taskInc('correct');
     toast('答对了 +'+gain+' 圣宠'+(S.streak>1?'（连击×2）':''));
@@ -2036,7 +2060,7 @@ function answerSpell(timedOut){
     S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak;
     var gain=20*(S.streak>1?2:1);
     S.points+=gain;
-    try{ if(!S.seen[it.word])S.seen[it.word]=1; taskLearnWord(it.word); }catch(e){}
+    try{ if(!S.seen[it.word]){S.seen[it.word]=1; taskInc('words');} }catch(e){}
     recordLearning(it.word,true);
     taskInc('correct');
     toast('\u98de\u82b1\u4ee4\u5bf9\u4e2d +'+gain+' \u5723\u5ba0'+(S.streak>1?'\uff08\u8fde\u51fb\u00d72\uff09':''));
@@ -2044,7 +2068,10 @@ function answerSpell(timedOut){
     showAnswerFeedback(true,S.streak>=3?'飞花成章':'飞花令对中',it.word,'完整拼写正确 · 圣宠 +'+gain);
   }else{
     input.className='spell-input wrong';
-    input.value=correct;
+    var submitted=val||'（未作答）';
+    var correction=$('spellTip');
+    correction.className='spell-tip correction';
+    correction.textContent='你的答案：'+submitted+'　｜　正确拼写：'+it.word;
     S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
     S.energy=Math.max(0,S.energy-3);
     cur.wrongCount++;
@@ -2064,7 +2091,7 @@ function answerSpell(timedOut){
     }else{
       renderQuiz();
     }
-  },1500);
+  },isRight?1500:2600);
 }
 function finishQuiz(){
   clearTimer();
@@ -2265,7 +2292,6 @@ function answerBattle(idx){
     cur.hp-=dmg;
     S.right++; S.streak++; if(S.streak>S.bestStreak) S.bestStreak=S.streak;
     S.points+=12;
-    taskLearnWord(cur.q.word); recordLearning(cur.q.word,true);
     var cn=comboName(cur.combo);
     cur.log+='第'+cur.turn+'回合：你「'+(cn||'见招拆招')+'」命中，'+cur.enemy+' -'+dmg+(cur.combo>=2?'（连击×'+cur.combo+'）':'')+'\n';
     dmgFloat($('enemyHp'),'-'+dmg,'hit');
@@ -2367,9 +2393,6 @@ function answerChoice(idx){
     }
   }
   S.verdict.push({c:cfg.q.slice(0,40)+'…',good:isGood,t:o.t});
-  var branchKey='chapter'+(S.chapter+1),firstChoice=!S.branchFlags[branchKey];
-  S.branchFlags[branchKey]=o.k;
-  if(S.chapter===1&&firstChoice)adjustRelation('huafei',isGood?-8:5);
   addRecord('choice','作出剧情抉择',o.t+(isGood?' · 判断得当':' · 判断失当'),'choice-'+S.chapter+'-'+S.verdict.length,isGood);
   if(isGood){ S.points+=20; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('抉择正确 +20 圣宠'); }
   else{ S.points=Math.max(0,S.points-10); S.wrong++; S.streak=0; toast('抉择失当 -10 圣宠'); }
@@ -2419,9 +2442,6 @@ function answerCase(idx){
       $(ui.caseOpts).querySelectorAll('.qopt')[k].classList.add('right'); break;
     }
   }
-  var branchKey='chapter'+(S.chapter+1),firstChoice=!S.branchFlags[branchKey];
-  S.branchFlags[branchKey]=isGood?'truth':'misread';
-  if(S.chapter===2&&firstChoice)adjustRelation('queen',isGood?8:-5);
   if(isGood){ S.points+=25; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('查明真相 +25 圣宠'); }
   else{ S.points=Math.max(0,S.points-12); S.wrong++; S.streak=0; toast('误判了 -12 圣宠'); }
   save();
@@ -2463,7 +2483,7 @@ function renderOnboarding(step){
     {icon:'启',title:'先从首页开始',text:'点击首页中央的红色“开始／继续深宫闯关”，跟着剧情往下走即可，不用自己寻找关卡。',demo:'主线顺序：读剧情 → 遇单词 → 参加考校 → 获得凤印'},
     {icon:'词',title:'剧情里的词可以点',text:'故事中带红色虚线的英文词都能点击，随时查看释义、发音和例句。',demo:'例如：<span class="demo-word">careful</span>　点一下就能查，不会打断剧情'},
     {icon:'斗',title:'宫斗玩法会自动出现',text:'斗法、抉择、查案和飞花令都由章节剧情触发，不需要另找功能键。看到“继续”就跟着往下走。',demo:'这些玩法不是独立入口，推进剧情后会在该出现的时候出现'},
-    {icon:'册',title:'忘了随时回来查',text:'底部“复习”查看今日待复习和错词；“宫册”里有完整玩法说明，以及换手机时使用的存档导出与导入。',demo:'首页右上角“？”可重看说明　·　进度会自动保存在本机'}
+    {icon:'册',title:'忘了随时回来查',text:'底部“复习”查看今日待复习和错词；“宫册”里可以查看玩法说明，也能下载或导入备份文件。',demo:'进度自动保存在当前浏览器　·　换设备前记得下载备份'}
   ];
   var d=data[Math.max(0,Math.min(step,data.length-1))];
   var mask=document.getElementById('onboardMask');
@@ -2479,7 +2499,6 @@ function closeOnboarding(){
   toast('从首页红色按钮开始，玩法会随剧情自动出现');
 }
 function openStory(){
-  var echo=$('branchEcho');if(echo){echo.textContent='';echo.classList.remove('show');}
   if(S.chapter>=STORY.length){ showPage('page-story'); $(ui.storyTitle).textContent='剧情已尽'; $(ui.storyText).textContent='你已通关全部章节！可去词库复习词汇。'; $(ui.btnStoryNext).style.display='none'; $(ui.storyHint).textContent=''; return; }
   var ch=STORY[S.chapter];
   showPage('page-story');
@@ -2494,14 +2513,13 @@ function openStory(){
     $('charQuote').textContent='"'+c.quote+'"';
   }else if(cb){ cb.style.display='none'; }
   $(ui.storyTitle).textContent=ch.title;
-  var sceneCount=(ch.scenes||[]).length;
-  var scenePos=Math.min(S.storyIdx+1,sceneCount||1);
-  $(ui.storySub).textContent=ch.sub+(ch.generated?' · 第 '+scenePos+' / '+sceneCount+' 幕':'');
-  if(echo){var echoText='';if(S.chapter===2&&S.branchFlags.chapter2==='insist')echoText='前情回响：你没有向华妃退让。她虽记恨，却也不敢再把你当作任人拿捏的新人。';if(S.chapter===2&&S.branchFlags.chapter2==='let')echoText='前情回响：你把侍寝机会让了出去。宫人看你的眼神，已经比昨日多了几分轻慢。';echo.textContent=echoText;echo.classList.toggle('show',!!echoText);}
+  $(ui.storySub).textContent=ch.sub;
   $(ui.btnStoryNext).style.display='block';
-  $(ui.storyHint).textContent='点击红色英文查看释义和发音 · 正文不会直接公布答案';
+  $(ui.storyHint).textContent='';
   var s=ch.scenes[Math.min(S.storyIdx,ch.scenes.length-1)];
-  $(ui.storyText).innerHTML=linkWords(s.t,s.w);
+  var sceneText=s.t||semanticSceneText(s);
+  $(ui.storyText).textContent=sceneText;
+  renderSceneWords(ch.generated?s.w:[]);
   if(!S.covered)S.covered={};
   var coverageChanged=false;
   (s.w||[]).forEach(function(w){if(!S.covered[w]){S.covered[w]=1;coverageChanged=true;}});
@@ -2509,9 +2527,10 @@ function openStory(){
   bindWordClicks();
   if(S.storyIdx>=ch.scenes.length){
     $(ui.storyText).innerHTML='<p class="p-text">'+(ch.gateText||'')+'</p>';
+    renderSceneWords([]);
     $(ui.btnStoryNext).textContent=ch.quiz>0?'开始考校':'进入宫闱事件';
   }else{
-    $(ui.btnStoryNext).textContent='继续查阅下一页';
+    $(ui.btnStoryNext).textContent='继续';
   }
   setTab('story');
 }
@@ -2524,7 +2543,7 @@ function storyNext(){
     return;
   }
   // 场景走完 → 按章内顺序推进未完成事件
-  var done=S.chapterDone[S.chapter]||{};
+  var done=ch._done||{};
   if(ch.quiz>0 && !done.quiz){ startQuiz(ch); return; }
   if(ch.battle && !done.battle){ startBattle(ch.battle); return; }
   if(ch.choice && !done.choice){ showChoice(ch.choice); return; }
@@ -2535,22 +2554,21 @@ function afterGate(ok){
   if(S.chapter>=STORY.length){ openStory(); return; }
   var ch=STORY[S.chapter];
   // 按章内顺序推进：quiz → battle → choice → case → reward
-  var done=S.chapterDone[S.chapter]||{};
-  if(ch.quiz>0 && !done.quiz){ done.quiz=true; S.chapterDone[S.chapter]=done; save(); if(ok){ openStory(); return; } }
-  if(ch.battle && !done.battle){ done.battle=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
-  if(ch.choice && !done.choice){ done.choice=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
-  if(ch.case && !done.case){ done.case=true; S.chapterDone[S.chapter]=done; save(); openStory(); return; }
+  var done=ch._done||{};
+  if(ch.quiz>0 && !done.quiz){ done.quiz=true; ch._done=done; if(ok){ openStory(); return; } }
+  if(ch.battle && !done.battle){ done.battle=true; ch._done=done; openStory(); return; }
+  if(ch.choice && !done.choice){ done.choice=true; ch._done=done; openStory(); return; }
+  if(ch.case && !done.case){ done.case=true; ch._done=done; openStory(); return; }
   // 全部完成 → 晋升
-  if(S.chapter===0&&!S.branchFlags.chapter1){S.branchFlags.chapter1='admitted';adjustRelation('aunt',8);}
   if(S.rank<ch.reward) promote(ch.reward);
-  else { taskInc('chapter'); addRecord('chapter','完成章节 · '+ch.title,'本章剧情与考校已经完成','chapter-'+S.chapter,true); delete S.chapterDone[S.chapter]; S.chapter++; S.storyIdx=0; S.step=0; save(); openStory(); }
+  else { addRecord('chapter','完成章节 · '+ch.title,'本章剧情与考校已经完成','chapter-'+S.chapter,true); S.chapter++; S.storyIdx=0; S.step=0; if(ch._done) delete ch._done; save(); openStory(); }
 }
 function promote(rank){
   S.rank=rank;
   addRecord('rank','获赐第 '+rank+' 枚凤印','晋位「'+RANKS[rank].n+'」 · '+RANKS[rank].s,'rank-'+rank,true);
-  taskInc('chapter');
+  taskInc('promote');
   var ch=STORY[S.chapter];
-  delete S.chapterDone[S.chapter];
+  if(ch._done) delete ch._done;
   showPage('page-reward');
   $(ui.rewardFrom).textContent='获赐第 '+rank+' 枚凤印 · 晋位大典';
   $(ui.rewardRank).textContent=RANKS[rank].n;
@@ -2651,11 +2669,7 @@ function ensureHistoricalRecords(){
   (S.verdict||[]).forEach(function(v,i){addRecord('choice','剧情抉择',v.t,'legacy-choice-'+i,v.good);});
   save();
 }
-function adjustRelation(id,delta){if(!S.relations)S.relations={queen:0,huafei:0,aunt:0};S.relations[id]=Math.max(-100,Math.min(100,(S.relations[id]||0)+delta));}
-function relationLabel(v){if(v>=60)return'倚重';if(v>=25)return'亲近';if(v>5)return'留意';if(v<=-60)return'死敌';if(v<=-25)return'敌视';if(v<-5)return'戒备';return'平淡';}
-function renderRelations(){var list=$('relationList');if(!list)return;var people=[['queen','皇后'],['huafei','华妃'],['aunt','掌事姑姑']];list.innerHTML=people.map(function(p){var v=(S.relations&&S.relations[p[0]])||0;return'<div class="relation-item"><span class="relation-name">'+p[1]+'</span><span class="relation-track"><i style="width:'+Math.max(4,Math.min(100,(v+100)/2))+'%"></i></span><span class="relation-state">'+relationLabel(v)+'</span></div>';}).join('');}
 function renderRecord(){
-  renderRelations();
   var list=$(ui.recList);
   ensureHistoricalRecords();
   if(!S.records.length){
@@ -2688,7 +2702,7 @@ function encodeSave(){
 }
 function decodeSave(code){
   code=(code||'').trim();
-  if(code.indexOf(SAVE_PREFIX)!==0) return {ok:false,msg:'密文格式不对，应以上传存档前缀开头'};
+  if(code.indexOf(SAVE_PREFIX)!==0) return {ok:false,msg:'这不是本游戏的备份文件，请重新选择'};
   try{
     var json=decodeURIComponent(escape(atob(code.slice(SAVE_PREFIX.length))));
     var o=JSON.parse(json);
@@ -2702,22 +2716,19 @@ function decodeSave(code){
     if(!o.covered) o.covered={};
     if(!o.records) o.records=[];
     if(!o.reviews) o.reviews={};
-    if(!o.relations)o.relations={queen:0,huafei:0,aunt:0};
-    if(!o.branchFlags)o.branchFlags={};
-    if(!o.chapterDone)o.chapterDone={};
-    if(typeof o.energy!=='number') o.energy=100;
+  if(typeof o.energy!=='number') o.energy=100;
+    migrateSemanticState(o);
     return {ok:true,data:o};
   }catch(e){ return {ok:false,msg:'密文无效或已损坏'}; }
 }
 function openExport(){
   var code=encodeSave();
-  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), file=$('saveFile'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
   if(!m) return;
   t.textContent='🔐 导出存档';
   s.textContent='将密文发给新设备（微信/文件传输），导入即可恢复进度';
   ta.value=code;
   ta.readOnly=true;
-  if(file){file.style.display='none';file.value='';file.onchange=null;}
   cp.style.display='';
   cp.textContent='复制密文';
   cp.onclick=function(){ copyCode(ta); };
@@ -2728,22 +2739,12 @@ function openExport(){
   m.style.display='block';
 }
 function openImport(){
-  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), file=$('saveFile'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
+  var m=$('saveModal'), t=$('saveTitle'), s=$('saveSub'), ta=$('saveCode'), cp=$('saveCopyBtn'), dn=$('saveDownBtn'), tip=$('saveTip');
   if(!m) return;
   t.textContent='📥 导入存档';
   s.textContent='粘贴导出的存档密文，将覆盖当前进度';
   ta.value='';
   ta.readOnly=false;
-  if(file){
-    file.style.display='block';file.value='';
-    file.onchange=function(){
-      var chosen=file.files&&file.files[0];if(!chosen)return;
-      var reader=new FileReader();
-      reader.onload=function(){ta.value=String(reader.result||'').trim();toast('已读取存档文件，请点“确认导入”');};
-      reader.onerror=function(){toast('文件读取失败，请改用复制密文');};
-      reader.readAsText(chosen,'utf-8');
-    };
-  }
   cp.style.display='';
   cp.textContent='确认导入';
   cp.onclick=doImport;
@@ -2789,206 +2790,60 @@ function doImport(){
 function downloadSave(){
   var code=encodeSave(); if(!code){ toast('导出失败'); return; }
   try{
-    var blob=new Blob([code],{type:'text/plain;charset=utf-8'});
+    var blob=new Blob([JSON.stringify({type:'fengyin-save',version:1,code:code},null,2)],{type:'application/json;charset=utf-8'});
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');
     a.href=url;
-    a.download='凤印九重_存档_'+new Date().toISOString().slice(0,10)+'.txt';
+    a.download='凤印九重_备份_'+new Date().toISOString().slice(0,10)+'.json';
     document.body.appendChild(a); a.click();
     setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },400);
-  }catch(e){ toast('下载失败，请用复制密文'); }
+    toast('备份文件已下载，请妥善保存');
+  }catch(e){ toast('下载失败，请稍后重试'); }
+}
+function chooseSaveFile(){
+  var input=$('saveFileInput');
+  if(!input) return;
+  input.value='';
+  input.click();
+}
+function importSaveFile(input){
+  var file=input&&input.files&&input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    try{
+      var raw=String(reader.result||'').trim();
+      var code=raw;
+      if(raw.charAt(0)==='{'){
+        var pack=JSON.parse(raw);
+        code=pack&&pack.code||'';
+      }
+      var r=decodeSave(code);
+      if(!r.ok){ toast(r.msg); return; }
+      if(!confirm('导入后会覆盖这台设备现在的进度，确定继续吗？')) return;
+      S=r.data;
+      try{window.S=S;}catch(e){}
+      save();
+      toast('导入成功，正在恢复进度');
+      setTimeout(function(){location.reload();},700);
+    }catch(e){ toast('文件无法读取，请选择游戏导出的备份文件'); }
+  };
+  reader.onerror=function(){toast('文件读取失败，请重新选择');};
+  reader.readAsText(file,'utf-8');
 }
 
-/* ---------- V6.3 云同步（GitHub 私有仓库） ---------- */
-var CLOUD_KEY='gd12_cloud';
-var cloudCfgMem={code:'',owner:'',repo:'',token:'',savedAt:0,lastSync:0,lastErr:''};
-var _autoSyncT=null, _syncing=false;
-function cloudCfg(){
-  try{
-    var raw=localStorage.getItem(CLOUD_KEY);
-    if(raw){ var o=JSON.parse(raw); if(o&&o.code) cloudCfgMem=o; }
-  }catch(e){}
-  if(!cloudCfgMem.code) cloudCfgMem.code=genCode();
-  return cloudCfgMem;
-}
-function genCode(){
-  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var c='';
-  for(var i=0;i<8;i++) c+=chars.charAt(rand(chars.length));
-  return c;
-}
-function cloudReady(){ var c=cloudCfg(); return !!(c.code&&c.owner&&c.repo&&c.token); }
-function cloudPath(){ return 'saves/'+cloudCfg().code+'.json'; }
-function cloudApi(method,url,body){
-  var c=cloudCfg();
-  var opt={
-    method:method,
-    headers:{
-      'Authorization':'Bearer '+c.token,
-      'Accept':'application/vnd.github+json',
-      'X-GitHub-Api-Version':'2022-11-28',
-      'Content-Type':'application/json'
-    },
-    keepalive:true /* 页面关闭时尽量完成上传 */
-  };
-  if(body) opt.body=JSON.stringify(body);
-  return fetch('https://api.github.com'+url,opt);
-}
-/* V11.6：面向普通用户停用 GitHub Token 同步，不再注册离页上传。 */
-function cloudUpload(){
-  if(typeof fetch!=='function') return Promise.resolve(false);
-  if(!cloudReady()||_syncing) return Promise.resolve(false);
-  return _doUpload();
-}
-function _doUpload(){
-  var c=cloudCfg();
-  var path=cloudPath();
-  var payload={savedAt:Date.now(),data:S};
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+path)
-    .then(function(res){
-      return res.json().then(function(j){
-        var body={message:'sync '+new Date().toISOString(),content:content};
-        if(j&&j.sha) body.sha=j.sha; /* 已存在 → 带 sha 覆盖 */
-        return cloudApi('PUT','/repos/'+c.owner+'/'+c.repo+'/contents/'+path,body);
-      });
-    })
-    .then(function(res){
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      c.savedAt=payload.savedAt; c.lastSync=Date.now(); c.lastErr='';
-      saveCloudCfg();
-      return true;
-    })
-    .catch(function(e){
-      c.lastErr=String(e&&e.message||e);
-      saveCloudCfg();
-      return false;
-    });
-}
-function cloudPull(){
-  if(typeof fetch!=='function') return Promise.resolve(false);
-  if(!cloudReady()||_syncing) return Promise.resolve(false);
-  _syncing=true;
-  var c=cloudCfg();
-  return cloudApi('GET','/repos/'+c.owner+'/'+c.repo+'/contents/'+cloudPath())
-    .then(function(res){
-      if(res.status===404) return null; /* 云端还没有 → 首次上传由 autoSync 完成 */
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      return res.json();
-    })
-    .then(function(j){
-      if(!j||!j.content) return false;
-      var payload=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
-      var cloudT=payload&&payload.savedAt||0;
-      var localT=S.savedAt||0;
-      if(cloudT>localT){
-        /* 云端新 → 接管 */
-        S=payload.data||S;
-        if(!S.relations)S.relations={queen:0,huafei:0,aunt:0};if(!S.branchFlags)S.branchFlags={};if(!S.chapterDone)S.chapterDone={};if(!S.wrongs)S.wrongs={};if(!S.favs)S.favs={};if(!S.learning)S.learning={};if(!S.covered)S.covered={};if(!S.records)S.records=[];if(!S.reviews)S.reviews={};migrateReviewSchedule();initEnergy();initTasks();
-        try{ window.S=S; }catch(e){}
-        c.savedAt=cloudT; c.lastSync=Date.now(); c.lastErr='';
-        saveCloudCfg();
-        return true;
-      }else if(localT>cloudT){
-        /* 本地新 → 推上去 */
-        return _doUpload();
-      }
-      return false;
-    })
-    .catch(function(e){
-      c.lastErr=String(e&&e.message||e);
-      saveCloudCfg();
-      return false;
-    })
-    .finally(function(){ _syncing=false; });
-}
-function scheduleAutoSync(){
-  /* 已停用：存档只保存在本机，跨设备使用导出/导入。 */
-}
-function renderCloudStatus(){
-  var el=$('cloudStatus'); if(!el) return;
-  var c=cloudCfg();
-  if(!cloudReady()){
-    el.innerHTML='☁️ 云同步未开启<br><span class="off">配置后自动同步 · 换设备无缝续玩</span>';
-  }else{
-    var t=c.lastSync?fmtTime(c.lastSync):'从未同步';
-    var err=c.lastErr?'<br><span style="color:var(--danger)">上次失败：'+escapeHtml(c.lastErr)+'</span>':'';
-    el.innerHTML='☁️ 已开启 · <b>'+c.code+'</b><br><span class="ok">上次同步：'+t+'</span>'+err;
-  }
-}
-function fmtTime(ts){
-  var d=new Date(ts);
-  function p(n){return (n<10?'0':'')+n;}
-  return (d.getMonth()+1)+'月'+d.getDate()+'日 '+p(d.getHours())+':'+p(d.getMinutes());
-}
-function escapeHtml(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function openCloudCfg(){
-  var c=cloudCfg();
-  var m=$('cloudModal'); if(!m) return;
-  $('cloudCode').value=c.code;
-  $('cfgOwner').value=c.owner||'';
-  $('cfgRepo').value=c.repo||'';
-  $('cfgToken').value=c.token||'';
-  var tip=$('cloudTip');
-  var guide=$('cloudGuide');
-  if(tip){
-    if(cloudReady()){
-      tip.innerHTML='已配置。保存后每次存档自动上传，打开游戏自动拉取。';
-    }else{
-      tip.innerHTML='还没配好？照着下方三步走，或参考弹层内引导链接。';
-    }
-  }
-  if(guide){
-    guide.style.display=cloudReady()?'none':'block';
-  }
-  $('cloudMask').style.display='block';
-  m.style.display='block';
-}
-function closeCloudCfg(){
-  var m=$('cloudModal'), mk=$('cloudMask');
-  if(m) m.style.display='none';
-  if(mk) mk.style.display='none';
-}
-function saveCloudCfgForm(){
-  var c=cloudCfg();
-  var codeEl=$('cloudCode');
-  var code=(codeEl&&codeEl.value||'').trim().toUpperCase().replace(/[^A-Z2-9]/g,'');
-  if(code) c.code=code; /* 允许输入旧存档码接管 */
-  c.owner=($('cfgOwner').value||'').trim();
-  c.repo=($('cfgRepo').value||'').trim();
-  c.token=($('cfgToken').value||'').trim();
-  if(!c.owner||!c.repo||!c.token){ toast('请填全三项再保存'); return; }
-  saveCloudCfg();
-  toast('配置已保存');
-  closeCloudCfg();
-  renderCloudStatus();
-  /* 配置完成后立即做一次双向校验：先拉再传 */
-  cloudPull().then(function(pulled){
-    if(pulled){ toast('已从云端恢复最新进度'); location.reload(); }
-    else{ cloudUpload().then(function(ok){ toast(ok?'已上传到云端':'云端不可达，稍后自动重试'); }); }
-  });
-}
-function saveCloudCfg(){
-  try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(cloudCfgMem)); }catch(e){}
-}
-function cloudNow(dir){
-  if(!cloudReady()){ toast('请先完成云端配置'); return; }
-  toast(dir==='up'?'正在上传…':'正在拉取…');
-  var p=(dir==='up')?cloudUpload():cloudPull();
-  p.then(function(ok){
-    if(dir==='up'){ toast(ok?'已上传到云端':'上传失败，检查配置/网络'); }
-    else{ if(ok){ toast('已从云端恢复，即将刷新'); setTimeout(function(){ location.reload(); },600); } else { toast('云端没有可恢复的数据或失败'); } }
-    renderCloudStatus();
-  });
+function showSemanticMigrationNotice(){
+  if(!S.semanticMigration||!S.semanticMigration.notice)return;
+  S.semanticMigration.notice=false;
+  save();
+  setTimeout(function(){toast('剧情词序已按词义重排；位份、圣宠、错词和复习记录均已保留');},500);
 }
 
 /* ---------- 初始化 ---------- */
 function init(){
   ui={
     toast:'toast',rankBar:'rankBar',rankName:'rankName',favText:'favText',energyText:'energyText',
-    storyTitle:'storyTitle',storySub:'storySub',storyText:'storyText',
+    storyTitle:'storyTitle',storySub:'storySub',storyText:'storyText',storyWords:'storyWords',
     btnStoryNext:'btnStoryNext',storyHint:'storyHint',
     quizProgress:'quizProgress',qWord:'qWord',qPho:'qPho',qPos:'qPos',qOpts:'qOpts',quizHint:'quizHint',
     battleTitle:'battleTitle',battleSub:'battleSub',enemyName:'enemyName',enemyHp:'enemyHp',enemyHpText:'enemyHpText',
@@ -3016,8 +2871,7 @@ function init(){
   renderRankBar();
   renderLoveEntry();
   renderHeroBadge();
-  /* 清除旧版遗留的 GitHub 凭据，不影响任何学习进度。 */
-  try{ localStorage.removeItem('gd12_cloud'); }catch(e){}
+  showSemanticMigrationNotice();
   if(has && (S.chapter>0 || S.rank>0 || S.storyIdx>0)){
     /* 有进度 → 首页按钮改为"继续" */
     var bs=$('btnStart'); if(bs) bs.textContent='继续深宫闯关';
@@ -3034,7 +2888,7 @@ function registerOffline(){
   try{
     if('serviceWorker' in navigator && location.protocol!=='file:'){
       var hadController=!!navigator.serviceWorker.controller;
-      navigator.serviceWorker.register('./sw.js?v=118').then(function(reg){
+      navigator.serviceWorker.register('./sw.js?v=160').then(function(reg){
         try{reg.update();}catch(e){}
         reg.addEventListener('updatefound',function(){
           var worker=reg.installing;if(!worker)return;
@@ -3046,8 +2900,8 @@ function registerOffline(){
       navigator.serviceWorker.addEventListener('controllerchange',function(){
         if(!hadController)return;
         try{
-          if(sessionStorage.getItem('gd_sw_reloaded_v118')==='1')return;
-          sessionStorage.setItem('gd_sw_reloaded_v118','1');
+          if(sessionStorage.getItem('gd_sw_reloaded_v149')==='1')return;
+          sessionStorage.setItem('gd_sw_reloaded_v149','1');
         }catch(e){}
         showUpdateStatus('更新完成，正在载入新功能…');
         setTimeout(function(){location.reload();},350);
@@ -3080,6 +2934,9 @@ window.encodeSave=encodeSave;
 window.decodeSave=decodeSave;
 window.openExport=openExport;
 window.openImport=openImport;
+window.downloadSave=downloadSave;
+window.chooseSaveFile=chooseSaveFile;
+window.importSaveFile=importSaveFile;
 window.closeSaveModal=closeSaveModal;
 window.startQuiz=startQuiz;
 window.answerQuiz=answerQuiz;
@@ -3095,8 +2952,6 @@ window.renderRankBar=renderRankBar;
 window.libTab=libTab;
 window.startReview=startReview;
 window.toggleFav=toggleFav;
-window.claimTaskReward=claimTaskReward;
-window.speak=speak;
 window.markWrong=markWrong;
 window.markRight=markRight;
 window.wrongWords=wrongWords;
