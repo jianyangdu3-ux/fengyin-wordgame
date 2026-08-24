@@ -594,7 +594,7 @@ body{background:#241816}
   <div class="header-wrap">
     <header class="topbar">
       <h1 onclick="goTab('home')" role="button" aria-label="返回首页">凤印九重</h1>
-      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
+      <div class="sub"><span id="rankName">秀女</span><span id="sealText" style="color:var(--gold);font-size:11px;margin-left:6px;"></span><span style="margin-left:auto;display:flex;gap:6px"><span class="fav" id="energyText" onclick="showEnergyHelp()" role="button" aria-label="查看心力与温书规则" style="cursor:pointer">⚡ 100</span><span class="fav" id="favText">圣宠 0</span></span></div>
       <button class="help-circle top-help" type="button" onclick="location.href='manual.html#quickstart'" aria-label="打开玩法说明">?</button>
     </header>
     <div class="rank-bar" id="rankBar"></div>
@@ -606,7 +606,7 @@ body{background:#241816}
         <div class="home-head">
           <div class="home-seal" onclick="location.href='manual.html#fengyin'" role="button" aria-label="查看凤印与晋位说明">凤</div><div class="home-brand" onclick="location.href='manual.html#quickstart'" role="button" aria-label="查看凤印九重玩法说明">凤印九重</div>
           <div class="home-resources">
-            <div class="resource-pill"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
+            <div class="resource-pill" onclick="showEnergyHelp()" role="button" aria-label="查看心力与温书规则" style="cursor:pointer"><span class="bolt">⚡</span><b id="homeEnergy">100</b></div>
             <div class="resource-pill"><span>◉</span><b id="homeFavor">0</b></div>
             <button class="help-circle" type="button" onclick="location.href='manual.html#quickstart'" aria-label="打开玩法说明">?</button>
           </div>
@@ -1299,14 +1299,33 @@ function showRestoreHint(){
   var old=document.getElementById('restoreBtn'); if(old) old.remove();
   var b=document.createElement('button');
   b.id='restoreBtn'; b.className='btn ghost';
-  b.textContent='📖 温书恢复心力（+30）';
-  b.onclick=function(){
-    S.energy=Math.min(100,(S.energy||0)+30); S.energyDate=todayStr(); save(); renderRankBar();
+  b.style.cssText='position:fixed;left:20px;right:20px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:420;margin:0 auto;max-width:560px;background:#fffaf0;box-shadow:0 10px 28px rgba(62,35,27,.22)';
+  b.textContent='📖 温书 5 词 · 恢复 30 心力';
+  b.type='button';
+  b.onclick=function(e){
+    if(e){e.preventDefault();e.stopPropagation();}
+    startEnergyReview();
     b.remove();
-    toast('温故知新，心力 +30');
-    goTab('library');
+    return false;
   };
   pg.appendChild(b);
+}
+function showEnergyHelp(){
+  toast('⚡ 心力规则：每日回满100；考校-5、斗法-10、答错-3；温书5词恢复30');
+  showRestoreHint();
+}
+function startEnergyReview(){
+  var pool=[],seen={};
+  function add(list){(list||[]).forEach(function(w){if(VOCAB_MAP[w]&&!seen[w]){seen[w]=1;pool.push(w);}});}
+  add(dueWords()); add(wrongWords()); add(Object.keys(S.covered||{})); add(Object.keys(S.seen||{})); add(Object.keys(VOCAB_MAP));
+  var items=[];
+  for(var i=0;i<5&&i<pool.length;i++){
+    var w=pool[i];
+    var mode=i%2===0?'en2zh':'zh2en';
+    items.push({word:w,mode:mode,type:'choice',options:makeOptions(w,4,mode)});
+  }
+  cur={stage:'quiz',items:items,i:0,gate:'完成 5 个已学单词的温书，不要求全对；结束后恢复 30 心力。',wrongCount:0,wrongWords:[],chapterCfg:{review:'energy'}};
+  renderQuiz();
 }
 function restoreEnergy(n){
   S.energy=Math.min(100,(S.energy||0)+(n||30)); S.energyDate=todayStr(); save(); renderRankBar();
@@ -1982,7 +2001,7 @@ function renderQuiz(){
   /* 复习模式标题（覆盖题型小字，强化温习感） */
   if(cur.chapterCfg && cur.chapterCfg.review){
     var qp=$(ui.qPos);
-    if(qp) qp.textContent=(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':(cur.chapterCfg.review==='correction'?'即时订正 · 全对后继续':(cur.chapterCfg.review==='due'?'今日复习 · 对抗遗忘':'收藏温习 · 学而时习之')));
+    if(qp) qp.textContent=(cur.chapterCfg.review==='energy'?'静心温书 · 5词恢复心力':(cur.chapterCfg.review==='wrong'?'错词复习 · 温故而知新':(cur.chapterCfg.review==='correction'?'即时订正 · 全对后继续':(cur.chapterCfg.review==='due'?'今日复习 · 对抗遗忘':'收藏温习 · 学而时习之'))));
   }
   /* V6.0 限时出招：拼写 20 秒，选择 15 秒，超时判错 */
   startCountdown(it.type==='spell'?20:15,'qtFill','qtNum',function(){
@@ -2021,12 +2040,12 @@ function answerQuiz(idx){
     spawnCoin(qopt||$(ui.qWord),'✨');
     showAnswerFeedback(true,S.streak>=3?'妙语连珠':'答对了',it.word,'圣宠 +'+gain+(S.streak>1?' · 连续答对 '+S.streak+' 题':''));
   }else{
-    S.wrong++; S.streak=0; S.points=Math.max(0,S.points-5);
-    S.energy=Math.max(0,S.energy-3);
+    S.wrong++; S.streak=0;
+    if(!(cur.chapterCfg&&cur.chapterCfg.review==='energy')){S.points=Math.max(0,S.points-5);S.energy=Math.max(0,S.energy-3);}
     cur.wrongCount++;
     if(cur.wrongWords.indexOf(it.word)===-1) cur.wrongWords.push(it.word);
     markWrong(it.word);
-    toast('答错了 -5 圣宠 -3 心力');
+    toast(cur.chapterCfg&&cur.chapterCfg.review==='energy'?'答错了，已收入错词本；温书不扣心力':'答错了 -5 圣宠 -3 心力');
     spawnCoin(qopt||$(ui.qWord),'💔');
     var wd=VOCAB_MAP[it.word]?extractPOS(VOCAB_MAP[it.word].def).mean:'';
     showAnswerFeedback(false,'已收入错词本',it.word,wd+' · 稍后再复习一次');
@@ -2107,6 +2126,10 @@ function finishQuiz(){
   if(cfg && cfg.review){
     if(cfg.review==='correction') passed=correctCount===total;
     finishReviewCleanup();
+    if(cfg.review==='energy'){
+      restoreEnergy(30); passed=true;
+      addRecord('review','完成静心温书','温书 5 词 · 心力 +30','energy-review-'+Date.now(),true);
+    }
     if(cfg.review==='due')addRecord('review','完成今日复习','答对 '+correctCount+' / '+total+' 题 · '+nextReviewText(),'review-'+Date.now(),passed);
     save();
     var charBoxR=$('quizChar'); if(charBoxR) charBoxR.style.display='none';
@@ -2117,20 +2140,21 @@ function finishQuiz(){
     resBoxR.style.display='block';
     var left=Object.keys(S.wrongs||{}).filter(function(w){return !!VOCAB_MAP[w];}).length;
     resBoxR.innerHTML='<div class="quiz-result">'+
-      '<div class="result-stamp '+(passed?'pass':'fail')+'">'+(passed?'温故知新':'尚未记牢')+'</div>'+
-      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(left>0?' · 错词本还剩 <b>'+left+'</b> 词':' · 错词本已清空 ✨')+'</div>'+
+      '<div class="result-stamp '+(passed?'pass':'fail')+'">'+(cfg.review==='energy'?'静心完毕':(passed?'温故知新':'尚未记牢'))+'</div>'+
+      '<div class="result-score">答对 <b>'+correctCount+'</b> / '+total+' 题'+(cfg.review==='energy'?' · <b>心力 +30</b>':(left>0?' · 错词本还剩 <b>'+left+'</b> 词':' · 错词本已清空 ✨'))+'</div>'+
       (wrongWords.length>0?
         '<div class="result-wrong-title">仍未记住（点单词听发音）</div>'+
         '<div class="result-wrong-list">'+wrongWords.map(function(w){
           var d=VOCAB_MAP[w]?VOCAB_MAP[w].def:'';
           return '<div class="result-wrong-item"><span class="result-word" onclick="speak(\''+w+'\')" style="cursor:pointer">'+w+' 🔊</span><div class="result-def">'+d+'</div></div>';
         }).join('')+'</div>':'')+
-      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">'+(cfg.review==='correction'?(passed?'订正完成，继续剧情':'再订正一次'):(cfg.review==='due'?'完成复习，返回首页':'返回词库'))+'</button>'+ 
+      '<button class="btn gold" id="quizReviewBack" style="margin-top:6px">'+(cfg.review==='energy'?'心力已恢复，继续剧情':(cfg.review==='correction'?(passed?'订正完成，继续剧情':'再订正一次'):(cfg.review==='due'?'完成复习，返回首页':'返回词库')))+'</button>'+ 
     '</div>';
     var btnR=$('quizReviewBack');
     if(btnR) btnR.onclick=function(){
       resBoxR.style.display='none'; resBoxR.innerHTML='';
-      if(cfg.review==='correction'){
+      if(cfg.review==='energy'){cur=null;openStory();}
+      else if(cfg.review==='correction'){
         var ws=cfg.correctionWords||[]; var returnCfg=cfg.returnCfg; cur=null;
         if(passed) afterGate(true); else startCorrection(ws,returnCfg);
       }else if(cfg.review==='due'){cur=null;showPage('page-start');renderHeroBadge();}
@@ -2944,6 +2968,8 @@ window.startBattle=startBattle;
 window.answerBattle=answerBattle;
 window.clearTimer=clearTimer;
 window.initEnergy=initEnergy;
+window.showEnergyHelp=showEnergyHelp;
+window.startEnergyReview=startEnergyReview;
 window.comboName=comboName;
 window.ENEMY_MOVES=ENEMY_MOVES;
 window.save=save;
