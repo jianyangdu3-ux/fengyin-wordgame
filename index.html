@@ -1474,26 +1474,71 @@ function onceAudioUnlock(){
 document.addEventListener('touchstart',onceAudioUnlock,{passive:true});
 document.addEventListener('click',onceAudioUnlock);
 
+var pronunciationAudio=null;
+var pronunciationTicket=0;
+function systemSpeakFallback(word,ticket){
+  if(ticket!==pronunciationTicket) return;
+  try{
+    if(!window.speechSynthesis||!window.SpeechSynthesisUtterance) throw new Error('speech unavailable');
+    speechSynthesis.cancel();
+    speechSynthesis.resume();
+    var started=false;
+    var u=new SpeechSynthesisUtterance(word);
+    u.lang='en-US';
+    u.rate=0.82;
+    u.onstart=function(){started=true;};
+    u.onerror=function(){if(ticket===pronunciationTicket) toast('没有成功播放，请打开媒体音量或用系统浏览器重试');};
+    speechSynthesis.speak(u);
+    setTimeout(function(){
+      if(ticket===pronunciationTicket&&!started&&!speechSynthesis.speaking){
+        toast('没有成功播放，请打开媒体音量或用系统浏览器重试');
+      }
+    },1600);
+  }catch(e){
+    if(ticket===pronunciationTicket) toast('没有成功播放，请打开媒体音量或用系统浏览器重试');
+  }
+}
 function speak(word){
   if(!word) return;
   initAudio();
-  // 优先 Web Speech API（iOS 更可靠）
+  var ticket=++pronunciationTicket;
   try{
-    if(window.speechSynthesis){
-      speechSynthesis.cancel();
-      var u=new SpeechSynthesisUtterance(word);
-      u.lang='en-US';
-      u.rate=0.85;
-      speechSynthesis.speak(u);
-      return;
+    if(!pronunciationAudio){
+      pronunciationAudio=new Audio();
+      pronunciationAudio.preload='auto';
+      pronunciationAudio.setAttribute('playsinline','');
+      pronunciationAudio.setAttribute('webkit-playsinline','');
     }
-  }catch(e){}
-  // fallback 到有道
-  try{
-    var url='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
-    var a=new Audio(url);
-    a.play().catch(function(){});
-  }catch(e){}
+    var a=pronunciationAudio;
+    var settled=false;
+    var fallbackTimer=null;
+    function cleanup(){
+      if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null;}
+      a.onplaying=null;a.onerror=null;a.onstalled=null;a.onabort=null;
+    }
+    function success(){
+      if(settled||ticket!==pronunciationTicket)return;
+      settled=true;cleanup();
+    }
+    function fallback(){
+      if(settled||ticket!==pronunciationTicket)return;
+      settled=true;cleanup();
+      try{a.pause();}catch(e){}
+      systemSpeakFallback(word,ticket);
+    }
+    try{a.pause();a.currentTime=0;}catch(e){}
+    a.onplaying=success;
+    a.onerror=fallback;
+    a.onstalled=fallback;
+    a.onabort=fallback;
+    a.src='https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(word)+'&type=2';
+    a.load();
+    var playPromise=a.play();
+    if(playPromise&&typeof playPromise.then==='function') playPromise.then(success).catch(fallback);
+    fallbackTimer=setTimeout(fallback,2400);
+  }catch(e){
+    systemSpeakFallback(word,ticket);
+  }
 }
 function speakWord(){
   var w;
