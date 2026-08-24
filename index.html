@@ -1502,7 +1502,6 @@ function speakWord(){
   else w='';
   if(!w) return;
   speak(w);
-  toast('🔊 发音：'+w);
 }
 function speakSpell(){
   var w=cur && cur.items ? cur.items[cur.i].word : '';
