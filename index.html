@@ -986,6 +986,27 @@ var STORY_PLAN=window.SEMANTIC_STORY_PLAN||null;
   chapter.scenes[1].t='丝封上的印记暴露了伪造户籍的真实 origin。她自称出身低微的 station，却在袖中藏着御赐令牌；更矛盾的是，resume 声称入宫十年，宫门簿却记录她去年春天才受雇。你由此确认，两份名册中的不同姓名实际属于同一人。';
   chapter.scenes[3].t='你翻出 original 原册，发现一个姓名在后来所有抄本中消失。那道手令足以 entitle 持有人免试入宫；她申报的 nationality 又与童年书信所用方言不符。画像缺失，起初无法确认她的 identity。';
 })();
+/* 第5—8章人工校正：清除整段英文，保留且只保留本幕目标词。 */
+(function patchEarlySemanticStories(){
+  if(!STORY_PLAN||!STORY_PLAN.chapters)return;
+  function chapter(no){for(var i=0;i<STORY_PLAN.chapters.length;i++)if(STORY_PLAN.chapters[i].displayNo===no)return STORY_PLAN.chapters[i];return null;}
+  function scene(no,index,text){var ch=chapter(no);if(ch&&ch.scenes&&ch.scenes[index])ch.scenes[index].t=text;}
+  scene(5,0,'密室外，女官脸上没有应有的 sorrow；凤印在座下被找到时，她眼里反而闪过 thrill。乳母先去 comfort 受惊的孩子，孩子才说出藏身处；她对掌事的 hatred，也解释了为何愿意配合伪造指控。');
+  scene(5,1,'密信开头写着 love，结尾威胁的笔迹却属于另一人。证人把逃脱形容得 marvelous，语气不像无辜旁观者；又有人试图 frighten 小宫女撤回证词。掌事对搜查表现出异常 enthusiasm，只因他想让众人先搜错房间。');
+  scene(5,2,'掌事谎称宫门已经封死，宫人才出现 panic；流言起初并未 affect 皇后，直到伪造签名被呈上。乳母保护孩子的 passion 解释了她为何隐瞒暗道；太医则出于 compassion，先救治被告宫女再接受问讯。');
+  scene(5,3,'往日充满 laughter 的值房突然安静，说明有人提前清场。嫌犯原本回答得十分 ease，听见烧毁的信件后却神色骤变；妹妹被带走让侍女陷入 miserable，而抽屉上的新抓痕证明，有人曾 desperate 地寻找那封信。');
+  scene(5,4,'她的 grief 并非假装，却在死讯公布前数个时辰已经出现。太医用辛香 stimulate 昏迷证人；一名 jealous 对手又临摹笔迹，企图让两位秀女彼此仇视。付款记录被当众念出后，收款的大臣立刻 angry，情绪终于与证据对上。');
+  scene(6,2,'外邦奇物图册中的 tv 被使臣解释为能远传画面的器具，他声称边关消息由此传到京城。公开 declaration 承诺议和，暗令却准备开战；证人不能直接 express 警告，只能在每封信中重复同一句话。她十分 certain 结尾被改，因为仍记得原文。');
+  scene(6,4,'内应以灯号 communicate，不必经过宫门见面。正式 report 删掉了唯一见过信使的证人；长廊传来三次 clap，正是换岗信号。更关键的是，改动一处 grammar，便把求救句变成了进攻命令。');
+  scene(7,0,'第一份 proposal 主张重开西门，第二份却要求继续封宫。赈济 programme 看似完整，却没有安排运粮车辆；遗失税簿出现后，大臣才突然改变 opinion。一名 intelligent 谋士发现，两套方案都使用了同一份虚假人口数。');
+  scene(7,1,'太医的 advice 是推迟宫宴，等所有酒杯验完再开席。你 suggest 先问守门人，再让朝廷公布决定；山间暗道提供了避开敌境的 alternative。证据尚弱，仍有官员 advocate 立即处刑，他的急切反而显得可疑。');
+  scene(7,2,'皇后命你 select 一套既保护证人、又保住粮队的方案。商路 settlement 能结束争端，却会交出渡口控制权；舆图还暴露了调走东库守卫的 plot。你的 plan 是安排两名可信宫女守门，逐一核对返回者。');
+  scene(7,3,'廷议先要 fix 使臣离京的准确时刻。司库 prefer 较慢的路线，因为每笔支出都能留下完整记录；两枚印痕可以 determine 两道诏令的先后。真正 decisive 的证物，是盖着嫌犯私印的粮票。');
+  scene(7,4,'值房收到 urge 加快放行的口信，但当值簿只有一名侍卫签字。使臣接受议和的 condition，是双方天亮前同时撤兵；商会随后将 elect 新代表。你 recommend 等清点官到齐后再开封库房，避免证物被换。');
+  scene(8,1,'掌事主动承担检查礼服的 responsibility，门官的 duty 则是登记所有来客。按 conventional 礼序，应先宣誓再交换贡礼；出行 allowance 只够三匹马，账册却向宫中报销了六匹。多出的银两正是伪诏经费。');
+  scene(8,4,'宫规 prohibit 私信从供给门送出；秀女早已有 engagement，也不可能再议皇室婚约。按宗族 custom，应由最长者先作证；使团则可依本国传统 worship。有人故意混用四套规矩，为私信出宫制造借口。');
+  scene(8,5,'依照两国约定的 convention，使臣在 banquet 前不得进入内库。值门簿却显示他越门半刻，已经构成 breach；新 regulation 又要求双印放行，而通行纸上只有一枚假印。');
+})();
 function semanticMeaning(w){
   if(STORY_PLAN&&STORY_PLAN.senses&&STORY_PLAN.senses[w])return STORY_PLAN.senses[w];
   var it=VOCAB_MAP[w];if(!it)return '待查词义';
