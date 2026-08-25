@@ -972,6 +972,20 @@ var STORY=[
 
 /* ---------- V12 语义剧情引擎 ---------- */
 var STORY_PLAN=window.SEMANTIC_STORY_PLAN||null;
+/* 第4章人工校正：正文只保留需要学习的英文词，并保证正文红词与本幕词表一致。 */
+(function patchChapterFourIdentityStory(){
+  if(!STORY_PLAN||!STORY_PLAN.chapters)return;
+  var chapter=null;
+  for(var i=0;i<STORY_PLAN.chapters.length;i++){
+    if(STORY_PLAN.chapters[i].displayNo===4){chapter=STORY_PLAN.chapters[i];break;}
+  }
+  if(!chapter||!chapter.scenes||chapter.scenes.length<4)return;
+  chapter.scenes[0].w=['candidate','qualification','birth','affair','surname'];
+  chapter.scenes[0].t='终选前，掌事发现一名 candidate 的 qualification 文书被重新装订。她的 birth 籍写着河东，家中那桩旧 affair 却发生在江南；更可疑的是，两份族谱使用了不同的 surname。五处矛盾都指向同一件事：有人替她换了身份。';
+  chapter.scenes[1].w=['origin','station','resume'];
+  chapter.scenes[1].t='丝封上的印记暴露了伪造户籍的真实 origin。她自称出身低微的 station，却在袖中藏着御赐令牌；更矛盾的是，resume 声称入宫十年，宫门簿却记录她去年春天才受雇。你由此确认，两份名册中的不同姓名实际属于同一人。';
+  chapter.scenes[3].t='你翻出 original 原册，发现一个姓名在后来所有抄本中消失。那道手令足以 entitle 持有人免试入宫；她申报的 nationality 又与童年书信所用方言不符。画像缺失，起初无法确认她的 identity。';
+})();
 function semanticMeaning(w){
   if(STORY_PLAN&&STORY_PLAN.senses&&STORY_PLAN.senses[w])return STORY_PLAN.senses[w];
   var it=VOCAB_MAP[w];if(!it)return '待查词义';
