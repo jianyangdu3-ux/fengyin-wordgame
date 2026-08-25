@@ -952,7 +952,7 @@ var STORY=[
   title:'第三章 · 风波乍起', sub:'一封密信',
   scenes:[
     {t:'晨起，枕下多了一封 secret 密信。你展开 message，双手不由得 tremble——信上写的竟是英文。', w:['secret','message','tremble']},
-    {t:'信中写着“I am innocent. I never betray you.”若被搜出，这封信就会成为 evidence。', w:['innocent','betray','evidence']},
+    {t:'信里最醒目的两个词是 innocent 与 betray；若被搜出，这封密信就会成为 evidence。', w:['innocent','betray','evidence']},
     {t:'门外脚步正在 approach，皇后的凤驾已至。你必须 hurry，在她进门前 understand 信中真意。', w:['approach','understand','hurry']}
   ],
   quiz:0, battle:null, choice:null, case:{
@@ -1153,6 +1153,12 @@ var STORY_PLAN=window.SEMANTIC_STORY_PLAN||null;
   scene(191,2,'你用 analytic 方法把药号与门簿作 conjunction，发现行动 sequence 跨越三个部门；清晰的 division 证明幕后者事先分配了各自职责。');
   scene(193,5,'新规 arbitrary 地授予尚宫 unique 权限，neither 六局也无法制衡；extravagant 装帧只是掩护夺权条款。');
   scene(200,1,'正文以 lay 表示放下兵器，旁注却提醒 beware 查验，并 encourage 亲信 complete 换岗。所谓投降只是诱饵。');
+  scene(209,0,'御前品评最终名册：可擦墨容易 susceptible 水损，secondary 抄本又会 perpetual 保留错名，必须采用 creative 双重校验。');
+  scene(222,3,'所谓 stall 连摊位都不存在，只在账册中反复收款。');
+  scene(230,1,'cardinal 数字与 of 短语共同限定人数；can 表示许可，under 则说明必须在印信约束下行动。只有持印者可以进入。');
+  scene(230,3,'暗语先以 yes 确认，再用 plus 增加一名随行者。你追问 whom 指谁，并确认 wherever 并非任意通行，而是跟随指定使者。');
+  scene(230,5,'暗令要求接头人先 sit，再以 sing 作为回应，直到短促 sting 声消失。这套顺序用来 establish 完整的等候暗号。');
+  scene(230,6,'hail 表示向来使招呼。你逐人 interview 后，译员的证词 contribute 了最后一项语义证据。');
 })();
 function semanticMeaning(w){
   if(STORY_PLAN&&STORY_PLAN.senses&&STORY_PLAN.senses[w])return STORY_PLAN.senses[w];
