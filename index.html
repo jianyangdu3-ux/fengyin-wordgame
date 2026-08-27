@@ -2052,19 +2052,26 @@ function loveFinalChoice(){
   cur={stage:'loveFinal',answered:false};
   showPage('page-choice');
   $(ui.choiceTitle).textContent=L.name+' · 私奔密约';
-  $(ui.choiceText).innerHTML=linkWords(L.final.q,L.words);
-  bindWordClicks($(ui.choiceText));
   var word=L.words[rand(L.words.length)];
   cur.finalWord=word;
+  $(ui.choiceText).innerHTML=linkWords(L.final.q,L.words)+
+    '<div style="margin-top:18px;padding:16px 14px;border:1px solid rgba(174,125,40,.38);border-radius:16px;background:rgba(255,250,238,.82);text-align:center">'+
+      '<div style="font-size:14px;color:#8b7458;margin-bottom:8px">画舫灯上的暗号单词</div>'+
+      '<div style="font-size:30px;font-family:Georgia,serif;font-weight:700;color:#9b2924;line-height:1.25">'+word+'</div>'+
+      '<button type="button" class="btn ghost" style="margin-top:10px;padding:8px 16px" onclick="speak(\''+word+'\')">🔊 听发音</button>'+
+      '<div style="font-size:14px;color:#6f6255;margin-top:10px">请选择这个单词的正确中文释义</div>'+
+    '</div>';
+  bindWordClicks($(ui.choiceText));
   var opts=makeOptions(word,4,'en2zh');
   var h='';
   for(var i=0;i<opts.length;i++){
     h+='<button class="qopt" data-i="'+i+'"'+(opts[i].is?' data-ok="1"':'')+'><span class="pos">'+opts[i].pos+'</span>'+opts[i].label+'</button>';
   }
   $(ui.choiceOpts).innerHTML=h;
+  $(ui.choiceOpts).style.display='block';
   var btns=$(ui.choiceOpts).querySelectorAll('.qopt');
   for(var j=0;j<btns.length;j++) btns[j].onclick=function(){ answerLoveFinal(this.getAttribute('data-i')); };
-  $(ui.choiceHint).textContent='他给的暗号——答对，随他远走；答错，或许就再也见不到了。';
+  $(ui.choiceHint).textContent='答错会标出正确答案，并可不限次数重新挑战；答对后解锁私奔结局。';
 }
 function answerLoveFinal(idx){
   if(!cur||cur.answered) return;
@@ -2079,10 +2086,8 @@ function answerLoveFinal(idx){
     }
   }
   for(var m=0;m<opts.length;m++) opts[m].style.pointerEvents='none';
-  S.love.endings[L.id]=isRight?'he':'be';
-  S.love.stage=5;
-  if(isRight){ S.love.points=100; S.points+=50; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('你念对了暗号，随他远走高飞！+50 圣宠'); }
-  else{ S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; markWrong(cur.finalWord); toast('暗号答错，功亏一篑 -15 圣宠'); }
+  if(isRight){ S.love.endings[L.id]='he'; S.love.stage=5; S.love.points=100; S.points+=50; S.right++; S.streak++; if(S.streak>S.bestStreak)S.bestStreak=S.streak; taskInc('correct'); toast('你念对了暗号，随他远走高飞！+50 圣宠'); }
+  else{ delete S.love.endings[L.id]; S.love.stage=4; S.points=Math.max(0,S.points-15); S.wrong++; S.streak=0; markWrong(cur.finalWord); toast('暗号答错，已标出正确答案，可以再次挑战 -15 圣宠'); }
   save();
   setTimeout(function(){ loveEnding(isRight); },900);
 }
@@ -2102,7 +2107,7 @@ function loveEnding(he){
   b.textContent=he?'回到情缘':'再试一次';
   b.onclick=function(){
     if(he){ openLove(); }
-    else{ S.love.stage=4; S.love.points=Math.max(0,S.love.points-10); save(); loveFinalChoice(); }
+    else{ delete S.love.endings[L.id]; S.love.stage=4; save(); loveFinalChoice(); }
   };
   parent.appendChild(b);
   renderLoveEntry();
