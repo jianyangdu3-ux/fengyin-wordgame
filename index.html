@@ -2517,7 +2517,7 @@ function renderBattle(){
   var p=extractPOS(VOCAB_MAP[cur.q.word].def);
   $(ui.bWord).textContent=cur.q.word;
   $(ui.bPho).textContent=VOCAB_MAP[cur.q.word].phonetic||'';
-  $(ui.bPos).textContent=p.pos;
+  $(ui.bPos).textContent=p.pos+' · 请选择正确中文词义';
   $(ui.bOpts).innerHTML=buildOptsHTML(cur.q.options,function(){});
   var opts=$(ui.bOpts).querySelectorAll('.qopt');
   for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerBattle(this.getAttribute('data-i')); };
@@ -2626,6 +2626,7 @@ function loseBattle(){
 function showChoice(cfg){
   cur={stage:'choice',cfg:cfg,answered:false};
   showPage('page-choice');
+  $(ui.choiceOpts).style.display='block';
   $(ui.choiceTitle).textContent=STORY[S.chapter].title;
   $(ui.choiceText).innerHTML=linkWords(cfg.q,STORY[S.chapter].scenes.reduce(function(a,s){return a.concat(s.w);},[]));
   bindWordClicks($(ui.choiceText));
@@ -2638,7 +2639,7 @@ function showChoice(cfg){
   $(ui.choiceOpts).innerHTML=h;
   var opts=$(ui.choiceOpts).querySelectorAll('.qopt');
   for(var i=0;i<opts.length;i++) opts[i].onclick=function(){ answerChoice(this.getAttribute('data-i')); };
-  $(ui.choiceHint).textContent='抉择的关键词已在文中标红，点开即看释义。';
+  $(ui.choiceHint).textContent='这是剧情判断题：关键词已在文中标红，点开可看释义；选错会标出推荐选项，但仍可继续剧情。';
 }
 function answerChoice(idx){
   if(cur.answered) return;
@@ -2675,6 +2676,9 @@ function answerChoice(idx){
 function showCase(cfg){
   cur={stage:'case',cfg:cfg,answered:false};
   showPage('page-case');
+  $(ui.caseLetter).style.display='block';
+  $(ui.caseQ).style.display='block';
+  $(ui.caseOpts).style.display='block';
   $(ui.caseTitle).textContent=STORY[S.chapter].title;
   $(ui.caseIntro).innerHTML=linkWords('凤驾将至，你必须读懂这封信。信中的词均可点开查看释义。',['evidence','understand']);
   var letterWords=['innocent','betray','hurt','help'];
